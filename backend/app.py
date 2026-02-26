@@ -48,6 +48,7 @@ mail = Mail(app)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 DB_PATH = os.path.join(BASE_DIR, "vecinal.db")
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -56,6 +57,15 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 
+
+@app.route("/")
+def index():
+    return send_from_directory(FRONTEND_DIR, "login.html")
+
+# permitir abrir cualquier archivo html
+@app.route("/<path:path>")
+def static_files(path):
+    return send_from_directory(FRONTEND_DIR, path)
 
 # -----------------------------
 # Conexión a la base de datos
