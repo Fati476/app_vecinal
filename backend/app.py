@@ -23,11 +23,7 @@ API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 app = Flask(__name__)
 CORS(app)
-socketio = SocketIO(
-    app,
-    cors_allowed_origins="*",
-    async_mode="gevent"
-)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 usuarios_online = {}
 def get_db():
     conn = sqlite3.connect(DB_PATH, timeout=15, check_same_thread=False)
@@ -49,6 +45,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 DB_PATH = os.path.join(BASE_DIR, "vecinal.db")
 FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+print("DB PATH:", DB_PATH)
+print("EXISTE:", os.path.exists(DB_PATH))
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
