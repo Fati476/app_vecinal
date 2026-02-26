@@ -30,11 +30,7 @@ socketio = SocketIO(
 )
 usuarios_online = {}
 def get_db():
-    conn = sqlite3.connect(
-        "vecinal.db",
-        timeout=15,                     # espera hasta 15 segundos por el lock
-        check_same_thread=False         # ← clave para eventlet/greenlets
-    )
+    conn = sqlite3.connect(DB_PATH, timeout=15, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -49,8 +45,9 @@ app.config['MAIL_PASSWORD'] = 'lqca vjtr jvrk wlkt'
 app.config['MAIL_DEFAULT_SENDER'] = 'ConectaVecinos <fm2290759@gmail.com>'
 mail = Mail(app)
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+DB_PATH = os.path.join(BASE_DIR, "vecinal.db")
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -64,7 +61,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 # Conexión a la base de datos
 # -----------------------------
 def conectar_db():
-    return sqlite3.connect("vecinal.db")
+    return sqlite3.connect(DB_PATH)
 
 # -----------------------------
 # Ruta de prueba
@@ -225,7 +222,7 @@ def crear_incidencia():
     except ValueError:
         return jsonify({"error": "Datos inválidos"}), 400
 
-    conn = sqlite3.connect("vecinal.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -250,7 +247,7 @@ def crear_incidencia():
 
 @app.route("/incidencias/activas", methods=["GET"])
 def incidencias_activas():
-    conn = sqlite3.connect("vecinal.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -284,7 +281,7 @@ def incidencias_activas():
 # -----------------------------
 @app.route('/incidencias', methods=['GET'])
 def ver_incidencias():
-    conn = sqlite3.connect("vecinal.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -317,7 +314,7 @@ def ver_incidencias():
 def listar_incidencias_menu():
     id_usuario = request.args.get('id_usuario', type=int)
 
-    conn = sqlite3.connect("vecinal.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -372,7 +369,7 @@ def marcar_atendida(id):
     data = request.get_json()
     id_usuario = data.get('id_usuario')
 
-    conn = sqlite3.connect("vecinal.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -1389,7 +1386,7 @@ def eliminar_foto(id_usuario):
 import requests
 
 def obtener_reportes_activos():
-    conn = sqlite3.connect("vecinal.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("SELECT descripcion FROM reportes WHERE activo = 1")
