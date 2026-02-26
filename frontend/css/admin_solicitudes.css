@@ -1,0 +1,99 @@
+/* ===== FONDO GENERAL ===== */
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(135deg, #e0ecff, #f7f9fc);
+  padding: 25px;
+  color: #0f172a;
+}
+
+/* ===== TÍTULO ===== */
+h1 {
+  margin-bottom: 20px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #1e3a8a;
+}
+
+/* ===== TABLA ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(30, 64, 175, 0.15);
+  animation: fadeIn 0.6s ease;
+}
+
+th, td {
+  padding: 14px 16px;
+  text-align: left;
+}
+
+th {
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  color: white;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+tr {
+  transition: all 0.25s ease;
+}
+
+tr:hover {
+  background: #eff6ff;
+  transform: scale(1.005);
+}
+
+/* ===== BOTONES ===== */
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* EFECTO SUAVE AL PRESIONAR */
+button:active {
+  transform: scale(0.95);
+}
+
+/* APROBAR */
+.aprobar {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+}
+
+.aprobar:hover {
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.6);
+}
+
+/* RECHAZAR */
+.rechazar {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+  box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4);
+}
+
+.rechazar:hover {
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.6);
+}
+
+/* ===== ANIMACIÓN DE ENTRADA ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

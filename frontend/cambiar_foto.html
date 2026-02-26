@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cambiar foto</title>
+  <link rel="stylesheet" href="css/perfil.css">
+</head>
+<body>
+ <body class="pagina-centrada">
+
+  <div class="perfil-container">
+
+    <h2 class="titulo">Cambiar foto de perfil</h2>
+    <p class="subtitulo">Esta imagen será visible para los demás usuarios</p>
+
+    <!-- FOTO -->
+    <div class="foto-wrapper" onclick="document.getElementById('foto').click()">
+      <img id="preview" src="img/default.jpg" alt="Foto de perfil">
+      <div class="overlay">📸</div>
+    </div>
+
+    <input type="file" id="foto" accept="image/*" hidden onchange="mostrarPreview()">
+
+    <!-- BOTONES -->
+    <div class="acciones">
+      <button class="btn btn-guardar" onclick="subirFoto()">Guardar</button>
+      <button class="btn btn-cancelar" onclick="history.back()">Cancelar</button>
+      <button class="btn btn-volver" onclick="history.back()">Volver</button>
+
+
+    </div>
+
+  </div>
+
+  <script src="js/cambiar_foto.js"></script>
+
+  <script>
+    function mostrarPreview() {
+      const input = document.getElementById("foto");
+      const preview = document.getElementById("preview");
+
+      if (input.files.length) {
+        preview.src = URL.createObjectURL(input.files[0]);
+      }
+    }
+  </script>
+
+  
+ </body>
+</body>
+</html>

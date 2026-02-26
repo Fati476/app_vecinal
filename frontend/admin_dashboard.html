@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/sos.css">
+<link rel="stylesheet" href="css/incidencias.css">
+<link rel="stylesheet" href="css/chat.css">
+<link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/chat_ia.css">
+
+
+</head>
+<body>
+
+
+<!-- 🔝 TOPBAR -->
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <h2>Dashboard</h2>
+</div>
+
+<!-- 📂 SIDEBAR -->
+<aside id="sidebar" class="sidebar">
+  <div class="logo">ConectaVecinos</div>
+
+  <a href="admin.html">🏠 Panel</a>
+  <a href="admin_chat.html">💬 Chat</a>
+  <a href="admin_solicitudes.html">📥 Solicitudes</a>
+  <a href="admin_historial.html">📜 Historial</a>
+  <a href="admin_reportes.html">🛠️ Reportes</a>
+  <a href="incidencias_admin.html">🚨 Incidencias</a>
+  <a href="admin_perfil.html">👤 Perfil</a>
+  <a href="admin_dashboard.html">📊 Dashboard</a>
+  <a href="login.html" class="logout">🚪 Cerrar sesión</a>
+</aside>
+
+<!-- 📊 CONTENIDO PRINCIPAL -->
+<main class="main">
+  <h1>Resumen general del sistema</h1>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Aprobados</h3>
+      <span id="aprobados">0</span>
+    </div>
+
+    <div class="card">
+      <h3>Pendientes</h3>
+      <span id="pendientes">0</span>
+    </div>
+
+    <div class="card">
+      <h3>Rechazados</h3>
+      <span id="rechazados">0</span>
+    </div>
+  </div>
+</main>
+
+
+<button id="btnIA" class="boton-ia">🤖</button>
+
+<!-- PANEL CHAT IA -->
+<div id="panelIA" class="panel-ia oculto">
+    <div class="panel-header">
+        Asistente Vecinal
+        <span id="cerrarIA">✖</span>
+    </div>
+
+    <div id="mensajesIA" class="panel-mensajes"></div>
+
+    <div class="panel-input">
+        <input type="text" id="inputIA" placeholder="Escribe tu mensaje...">
+        <button onclick="enviarMensajeIA()">Enviar</button>
+    </div>
+</div>
+
+
+
+<!-- JS DEL BOTÓN SOS -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="js/chat_ia.js"></script>
+
+<!-- 🫧 BURBUJAS DE INCIDENCIAS -->
+<script src="js/incidencias-burbujas.js"></script>
+
+<!-- 🚨 BOTÓN SOS -->
+<button id="btnSOS" title="Emergencia">🚨</button>
+<script src="js/chat.js"></script>
+<!-- JS -->
+<script src="js/sos.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/admin_dashboard.js"></script>
+<script src="js/incidencias.js"></script>
+</body>
+</html>

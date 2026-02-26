@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar perfil</title>
+  <link rel="stylesheet" href="css/perfil.css">
+</head>
+<body>
+ <body class="pagina-centrada">
+  <div class="perfil-container">
+
+    <div class="perfil-header">
+      <h1>Editar perfil</h1>
+      <p>Actualiza tu información</p>
+    </div>
+
+    <div class="perfil-dato">
+      <span>Nombre</span>
+      <input type="text" id="nombre">
+    </div>
+
+    <div class="perfil-dato">
+      <span>Teléfono</span>
+      <input type="text" id="telefono">
+    </div>
+
+    <div class="perfil-dato">
+      <span>Dirección</span>
+      <input type="text" id="direccion">
+    </div>
+
+    <div class="botones">
+      <button class="btn btn-guardar" onclick="guardarCambios()">Guardar cambios</button>
+      <button class="btn btn-cancelar" onclick="window.history.back()">Cancelar</button>
+      <button class="btn btn-volver" onclick="history.back()">Volver</button>
+      
+    </div>
+
+  </div>
+
+  <script src="js/editar_perfil.js"></script>
+ </body>
+</body>
+</html>

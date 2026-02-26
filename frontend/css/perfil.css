@@ -1,0 +1,330 @@
+/* 🔹 RESET LOCAL (no tocar body global del admin) */
+.perfil-container * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 🔹 WRAPPER PARA CENTRAR SOLO EL PERFIL */
+.perfil-container-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* 🔹 CONTENEDOR PRINCIPAL */
+.perfil-container {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  animation: aparecer 0.5s ease;
+}
+
+/* 🔹 HEADER */
+.perfil-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.perfil-header h1 {
+  font-size: 1.6rem;
+  color: #333;
+}
+
+.perfil-header p {
+  font-size: 0.9rem;
+  color: #777;
+  margin-top: 5px;
+}
+
+/* 🔹 FOTO */
+.perfil-foto {
+  width: 150px;
+  height: 150px;
+  margin: 20px auto;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #4f46e5;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: 0.3s ease;
+}
+
+.perfil-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.perfil-foto:hover {
+  transform: scale(1.05);
+}
+
+/* 🔹 DATOS */
+.perfil-dato {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.perfil-dato span:first-child {
+  font-weight: 600;
+  color: #555;
+}
+
+.perfil-dato span:last-child {
+  color: #222;
+}
+
+/* 🔹 BOTONES */
+.botones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.botones button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+
+/* 🔹 HOVER */
+.botones button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* 🔹 ANIMACIÓN */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 🔹 EDICIÓN DE FOTO */
+.foto-wrapper {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  margin: 0 auto 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 4px solid #4f46e5;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+}
+
+.foto-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto-wrapper .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  color: white;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.foto-wrapper:hover .overlay {
+  opacity: 1;
+}
+
+/* 🔹 ACCIONES EXTRA */
+.acciones {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+
+
+
+
+.btn-volver-top {
+  background: none;
+  border: none;
+  color: #4f46e5;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.btn-volver-top:hover {
+  text-decoration: underline;
+}
+
+
+.perfil-container-wrapper {
+  width: 100%;
+  min-height: calc(100vh - 80px); /* altura visible sin topbar */
+  display: flex;
+  justify-content: center;  /* centra horizontal */
+  align-items: center;      /* centra vertical */
+}
+
+
+.pagina-centrada {
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #f5f7fa 0%, #c3cfe2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+
+
+/* ✨ brillo al pasar */
+.btn-eliminar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 120%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(239,68,68,0.25), transparent);
+  transition: 0.5s;
+}
+
+.btn-eliminar:hover::before {
+  left: 120%;
+}
+
+
+
+
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 300px;
+  text-align: center;
+  animation: aparecer 0.3s ease;
+}
+
+.modal-buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+@keyframes aparecer {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ✨ BOTÓN BASE UNIFICADO */
+.btn {
+  padding: 12px 26px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 8px 6px;
+  color: #2c2c2c;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+  letter-spacing: 0.3px;
+}
+
+/* ✨ MISMA ANIMACIÓN PARA TODOS */
+.botones button,
+.btn {
+  transition: all 0.3s ease;
+}
+
+.botones button:hover,
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+  opacity: 0.95;
+}
+
+.botones button:active,
+.btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+
+/* 💜 EDITAR — lavanda suave */
+.btn-editar {
+  background: linear-gradient(135deg, #e9e6ff, #d6d1ff);
+  color: #4b3fbf;
+}
+
+/* 🧡 FOTO — durazno pastel */
+.btn-foto {
+  background: linear-gradient(135deg, #ffe9d6, #ffd8b5);
+  color: #a05a00;
+}
+
+/* ❤️ SALIR — rosa suave */
+.btn-salir {
+  background: linear-gradient(135deg, #ffe3e6, #ffc9cf);
+  color: #a11d33;
+}
+
+/* 💙 VOLVER — azul cielo pastel */
+.btn-volver {
+  background: linear-gradient(135deg, #e3f0ff, #cfe4ff);
+  color: #1e40af;
+}
+
+/* 💚 GUARDAR — menta pastel */
+.btn-guardar {
+  background: linear-gradient(135deg, #e3fcec, #c8f7dc);
+  color: #166534;
+}
+
+/* ❌ ELIMINAR — rojo rosado elegante */
+.btn-eliminar {
+  background: linear-gradient(135deg, #ffe1e1, #ffc7c7);
+  color: #b74747;
+  border: none;
+}
+
+/* ❤️ CANCELAR — rojo pastel elegante */
+.btn-cancelar {
+  background: linear-gradient(135deg, #ffe1e1, #ffc7c7);
+  color: #991b1b;
+}

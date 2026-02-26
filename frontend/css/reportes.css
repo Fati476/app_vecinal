@@ -1,0 +1,144 @@
+/* ===== FORMULARIOS ===== */
+form input,
+form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+form button {
+  background: #1877f2;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: transform .2s, box-shadow .2s;
+}
+
+form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,.25);
+}
+
+/* ===== REPORTE TIPO FACEBOOK ===== */
+.reporte {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+
+/* HEADER */
+.reporte-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.reporte-titulo {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+/* IMAGEN */
+.reporte img {
+  width: 320px;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  margin: 10px auto;
+  border-radius: 10px;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.reporte img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+}
+
+
+/* ACCIONES */
+.acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.acciones button {
+  flex: 1;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-mapa {
+  background: #1976d2;
+  color: #fff;
+}
+
+.btn-editar {
+  background: #fbc02d;
+}
+
+.btn-eliminar {
+  background: #d32f2f;
+  color: #fff;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  width: 420px;
+  border-radius: 12px;
+}
+
+
+.carrusel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.carrusel .imagenes {
+  display: flex;
+  transition: transform .4s ease;
+}
+
+.carrusel img {
+  width: 100%;
+  max-height: 250px;
+  object-fit: cover;
+  cursor: zoom-in;
+}
+
+.zoom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}

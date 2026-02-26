@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Comunidad - Vecino</title>
+
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/chat.css">
+</head>
+
+<body>
+
+<!-- 🔹 TOPBAR -->
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <h2>💬 Comunidad General</h2>
+</div>
+
+<!-- 🔹 SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">Vecinos</div>
+
+  <a href="vecino.html">🏠 Inicio</a>
+  <a href="chat_vecino.html">💬 Chat</a>
+  <a href="reportes.html">🛠️ Reportes</a>
+  <a href="incidencias_vecino.html">🚨 Incidencias</a>
+  <a href="vecino_perfil.html">👤 Perfil</a>
+ 
+</aside>
+
+<!-- 🔹 CONTENIDO -->
+<main class="main">
+
+  <!-- PANEL INFO ARRIBA -->
+  <section class="info-top">
+    <strong>Información</strong>
+    <span>ConectaVecinos • Administración</span>
+    <span>Usuarios activos</span>
+  </section>
+
+  <!-- CHAT -->
+  <section class="chat-section">
+
+    <header class="chat-header">
+      <h3>Comunidad General</h3>
+      <span>Chat vecinal en tiempo real</span>
+    </header>
+    <div id="escribiendo" class="escribiendo"></div>
+
+    <div id="chat" class="chat-messages"></div>
+
+    <div class="chat-input">
+      <input id="mensaje" type="text" placeholder="Escribe un mensaje...">
+      <button onclick="enviarMensaje()">Enviar</button>
+    </div>
+
+  </section>
+
+</main>
+
+<script src="js/menu.js"></script>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="js/chat_grupo.js"></script>
+</body>
+</html>

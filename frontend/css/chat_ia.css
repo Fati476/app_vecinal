@@ -1,0 +1,163 @@
+/* ===============================
+   BOTÓN FLOTANTE IA
+=============================== */
+.boton-ia {
+    position: fixed;
+    left: 25px;
+    bottom: 25px;
+
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+
+    font-size: 32px;
+    color: white;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transition: all 0.25s ease;
+    z-index: 9999;
+}
+
+.boton-ia:hover {
+    transform: scale(1.12);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+/* ===============================
+   PANEL IA
+=============================== */
+.panel-ia {
+    position: fixed;
+    bottom: 110px;
+    left: 25px;
+    width: 320px;
+    height: 420px;
+
+    background: white;
+    border-radius: 18px;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    overflow: hidden;
+    z-index: 9999;
+
+    animation: aparecer 0.25s ease;
+}
+
+.oculto {
+    display: none;
+}
+
+/* ===============================
+   HEADER
+=============================== */
+.panel-header {
+    background: #2563eb;
+    color: white;
+    padding: 12px;
+    font-weight: 600;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ===============================
+   MENSAJES
+=============================== */
+.panel-mensajes {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* BURBUJA BASE */
+.message {
+    padding: 10px 14px;
+    border-radius: 18px;
+    max-width: 75%;
+    word-wrap: break-word;
+    font-size: 14px;
+    animation: fadeIn 0.25s ease;
+}
+
+/* MENSAJE USUARIO → DERECHA */
+.user {
+    align-self: flex-end;
+    background: #3b82f6;
+    color: white;
+    border-bottom-right-radius: 6px;
+}
+
+/* MENSAJE IA → IZQUIERDA */
+.ia {
+    align-self: flex-start;
+    background: #1e293b;
+    color: white;
+    border-bottom-left-radius: 6px;
+}
+
+/* TEXTO ESCRIBIENDO */
+.typing {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* ===============================
+   INPUT
+=============================== */
+.panel-input {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.panel-input input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.panel-input button {
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    transition: 0.2s;
+}
+
+.panel-input button:hover {
+    transform: scale(1.05);
+}
+
+/* ===============================
+   ANIMACIONES
+=============================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes aparecer {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

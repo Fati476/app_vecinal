@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Registro</h2>
+
+<input id="nombre" placeholder="Nombre"><br>
+<input id="correo" placeholder="Correo"><br>
+<input id="contraseña" placeholder="Contraseña"><br><br>
+
+<button onclick="registrar()">Registrar</button>
+
+<p id="resp"></p>
+
+<script>
+function registrar() {
+    fetch("http://127.0.0.1:5000/registro", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            nombre: nombre.value,
+            correo: correo.value,
+            contraseña: contraseña.value
+        })
+    })
+    .then(r => r.json())
+    .then(d => resp.innerText = JSON.stringify(d))
+}
+</script>
+
+</body>
+</html>

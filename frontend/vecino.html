@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Vecino</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/vecino_chat.css">
+  <link rel="stylesheet" href="css/chat_ia.css">
+  <link rel="stylesheet" href="css/sos.css">
+  <link rel="stylesheet" href="css/incidencias.css">
+ 
+  
+</head>
+<body>
+
+<!-- BARRA SUPERIOR -->
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <h2>ConectaVecinos</h2>
+</div>
+
+<!-- MENÚ -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">Vecino</div>
+
+  <a href="vecino.html">🏠 Inicio</a>
+  <a href="chat_vecino.html">💬 Chat</a>
+  <a href="reportes.html">🛠️ Reportes</a>
+  <a href="incidencias_vecino.html">🚨 Incidencias</a>
+  <a href="vecino_perfil.html">👤 Perfil</a>
+ 
+
+  <!-- FUTURO -->
+  <!-- <a href="incidencias.html">🚨 Incidencias</a> -->
+  <!-- <a href="mensajes.html">💬 Mensajes</a> -->
+
+  <a href="login.html" class="logout">🚪 Cerrar sesión</a>
+</aside>
+
+<!-- CONTENIDO -->
+<main class="main">
+  <div class="card">
+    <h2>Bienvenido vecino 👋</h2>
+    <p>Desde aquí podrás:</p>
+
+    <ul style="margin-top:10px; padding-left:20px;">
+      <li>📌 Ver reportes de la comunidad</li>
+      <li>➕ Crear tus propios reportes</li>
+      <li>🗑️ Eliminar reportes que tú hayas creado</li>
+    </ul>
+  </div>
+</main>
+
+<button id="btnSOS" title="Emergencia">
+  🚨
+</button>
+
+<!-- BOTÓN FLOTANTE IA -->
+<button id="btnIA" class="boton-ia">🤖</button>
+
+<!-- PANEL CHAT IA -->
+<div id="panelIA" class="panel-ia oculto">
+    <div class="panel-header">
+        Asistente Vecinal
+        <span id="cerrarIA">✖</span>
+    </div>
+
+    <div id="mensajesIA" class="panel-mensajes"></div>
+
+    <div class="panel-input">
+        <input type="text" id="inputIA" placeholder="Escribe tu mensaje...">
+        <button onclick="enviarMensajeIA()">Enviar</button>
+    </div>
+</div>
+
+
+
+<!-- JS DEL BOTÓN SOS -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="js/chat_ia.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/sos.js"></script>
+
+<script src="js/incidencias-burbujas.js"></script>
+
+<script src="js/menu.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+#btnSOS {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: none;
+
+  background: #e53935;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+
+  z-index: 100000; /* 🔥 MÁS ALTO QUE SIDEBAR, MAPA, MODALES */
+  pointer-events: auto; /* 🔑 asegura clic */
+
+  animation: pulso 1.5s infinite;
+}
+
+#btnSOS:hover {
+  background: #c62828;
+  transform: scale(1.1);
+}
+
+/* ❤️ Efecto de pulso */
+@keyframes pulso {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+

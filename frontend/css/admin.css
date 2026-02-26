@@ -1,0 +1,437 @@
+/* ===============================
+   RESET + BASE
+=============================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #eef2ff, #f8fafc);
+  min-height: 100vh;
+}
+
+/* ===============================
+   SIDEBAR
+=============================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1e3a8a, #2563eb);
+  color: white;
+  padding: 25px 20px;
+  transition: left 0.35s ease;
+  z-index: 1001;
+  box-shadow: 8px 0 25px rgba(30, 64, 175, 0.4);
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 35px;
+  text-align: center;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  text-decoration: none;
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateX(6px);
+}
+
+.sidebar .logout {
+  margin-top: 40px;
+  background: rgba(15, 23, 42, 0.4);
+}
+
+/* ===============================
+   TOPBAR
+=============================== */
+.topbar {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.menu-btn {
+  font-size: 22px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Hover */
+.menu-btn:hover {
+  transform: rotate(10deg) scale(1.1);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.4);
+}
+
+/* Click */
+.menu-btn:active {
+  transform: scale(0.9);
+}
+
+/* ===============================
+   MAIN
+=============================== */
+.main {
+  padding: 30px;
+  transition: margin-left 0.35s ease;
+}
+
+.sidebar.open ~ .main {
+  margin-left: 280px;
+}
+
+/* ===============================
+   CARDS
+=============================== */
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 15px 35px rgba(30, 64, 175, 0.15);
+}
+
+/* ===============================
+   TABLAS MODERNAS
+=============================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+thead {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+}
+
+th {
+  text-align: left;
+  padding: 14px;
+  font-weight: 600;
+}
+
+td {
+  padding: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+tbody tr:hover {
+  background: #eef2ff;
+  transition: 0.2s;
+}
+
+/* ===============================
+   BOTONES
+=============================== */
+.btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    left: -100%;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .sidebar.open ~ .main {
+    margin-left: 0;
+  }
+
+  .main {
+    padding: 20px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+}
+
+/* ===============================
+   BOTONES ANIMADOS
+=============================== */
+.btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Efecto levantar */
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+/* Efecto al presionar */
+.btn:active {
+  transform: scale(0.95);
+}
+
+/* ===============================
+   COLORES DE BOTONES
+=============================== */
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+/* ===============================
+   EFECTO BRILLO AL PASAR MOUSE
+=============================== */
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.25);
+  transition: left 0.4s ease;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+
+/* ===============================
+   BOTÓN SOS
+=============================== */
+#btnSOS {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: none;
+  font-size: 28px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5);
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+/* Efecto levantar */
+#btnSOS:hover {
+  transform: scale(1.1);
+  box-shadow: 0 15px 35px rgba(239, 68, 68, 0.7);
+}
+
+/* Efecto presionar */
+#btnSOS:active {
+  transform: scale(0.9);
+}
+
+/* Animación latido */
+@keyframes pulsoSOS {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+#btnSOS {
+  animation: pulsoSOS 2s infinite;
+}
+
+#btnSOS:hover {
+  animation: vibrar 0.3s linear infinite;
+}
+
+@keyframes vibrar {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+  75% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+/* ===============================
+   BOTÓN ELIMINAR
+=============================== */
+.btn-eliminar {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover */
+.btn-eliminar:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.4);
+}
+
+/* Click */
+.btn-eliminar:active {
+  transform: scale(0.9);
+}
+
+/* Brillo animado */
+.btn-eliminar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.3);
+  transition: left 0.4s ease;
+}
+
+.btn-eliminar:hover::before {
+  left: 100%;
+}
+
+/* ===============================
+   BOTÓN APROBAR
+=============================== */
+.btn.aprobar {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-radius: 10px;
+  padding: 9px 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn.aprobar:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(16, 185, 129, 0.4);
+}
+
+.btn.aprobar:active {
+  transform: scale(0.9);
+}
+
+/* ===============================
+   BOTÓN RECHAZAR
+=============================== */
+.btn.rechazar {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border-radius: 10px;
+  padding: 9px 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn.rechazar:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(220, 38, 38, 0.4);
+}
+
+.btn.rechazar:active {
+  transform: scale(0.9);
+}
+
+/* ===============================
+   EFECTO BRILLO (para ambos)
+=============================== */
+.btn.aprobar::before,
+.btn.rechazar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.25);
+  transition: left 0.4s ease;
+}
+
+.btn.aprobar:hover::before,
+.btn.rechazar:hover::before {
+  left: 100%;
+}

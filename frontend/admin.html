@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Administrador</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/chat_ia.css">
+  <link rel="stylesheet" href="css/sos.css">
+  <link rel="stylesheet" href="css/incidencias.css">
+</head>
+<body>
+
+<!-- BOTÓN SUPERIOR -->
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <h2>Panel de Administración</h2>
+</div>
+
+<!-- MENÚ -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">ConectaVecinos</div>
+
+  <a href="admin.html">🏠 Panel</a>
+  <a href="admin_solicitudes.html">📥 Solicitudes</a>
+  <a href="chat_admin.html" class="active">💬 Chat Comunidad</a>
+  <a href="admin_historial.html">📜 Historial</a>
+  <a href="admin_reportes.html">🛠️ Reportes</a>
+  <a href="incidencias_admin.html">🚨 Incidencias</a>
+  <a href="admin_perfil.html">👤 Perfil</a>
+  <a href="admin_dashboard.html">📊 Dashboard</a>
+  <a href="login.html" class="logout">🚪 Cerrar sesión</a>
+</aside>
+
+<!-- CONTENIDO -->
+<main class="main">
+  <div class="card">
+    <h2>Bienvenido Administrador 👋</h2>
+    <p>Selecciona una opción del menú.</p>
+  </div>
+</main>
+<script src="js/incidencias-burbujas.js"></script>
+<!-- 🚨 BOTÓN SOS -->
+<!-- 🚨 BOTÓN SOS FLOTANTE -->
+<button id="btnSOS" title="Emergencia">
+  🚨
+</button>
+
+<button id="btnIA" class="boton-ia">🤖</button>
+
+<!-- PANEL CHAT IA -->
+<div id="panelIA" class="panel-ia oculto">
+    <div class="panel-header">
+        Asistente Vecinal
+        <span id="cerrarIA">✖</span>
+    </div>
+
+    <div id="mensajesIA" class="panel-mensajes"></div>
+
+    <div class="panel-input">
+        <input type="text" id="inputIA" placeholder="Escribe tu mensaje...">
+        <button onclick="enviarMensajeIA()">Enviar</button>
+    </div>
+</div>
+
+
+
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="js/chat_ia.js"></script>
+<!-- JS DEL BOTÓN SOS -->
+<script src="js/sos.js"></script>
+
+
+<script src="js/menu.js"></script>
+</body>
+</html>

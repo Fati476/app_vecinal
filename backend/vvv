@@ -1,0 +1,21 @@
+import sqlite3
+from datetime import datetime
+
+con = sqlite3.connect("vecinal.db")
+cur = con.cursor()
+
+cur.execute("""
+INSERT INTO usuarios (nombre, correo, contraseña, rol, fecha_registro)
+VALUES (?, ?, ?, ?, ?)
+""", (
+    "Fatima",
+    "fatima@vecinal.com",
+    "123456",
+    "vecino",
+    datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+))
+
+con.commit()
+con.close()
+
+print("Usuario vecino creado correctamente")

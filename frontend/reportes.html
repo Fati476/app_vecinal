@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reportes - Vecino</title>
+
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/reportes.css">
+  <link rel="stylesheet" href="css/sos.css">
+  <link rel="stylesheet" href="css/incidencias.css">
+  <link rel="stylesheet" href="css/chat_ia.css">
+
+  <!-- LEAFLET -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    #mapa, #mapaEditar {
+      height: 300px;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+    }
+
+    .img-reporte {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    .acciones button {
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <h2>Reportes Vecinales</h2>
+</div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="logo">Vecino</div>
+  <a href="vecino.html">🏠 Inicio</a>
+  <a href="reportes.html">🛠️ Reportes</a>
+  <a href="incidencias_vecino.html">🚧 Incidencias</a>
+  <a href="vecino_perfil.html">👤 Perfil</a>
+  <a href="login.html" class="logout">🚪 Cerrar sesión</a>
+</aside>
+
+<main class="main">
+
+  <!-- CREAR REPORTE -->
+  <div class="card">
+    <h3>➕ Crear reporte</h3>
+
+    <form id="formReporte" enctype="multipart/form-data">
+      <input type="text" name="titulo" placeholder="Título" required>
+      <textarea name="descripcion" placeholder="Descripción" required></textarea>
+
+      <input type="file" name="foto" accept="image/*">
+
+      <!-- UBICACIÓN -->
+      <input type="hidden" name="lat" id="lat">
+      <input type="hidden" name="lng" id="lng">
+
+      <label>📍 Ubicación del problema</label>
+      <div id="mapa"></div>
+
+      <button type="submit">Publicar</button>
+    </form>
+  </div>
+
+  <!-- LISTA DE REPORTES -->
+  <div class="card">
+    <h3>📋 Reportes</h3>
+    <div id="listaReportes"></div>
+  </div>
+
+</main>
+
+<!-- MODAL EDITAR -->
+<div id="modalEditar" class="modal">
+  <div class="modal-content">
+    <h3>✏️ Editar reporte</h3>
+
+    <form id="formEditar" enctype="multipart/form-data">
+      <input type="hidden" id="edit_id">
+      <input type="hidden" id="edit_lat">
+      <input type="hidden" id="edit_lng">
+
+      <input type="text" id="edit_titulo" required>
+      <textarea id="edit_descripcion" required></textarea>
+
+      <!-- PREVIEW -->
+      <img id="preview_foto" class="img-reporte" style="display:none">
+
+      <input type="file" id="edit_foto" accept="image/*">
+
+      <label>📍 Mover ubicación</label>
+      <div id="mapaEditar"></div>
+
+      <button type="submit">💾 Guardar</button>
+      <button type="button" onclick="cerrarModal()">❌ Cancelar</button>
+    </form>
+  </div>
+</div>
+
+<button id="btnSOS" title="Emergencia">
+  🚨
+</button>
+
+
+<button id="btnIA" class="boton-ia">🤖</button>
+
+<!-- PANEL CHAT IA -->
+<div id="panelIA" class="panel-ia oculto">
+    <div class="panel-header">
+        Asistente Vecinal
+        <span id="cerrarIA">✖</span>
+    </div>
+
+    <div id="mensajesIA" class="panel-mensajes"></div>
+
+    <div class="panel-input">
+        <input type="text" id="inputIA" placeholder="Escribe tu mensaje...">
+        <button onclick="enviarMensajeIA()">Enviar</button>
+    </div>
+</div>
+
+<!-- JS DEL BOTÓN SOS -->
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="js/chat_ia.js"></script>
+<script src="js/sos.js"></script>
+<script src="js/incidencias-burbujas.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/reportes.js"></script>
+</body>
+</html>

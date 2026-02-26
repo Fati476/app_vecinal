@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperar contraseña</title>
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-left">
+
+        <!-- PASO 1 -->
+        <div id="paso1">
+            <h1>Recuperar contraseña</h1>
+
+            <input type="email" id="correo" placeholder="Ingresa tu correo">
+
+            <button onclick="enviarCodigo()">Enviar código</button>
+
+            <button class="secundario" onclick="mostrarPaso2()">
+                Ingresar código
+            </button>
+        </div>
+
+        <!-- PASO 2 -->
+        <div id="paso2" style="display:none;">
+            <h1>Verifica tu código</h1>
+
+            <input type="text" id="codigo" placeholder="Código recibido">
+
+            <input type="password" id="password" placeholder="Nueva contraseña">
+
+            <input type="password" id="password2" placeholder="Confirmar contraseña">
+
+            <button onclick="cambiarPassword()">Cambiar contraseña</button>
+
+            <button class="secundario" onclick="reenviarCodigo()">
+              Reenviar código
+            </button>
+
+
+            <button class="secundario" onclick="mostrarPaso1()">
+                Volver
+            </button>
+        </div>
+
+        <p id="mensaje" class="mensaje"></p>
+
+        <p class="switch">
+            <a href="login.html">Volver al login</a>
+        </p>
+    </div>
+
+    <div class="auth-right">
+        <img src="img/ilustracion.png" alt="Recuperar">
+    </div>
+</div>
+
+<script src="js/recuperar.js"></script>
+</body>
+</html>

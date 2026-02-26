@@ -1,0 +1,68 @@
+.burbuja-incidencia {
+  position: fixed;
+  background: #fff;
+  border-left: 6px solid #e53935;
+  padding: 12px;
+  width: 260px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  font-size: 14px;
+
+  z-index: 99999; /* 🔥 CLAVE */
+  animation: aparecer .4s ease;
+}
+
+.burbuja-incidencia button {
+  margin-top: 8px;
+  width: 100%;
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  background: #e53935;
+  color: #fff;
+  cursor: pointer;
+}
+
+@keyframes aparecer {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.btn-atender {
+  background: #22c55e;        /* verde */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-atender:hover {
+  background: #16a34a;
+}
+
+.estado {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.estado.activa {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.estado.atendida {
+  background: #dcfce7;
+  color: #166534;
+}
+

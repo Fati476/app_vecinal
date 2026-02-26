@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar sesión</title>
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-left">
+        <h1>Bienvenidos</h1>
+        <p>Plataforma vecinal</p>
+
+        
+        <input type="email" id="correo" placeholder="Correo">
+        <input type="password" id="password" placeholder="Contraseña">
+        <p id="mensaje"></p>
+        <button onclick="login()">Iniciar sesión</button>
+        <div class="options">
+            <a href="forgot.html">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        
+        
+        
+
+        <p class="switch">
+            ¿No tienes cuenta? <a href="registro.html">Regístrate</a>
+        </p>
+    </div>
+
+    <div class="auth-right">
+        <img src="img/ilustracion.png.jpg">
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+</body>
+</html>

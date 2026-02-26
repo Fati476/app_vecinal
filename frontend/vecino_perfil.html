@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Perfil Vecino</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/sos.css">
+  <link rel="stylesheet" href="css/chat.css">
+  <link rel="stylesheet" href="css/perfil.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/chat_ia.css">
+</head>
+<body>
+
+<!-- 🔝 TOPBAR -->
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <h2>Perfil</h2>
+</div>
+
+<!-- 📂 SIDEBAR VECINO -->
+<aside id="sidebar" class="sidebar">
+  <div class="logo">Vecino</div>
+
+  <a href="vecino.html">🏠 Inicio</a>
+  <a href="vecino_chat.html">💬 Chat</a>
+  <a href="reportes.html">🛠️ Reportes</a>
+  <a href="incidencias_vecino.html">🚨 Incidencias</a>
+  <a href="vecino_perfil.html" class="active">👤 Perfil</a>
+  <a href="#" class="logout" onclick="cerrarSesion()">🚪 Cerrar sesión</a>
+</aside>
+
+<!-- 👤 CONTENIDO -->
+<main class="main">
+  <div class="perfil-container-wrapper">
+
+    <div class="perfil-container">
+
+      <!-- FOTO -->
+      <div class="perfil-foto">
+        <img id="fotoPerfil" src="img/default.jpg" alt="Foto de perfil">
+      </div>
+
+      <div class="perfil-header">
+        <h1>Perfil Vecino</h1>
+        <p>Información de tu cuenta</p>
+      </div>
+
+      <div class="perfil-dato">
+        <span>Nombre</span>
+        <span id="nombre"></span>
+      </div>
+
+      <div class="perfil-dato">
+        <span>Correo</span>
+        <span id="correo"></span>
+      </div>
+
+      <div class="perfil-dato">
+        <span>Rol</span>
+        <span id="rol"></span>
+      </div>
+
+      <div class="perfil-dato">
+        <span>Teléfono</span>
+        <span id="telefono"></span>
+      </div>
+
+      <div class="perfil-dato">
+        <span>Dirección</span>
+        <span id="direccion"></span>
+      </div>
+
+      <div class="botones">
+        <button class="btn btn-editar" onclick="editarPerfil()">Editar perfil</button>
+        <button class="btn btn-foto" onclick="cambiarFoto()">Cambiar foto</button>
+        <button class="btn btn-danger" onclick="eliminarFoto()">Eliminar foto</button>
+        <button class="btn btn-salir" onclick="cerrarSesion()">Salir</button>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+
+
+<button id="btnIA" class="boton-ia">🤖</button>
+
+<!-- PANEL CHAT IA -->
+<div id="panelIA" class="panel-ia oculto">
+    <div class="panel-header">
+        Asistente Vecinal
+        <span id="cerrarIA">✖</span>
+    </div>
+
+    <div id="mensajesIA" class="panel-mensajes"></div>
+
+    <div class="panel-input">
+        <input type="text" id="inputIA" placeholder="Escribe tu mensaje...">
+        <button onclick="enviarMensajeIA()">Enviar</button>
+    </div>
+</div>
+
+<!-- 🫧 BURBUJAS / SOS / CHAT -->
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="js/chat_ia.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/sos.js"></script>
+<button id="btnSOS" title="Emergencia">🚨</button>
+
+<!-- JS -->
+<script src="js/menu.js"></script>
+<script src="js/perfil.js"></script>
+
+<!-- 🔴 MODAL CONFIRMACIÓN -->
+<div id="modalConfirm" class="modal">
+  <div class="modal-content">
+    <p>¿Estás segura que deseas eliminar tu foto?</p>
+    <div class="modal-buttons">
+      <button class="btn btn-danger" onclick="confirmarEliminar()">
+        Sí, eliminar
+      </button>
+      <button class="btn btn-primary" onclick="cerrarModal()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

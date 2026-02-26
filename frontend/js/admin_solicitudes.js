@@ -1,0 +1,55 @@
+const API_URL = "http://127.0.0.1:5000";
+
+document.addEventListener("DOMContentLoaded", cargarSolicitudes);
+
+function cargarSolicitudes() {
+  fetch(`${API_URL}/admin/solicitudes`)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("tablaSolicitudes");
+      tbody.innerHTML = "";
+
+      if (data.length === 0) {
+        tbody.innerHTML = `
+          <tr class="fila-animada">
+            <td colspan="4" style="text-align:center;">
+              No hay solicitudes pendientes
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      data.forEach(s => {
+        const fila = document.createElement("tr");
+        fila.classList.add("fila-animada");
+
+        fila.innerHTML = `
+          <td>${s.nombre}</td>
+          <td>${s.correo}</td>
+          <td>${s.fecha}</td>
+          <td>
+            <button class="btn aprobar" onclick="aprobar(${s.id})">
+              Aprobar
+            </button>
+            <button class="btn rechazar" onclick="rechazar(${s.id})">
+              Rechazar
+            </button>
+          </td>
+        `;
+
+        tbody.appendChild(fila);
+      });
+    })
+    .catch(err => console.error("Error:", err));
+}
+
+function aprobar(id) {
+  fetch(`${API_URL}/admin/aprobar/${id}`, { method: "PUT" })
+    .then(() => cargarSolicitudes());
+}
+
+function rechazar(id) {
+  fetch(`${API_URL}/admin/rechazar/${id}`, { method: "PUT" })
+    .then(() => cargarSolicitudes());
+}
