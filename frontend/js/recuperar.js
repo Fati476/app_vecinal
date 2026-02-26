@@ -21,7 +21,7 @@ function enviarCodigo() {
     // 🔐 Guardar correo para el paso 2
     localStorage.setItem("correo_recuperacion", correo);
 
-    fetch("http://127.0.0.1:5000/recuperar", {
+    fetch("/recuperar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo })
@@ -48,7 +48,7 @@ function reenviarCodigo() {
         return;
     }
 
-    fetch("http://127.0.0.1:5000/recuperar", {
+    fetch("/recuperar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo })
@@ -82,7 +82,7 @@ function cambiarPassword() {
         return;
     }
 
-    fetch("http://127.0.0.1:5000/resetear", {
+    fetch("/resetear", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

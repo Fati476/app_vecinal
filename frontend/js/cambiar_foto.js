@@ -16,7 +16,7 @@ function subirFoto() {
   formData.append("foto", input.files[0]);
   formData.append("id_usuario", idUsuario);
 
-  fetch("http://127.0.0.1:5000/api/perfil/foto", {
+  fetch("/api/perfil/foto", {
     method: "POST",
     body: formData
   })

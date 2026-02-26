@@ -1,6 +1,6 @@
-const socket = io("http://127.0.0.1:5000", {
+const socket = io(); {
     transports: ["polling"]
-});
+};
 let ultimaFechaMostrada = null;
 const grupo_id = 1;
 const usuario_id = localStorage.getItem("id_usuario");

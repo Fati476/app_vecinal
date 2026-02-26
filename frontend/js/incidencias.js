@@ -1,7 +1,7 @@
 // ===============================
 // CONFIGURACIÓN
 // ===============================
-const API = "http://127.0.0.1:5000";
+const API = "";
 const idUsuario = Number(localStorage.getItem("id_usuario"));
 const rol = localStorage.getItem("rol");
 

@@ -10,7 +10,7 @@ if (!idUsuario) {
 // 🔹 CARGAR DATOS DEL PERFIL
 // ==============================
 
-fetch(`http://127.0.0.1:5000/api/perfil/${idUsuario}`)
+fetch(`/api/perfil/${idUsuario}`)
   .then(res => res.json())
   .then(data => {
 
@@ -30,8 +30,7 @@ fetch(`http://127.0.0.1:5000/api/perfil/${idUsuario}`)
     const fotoNueva = sessionStorage.getItem("foto_actualizada");
 
     if (fotoNueva) {
-      fotoPerfil.src =
-        `http://127.0.0.1:5000/uploads/${fotoNueva}?t=${Date.now()}`;
+      fotoPerfil.src =`/uploads/${data.foto}?t=${Date.now()}`
 
       sessionStorage.removeItem("foto_actualizada");
     }
@@ -39,7 +38,7 @@ fetch(`http://127.0.0.1:5000/api/perfil/${idUsuario}`)
     // 🧠 2️⃣ Si ya existe foto guardada
     else if (data.foto) {
       fotoPerfil.src =
-        `http://127.0.0.1:5000/uploads/${data.foto}?t=${Date.now()}`;
+        `/uploads/${data.foto}?t=${Date.now()}`;
     }
 
     // 🧠 3️⃣ Si NO hay foto → default
@@ -86,7 +85,7 @@ function cerrarModal() {
 
 // ✅ Confirmar eliminación
 function confirmarEliminar() {
-  fetch(`http://127.0.0.1:5000/api/perfil/foto/${idUsuario}`, {
+  fetch(`/api/perfil/foto/${idUsuario}`, {
     method: "DELETE"
   })
   .then(res => res.json())

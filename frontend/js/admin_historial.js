@@ -1,4 +1,4 @@
-fetch("http://127.0.0.1:5000/admin/aprobados")
+fetch("/admin/aprobados")
   .then(res => res.json())
   .then(data => {
     const tabla = document.getElementById("tablaAprobados")
@@ -37,8 +37,8 @@ fetch("http://127.0.0.1:5000/admin/aprobados")
 function eliminar(id) {
   if (!confirm("¿Eliminar este usuario?")) return
 
-  fetch(`http://127.0.0.1:5000/admin/eliminar/${id}`, {
-    method: "DELETE"
+  fetch(`/admin/eliminar/${id}`, {
+  method: "DELETE"
   })
   .then(() => {
     const boton = document.querySelector(

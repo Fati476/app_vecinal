@@ -5,7 +5,7 @@ if (!idUsuario) {
 }
 
 // 🔹 Cargar datos actuales
-fetch(`http://127.0.0.1:5000/api/perfil/${idUsuario}`)
+fetch(`/api/perfil/${idUsuario}`)
   .then(res => res.json())
   .then(data => {
     document.getElementById("nombre").value = data.nombre || "";
@@ -21,7 +21,7 @@ function guardarCambios() {
     direccion: document.getElementById("direccion").value
   };
 
-  fetch(`http://127.0.0.1:5000/api/perfil/${idUsuario}`, {
+  fetch(`/api/perfil/${idUsuario}`,  {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"

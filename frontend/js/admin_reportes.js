@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const API = "http://localhost:5000";
+  const API = "";
 
   /* ===============================
      👤 USUARIO

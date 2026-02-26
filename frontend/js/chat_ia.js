@@ -1,5 +1,4 @@
-const socket = io("http://127.0.0.1:5000");
-
+const socket = io();
 const chat = document.getElementById("mensajesIA");
 const input = document.getElementById("inputIA");
 const btnIA = document.getElementById("btnIA");

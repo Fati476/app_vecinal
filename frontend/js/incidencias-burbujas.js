@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const API = "http://127.0.0.1:5000";
+  const API = "";
 
   // 🔐 ROL ACTUAL (admin / vecino)
   const ROL = document.body.dataset.rol || "anon";
