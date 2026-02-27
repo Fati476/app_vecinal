@@ -1,3 +1,5 @@
+import threading
+
 from flask import Flask, render_template, request, jsonify, send_from_directory
 
 from flask_cors import CORS
@@ -74,9 +76,6 @@ def conectar_db():
 # -----------------------------
 # Ruta de prueba
 # -----------------------------
-@app.route('/')
-def inicio():
-    return jsonify({"mensaje": "API vecinal funcionando "})
 
 # -----------------------------
 # API: Registro de usuario
@@ -230,7 +229,7 @@ def crear_incidencia():
     except ValueError:
         return jsonify({"error": "Datos inválidos"}), 400
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -242,7 +241,7 @@ def crear_incidencia():
     conn.commit()
     conn.close()
     
-    enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
+    threading.Thread(target=enviar_correo_incidencia, args=(titulo, descripcion, lat, lng, tipo)).start()   
     return jsonify({"mensaje": "🚨 Incidencia creada correctamente"}), 200
 
 
@@ -255,7 +254,7 @@ def crear_incidencia():
 
 @app.route("/incidencias/activas", methods=["GET"])
 def incidencias_activas():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -271,7 +270,8 @@ def incidencias_activas():
         FROM incidencias i
         JOIN usuarios u ON i.id_usuario = u.id_usuario
         WHERE i.activo = 1
-        ORDER BY i.fecha DESC
+        ORDER BY datetime(i.fecha) DESC
+        LIMIT 100
     """)
 
     incidencias = cursor.fetchall()
@@ -289,7 +289,8 @@ def incidencias_activas():
 # -----------------------------
 @app.route('/incidencias', methods=['GET'])
 def ver_incidencias():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db()
+
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -306,7 +307,8 @@ def ver_incidencias():
             u.nombre AS usuario
         FROM incidencias i
         JOIN usuarios u ON i.id_usuario = u.id_usuario
-        ORDER BY i.fecha DESC
+        ORDER BY datetime(i.fecha) DESC
+        LIMIT 100
     """)
 
     datos = cursor.fetchall()
@@ -322,7 +324,7 @@ def ver_incidencias():
 def listar_incidencias_menu():
     id_usuario = request.args.get('id_usuario', type=int)
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -356,6 +358,7 @@ def listar_incidencias_menu():
         JOIN usuarios u ON i.id_usuario = u.id_usuario
         WHERE i.activo = 1
         ORDER BY datetime(i.fecha) DESC
+        LIMIT 100
     """, (id_usuario, id_usuario))
 
     datos = [dict(row) for row in cursor.fetchall()]
@@ -377,7 +380,7 @@ def marcar_atendida(id):
     data = request.get_json()
     id_usuario = data.get('id_usuario')
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
