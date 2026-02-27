@@ -232,18 +232,24 @@ def crear_incidencia():
     conn = get_db()
     cursor = conn.cursor()
 
+    # 👇 HORA CORRECTA MÉXICO
     cursor.execute("""
         INSERT INTO incidencias
         (titulo, descripcion, tipo, estado, fecha, lat, lng, id_usuario, activo)
-        VALUES (?, ?, ?, 'activa', datetime('now','localtime'), ?, ?, ?, 1)
+        VALUES (?, ?, ?, 'activa', datetime('now','-6 hours'), ?, ?, ?, 1)
     """, (titulo, descripcion, tipo, lat, lng, id_usuario))
 
     conn.commit()
     conn.close()
-    
-    threading.Thread(target=enviar_correo_incidencia, args=(titulo, descripcion, lat, lng, tipo)).start()   
-    return jsonify({"mensaje": "🚨 Incidencia creada correctamente"}), 200
 
+    # 👇 THREAD EN SEGUNDO PLANO (NO BLOQUEA)
+    threading.Thread(
+        target=enviar_correo_incidencia,
+        args=(titulo, descripcion, lat, lng, tipo),
+        daemon=True
+    ).start()
+
+    return jsonify({"mensaje": "🚨 Incidencia creada correctamente"}), 200
 
 
 
@@ -1208,50 +1214,52 @@ from flask import current_app
 from flask_mail import Message
 
 def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    correos = []
-    correos += obtener_correos_admin()
+    with app.app_context():   # 👈 ESTO ES LO IMPORTANTE
 
-    if tipo == "SOS":
-        correos += obtener_correos_vecinos()
+        correos = []
+        correos += obtener_correos_admin()
 
-    correos = list(set(correos))
+        if tipo == "SOS":
+            correos += obtener_correos_vecinos()
 
-    if not correos:
-        print("❌ No hay correos destino")
-        return False
+        correos = list(set(correos))
 
-    fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
+        if not correos:
+            print("❌ No hay correos destino")
+            return False
 
-    msg = Message(
-        subject="🚨 Incidencia Vecinal",
-        recipients=correos,
-        body=f"""
+        fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+        msg = Message(
+            subject="🚨 Incidencia Vecinal",
+            recipients=correos,
+            body=f"""
 INCIDENCIA VECINAL
 
 Título: {titulo}
 Descripción: {descripcion}
 Tipo: {tipo}
-Fecha (UTC): {fecha}
+Fecha: {fecha}
 
 Ubicación:
 https://www.google.com/maps?q={lat},{lng}
 """
-    )
+        )
 
-    try:
-        mail.send(msg)
-        print("✅ Correo enviado correctamente")
-        return True
+        try:
+            mail.send(msg)
+            print("✅ Correo enviado correctamente")
+            return True
 
-    except Exception as e:
-        if "Connection unexpectedly closed" in str(e) or "timeout" in str(e):
-            print("⚠️ SMTP cerró conexión pero el correo salió")
-            return True   # 👈 CLAVE
-        else:
-            print("❌ ERROR AL ENVIAR CORREO:", e)
-            return False
+        except Exception as e:
+            if "Connection unexpectedly closed" in str(e) or "timeout" in str(e):
+                print("⚠️ SMTP cerró conexión pero el correo salió")
+                return True
+            else:
+                print("❌ ERROR AL ENVIAR CORREO:", e)
+                return False
 
 
 #perfil---------------------------------------------------------------------------------------------------------
