@@ -1221,30 +1221,44 @@ from flask import current_app
 from flask_mail import Message
 
 def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
+
     from datetime import datetime
-    print("📧 Intentando enviar correo...")
+    import os
 
+    print("📧 FUNCION enviar_correo_incidencia INICIADA")
 
-    with app.app_context():   # 👈 ESTO ES LO IMPORTANTE
+    with app.app_context():
 
-        correos = []
-        correos += obtener_correos_admin()
+        try:
 
-        if tipo == "SOS":
-            correos += obtener_correos_vecinos()
+            correos = []
 
-        correos = list(set(correos))
+            # agregar admins
+            admins = obtener_correos_admin()
+            print("👤 Admins:", admins)
+            correos += admins
 
-        if not correos:
-            print("❌ No hay correos destino")
-            return False
+            # agregar vecinos si es SOS
+            if tipo == "SOS":
+                vecinos = obtener_correos_vecinos()
+                print("🏠 Vecinos:", vecinos)
+                correos += vecinos
 
-        fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
+            # quitar duplicados
+            correos = list(set(correos))
 
-        msg = Message(
-            subject="🚨 Incidencia Vecinal",
-            recipients=correos,
-            body=f"""
+            print("📧 DESTINATARIOS FINALES:", correos)
+
+            if not correos:
+                print("❌ No hay correos destino")
+                return False
+
+            fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+            msg = Message(
+                subject="🚨 Incidencia Vecinal",
+                recipients=correos,
+                body=f"""
 INCIDENCIA VECINAL
 
 Título: {titulo}
@@ -1255,21 +1269,22 @@ Fecha: {fecha}
 Ubicación:
 https://www.google.com/maps?q={lat},{lng}
 """
-        )
+            )
 
-        try:
+            print("📤 Enviando correo...")
+
             mail.send(msg)
-            print("✅ Correo enviado correctamente")
+
+            print("✅ CORREO ENVIADO CORRECTAMENTE")
+
             return True
 
-        except Exception as e:
-            if "Connection unexpectedly closed" in str(e) or "timeout" in str(e):
-                print("⚠️ SMTP cerró conexión pero el correo salió")
-                return True
-            else:
-                print("❌ ERROR AL ENVIAR CORREO:", e)
-                return False
 
+        except Exception as e:
+
+            print("❌ ERROR REAL:", str(e))
+
+            return False
 
 #perfil---------------------------------------------------------------------------------------------------------
 
