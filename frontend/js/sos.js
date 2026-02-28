@@ -60,7 +60,9 @@ function enviarSOS(lat, lng, id_usuario) {
 
   fetch(`${API}/incidencias`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       titulo: "🚨 Emergencia vecinal",
       descripcion: "Solicitud de ayuda inmediata",
@@ -70,13 +72,27 @@ function enviarSOS(lat, lng, id_usuario) {
       id_usuario: Number(id_usuario)
     })
   })
-  .then(res => res.json())
+  .then(res => {
+
+    console.log("📡 Status:", res.status);
+
+    if (!res.ok) {
+      console.error("❌ Error HTTP");
+      return;
+    }
+
+    return res.json();
+
+  })
   .then(data => {
+
     console.log("✅ RESPUESTA:", data);
-    alert("Incidencia enviada");
+
   })
   .catch(err => {
-    console.error("❌ ERROR fetch:", err);
+
+    console.error("❌ ERROR FETCH:", err);
+
   });
 
 }
