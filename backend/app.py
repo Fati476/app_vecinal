@@ -1215,6 +1215,8 @@ from flask_mail import Message
 
 def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
     from datetime import datetime
+    print("📧 Intentando enviar correo...")
+
 
     with app.app_context():   # 👈 ESTO ES LO IMPORTANTE
 
