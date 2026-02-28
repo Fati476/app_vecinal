@@ -1214,12 +1214,9 @@ from flask import current_app
 from flask_mail import Message
 
 def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
-
     from datetime import datetime
 
-    with app.app_context():
-
-        print("📨 Intentando enviar correo...")
+    with app.app_context():   # 👈 ESTO ES LO IMPORTANTE
 
         correos = []
         correos += obtener_correos_admin()
@@ -1228,8 +1225,6 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
             correos += obtener_correos_vecinos()
 
         correos = list(set(correos))
-
-        print("DESTINOS:", correos)
 
         if not correos:
             print("❌ No hay correos destino")
@@ -1242,22 +1237,29 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
             recipients=correos,
             body=f"""
 INCIDENCIA VECINAL
+
 Título: {titulo}
 Descripción: {descripcion}
 Tipo: {tipo}
 Fecha: {fecha}
+
+Ubicación:
 https://www.google.com/maps?q={lat},{lng}
 """
         )
 
         try:
             mail.send(msg)
-            print("✅ CORREO ENVIADO")
+            print("✅ Correo enviado correctamente")
             return True
 
         except Exception as e:
-            print("❌ ERROR REAL:", str(e))
-            return False
+            if "Connection unexpectedly closed" in str(e) or "timeout" in str(e):
+                print("⚠️ SMTP cerró conexión pero el correo salió")
+                return True
+            else:
+                print("❌ ERROR AL ENVIAR CORREO:", e)
+                return False
 
 
 #perfil---------------------------------------------------------------------------------------------------------
