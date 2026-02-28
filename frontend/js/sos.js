@@ -1,4 +1,4 @@
-const API = "https://vecinal-app.onrender.com";
+const API = "";
 
 console.log("🔥 sos.js cargado");
 

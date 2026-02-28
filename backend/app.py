@@ -211,7 +211,7 @@ def ver_usuarios():
 @app.route('/incidencias', methods=['POST'])
 def crear_incidencia():
 
-    print("🔥 ENDPOINT INCIDENCIAS EJECUTADO")
+    
     data = request.get_json()
 
     titulo = data.get('titulo')
