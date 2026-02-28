@@ -67,21 +67,21 @@ function enviarSOS(lat, lng, id_usuario) {
       titulo: "🚨 Emergencia vecinal",
       descripcion: "Solicitud de ayuda inmediata",
       tipo: "SOS",
-      lat: Number(lat),
-      lng: Number(lng),
-      id_usuario: Number(id_usuario)
+      lat: lat,
+      lng: lng,
+      id_usuario: id_usuario
     })
   })
-  .then(res => {
+  .then(async res => {
 
     console.log("📡 Status:", res.status);
 
-    if (!res.ok) {
-      console.error("❌ Error HTTP");
-      return;
-    }
+    const text = await res.text();
+    console.log("📡 Raw response:", text);
 
-    return res.json();
+    if (!res.ok) throw new Error(text);
+
+    return JSON.parse(text);
 
   })
   .then(data => {
