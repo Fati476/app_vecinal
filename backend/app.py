@@ -243,11 +243,8 @@ def crear_incidencia():
     conn.close()
 
     # 👇 THREAD EN SEGUNDO PLANO (NO BLOQUEA)
-    threading.Thread(
-        target=enviar_correo_incidencia,
-        args=(titulo, descripcion, lat, lng, tipo),
-        daemon=True
-    ).start()
+    print("📧 Llamando función de correo...")
+    enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
 
     return jsonify({"mensaje": "🚨 Incidencia creada correctamente"}), 200
 
