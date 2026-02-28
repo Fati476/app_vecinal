@@ -254,7 +254,8 @@ def crear_incidencia():
 
     # 👇 THREAD EN SEGUNDO PLANO (NO BLOQUEA)
     print("📧 Llamando función de correo...")
-    enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
+    resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
+    print("📧 Resultado envio:", resultado)
 
     return jsonify({"mensaje": "🚨 Incidencia creada correctamente"}), 200
 
