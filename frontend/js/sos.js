@@ -55,6 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function enviarSOS(lat, lng, id_usuario) {
+
+  console.log("📡 Enviando SOS al backend...");
+
   fetch(`${API}/incidencias`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -67,10 +70,13 @@ function enviarSOS(lat, lng, id_usuario) {
       id_usuario: Number(id_usuario)
     })
   })
-  .then(res => {
-    if (!res.ok) return null; // ❌ Si falla, NO hacer nada
-    return res.json();
+  .then(res => res.json())
+  .then(data => {
+    console.log("✅ RESPUESTA:", data);
+    alert("Incidencia enviada");
   })
-  
-  
+  .catch(err => {
+    console.error("❌ ERROR fetch:", err);
+  });
+
 }
