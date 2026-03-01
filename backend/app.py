@@ -221,8 +221,8 @@ def ver_usuarios():
 # -----------------------------
 @app.route('/incidencias', methods=['POST'])
 def crear_incidencia():
-    print("🚨 ENDPOINT /incidencias LLAMADO")
-    
+    print("🚨 ENDPOINT /incidencias LLAMADO", flush=True)
+
     data = request.get_json()
 
     titulo = data.get('titulo')
@@ -245,7 +245,6 @@ def crear_incidencia():
     conn = get_db()
     cursor = conn.cursor()
 
-    # 👇 HORA CORRECTA MÉXICO
     cursor.execute("""
         INSERT INTO incidencias
         (titulo, descripcion, tipo, estado, fecha, lat, lng, id_usuario, activo)
@@ -255,21 +254,19 @@ def crear_incidencia():
     conn.commit()
     conn.close()
 
-    # 👇 THREAD EN SEGUNDO PLANO (NO BLOQUEA)
     print("📧 Llamando función de correo...", flush=True)
-    print("📧 FUNCION DE CORREO EJECUTANDOSE", flush=True)
 
     try:
-       resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
-       print("📧 Resultado envio:", resultado, flush=True)
+        resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
+        print("📧 Resultado envio:", resultado, flush=True)
     except Exception as e:
-       print("💥 ERROR AL LLAMAR FUNCION:", str(e), flush=True)
+        print("💥 ERROR AL ENVIAR CORREO:", str(e), flush=True)
 
-    print("📧 CONFIG SMTP:")
-    print("SERVER:", app.config['MAIL_SERVER'])
-    print("PORT:", app.config['MAIL_PORT'])
-    print("USER:", app.config['MAIL_USERNAME'])
-    print("SENDER:", app.config['MAIL_DEFAULT_SENDER'], flush=True)
+    print("📧 CONFIG SMTP:", flush=True)
+    print("SERVER:", app.config.get('MAIL_SERVER'), flush=True)
+    print("PORT:", app.config.get('MAIL_PORT'), flush=True)
+    print("USER:", app.config.get('MAIL_USERNAME'), flush=True)
+    print("SENDER:", app.config.get('MAIL_DEFAULT_SENDER'), flush=True)
 
     return jsonify({"mensaje": "🚨 Incidencia creada correctamente"}), 200
 
@@ -1236,45 +1233,31 @@ from flask import current_app
 from flask_mail import Message
 
 def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
-
     from datetime import datetime
-    import os
 
-    print("📧 FUNCION enviar_correo_incidencia INICIADA")
+    print("📧 FUNCION DE CORREO EJECUTANDOSE", flush=True)
 
-    with app.app_context():
+    try:
+        correos = obtener_correos_admin()
 
-        try:
+        if tipo == "SOS":
+            correos += obtener_correos_vecinos()
 
-            correos = []
+        correos = list(set(correos))
 
-            # agregar admins
-            admins = obtener_correos_admin()
-            print("👤 Admins:", admins)
-            correos += admins
+        print("📧 DESTINATARIOS:", correos, flush=True)
 
-            # agregar vecinos si es SOS
-            if tipo == "SOS":
-                vecinos = obtener_correos_vecinos()
-                print("🏠 Vecinos:", vecinos)
-                correos += vecinos
+        if not correos:
+            print("❌ No hay destinatarios", flush=True)
+            return False
 
-            # quitar duplicados
-            correos = list(set(correos))
+        fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-            print("📧 DESTINATARIOS FINALES:", correos)
-
-            if not correos:
-                print("❌ No hay correos destino")
-                return False
-
-            fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
-
-            msg = Message(
-                subject="🚨 Incidencia Vecinal",
-                sender=app.config['MAIL_DEFAULT_SENDER'],
-                recipients=correos,
-                body=f"""
+        msg = Message(
+            subject="🚨 Incidencia Vecinal",
+            sender=app.config['MAIL_DEFAULT_SENDER'],
+            recipients=correos,
+            body=f"""
 INCIDENCIA VECINAL
 
 Título: {titulo}
@@ -1285,22 +1268,19 @@ Fecha: {fecha}
 Ubicación:
 https://www.google.com/maps?q={lat},{lng}
 """
-            )
+        )
 
-            print("📤 Enviando correo...")
+        print("📤 Intentando enviar SMTP...", flush=True)
 
-            mail.send(msg)
+        with mail.connect() as conn:
+            conn.send(msg)
 
-            print("✅ CORREO ENVIADO CORRECTAMENTE")
+        print("✅ CORREO ENVIADO", flush=True)
+        return True
 
-            return True
-
-
-        except Exception as e:
-
-            print("❌ ERROR REAL:", str(e))
-
-            return False
+    except Exception as e:
+        print("💥 ERROR SMTP REAL:", str(e), flush=True)
+        return False
 
 #perfil---------------------------------------------------------------------------------------------------------
 
