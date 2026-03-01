@@ -46,6 +46,9 @@ app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
 
 app.config['MAIL_DEFAULT_SENDER'] = os.environ.get("MAIL_USERNAME")
 
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_DEBUG'] = True
+app.config['MAIL_TIMEOUT'] = 15
 mail = Mail(app)
 
 print("MAIL_USERNAME:", app.config['MAIL_USERNAME'])
@@ -64,7 +67,15 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-
+with app.app_context():
+    msg = Message(
+        subject="Prueba Render",
+        sender=app.config['MAIL_USERNAME'],
+        recipients=[app.config['MAIL_USERNAME']],
+        body="Correo de prueba desde producción"
+    )
+    mail.send(msg)
+    print("ENVIO SIMPLE OK")
 
 @app.route("/")
 def index():
@@ -1258,6 +1269,7 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
 
             msg = Message(
                 subject="🚨 Incidencia Vecinal",
+                sender=app.config['MAIL_USERNAME'],
                 recipients=correos,
                 body=f"""
 INCIDENCIA VECINAL
