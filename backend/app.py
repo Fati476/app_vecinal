@@ -257,6 +257,7 @@ def crear_incidencia():
 
     # 👇 THREAD EN SEGUNDO PLANO (NO BLOQUEA)
     print("📧 Llamando función de correo...", flush=True)
+    print("📧 FUNCION DE CORREO EJECUTANDOSE", flush=True)
 
     try:
        resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
