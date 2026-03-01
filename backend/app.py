@@ -256,9 +256,19 @@ def crear_incidencia():
     conn.close()
 
     # 👇 THREAD EN SEGUNDO PLANO (NO BLOQUEA)
-    print("📧 Llamando función de correo...")
-    resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
-    print("📧 Resultado envio:", resultado)
+    print("📧 Llamando función de correo...", flush=True)
+
+    try:
+       resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
+       print("📧 Resultado envio:", resultado, flush=True)
+    except Exception as e:
+       print("💥 ERROR AL LLAMAR FUNCION:", str(e), flush=True)
+
+    print("📧 CONFIG SMTP:")
+    print("SERVER:", app.config['MAIL_SERVER'])
+    print("PORT:", app.config['MAIL_PORT'])
+    print("USER:", app.config['MAIL_USERNAME'])
+    print("SENDER:", app.config['MAIL_DEFAULT_SENDER'], flush=True)
 
     return jsonify({"mensaje": "🚨 Incidencia creada correctamente"}), 200
 
