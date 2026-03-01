@@ -1234,6 +1234,7 @@ from flask_mail import Message
 
 def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
     from datetime import datetime
+    import requests, os
 
     print("📧 FUNCION DE CORREO EJECUTANDOSE", flush=True)
 
@@ -1253,11 +1254,20 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
 
         fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-        msg = Message(
-            subject="🚨 Incidencia Vecinal",
-            sender=app.config['MAIL_DEFAULT_SENDER'],
-            recipients=correos,
-            body=f"""
+        data = {
+            "personalizations": [
+                {
+                    "to": [{"email": c} for c in correos],
+                    "subject": "🚨 Incidencia Vecinal"
+                }
+            ],
+            "from": {
+                "email": app.config['MAIL_DEFAULT_SENDER']
+            },
+            "content": [
+                {
+                    "type": "text/plain",
+                    "value": f"""
 INCIDENCIA VECINAL
 
 Título: {titulo}
@@ -1268,18 +1278,30 @@ Fecha: {fecha}
 Ubicación:
 https://www.google.com/maps?q={lat},{lng}
 """
+                }
+            ]
+        }
+
+        headers = {
+            "Authorization": f"Bearer {os.environ.get('SENDGRID_API_KEY')}",
+            "Content-Type": "application/json"
+        }
+
+        print("📤 Enviando por API...", flush=True)
+
+        response = requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers=headers,
+            json=data
         )
 
-        print("📤 Intentando enviar SMTP...", flush=True)
+        print("📬 STATUS:", response.status_code, flush=True)
+        print("📬 RESPUESTA:", response.text, flush=True)
 
-        with mail.connect() as conn:
-            conn.send(msg)
-
-        print("✅ CORREO ENVIADO", flush=True)
-        return True
+        return response.status_code in (200, 202)
 
     except Exception as e:
-        print("💥 ERROR SMTP REAL:", str(e), flush=True)
+        print("💥 ERROR ENVIO:", str(e), flush=True)
         return False
 
 #perfil---------------------------------------------------------------------------------------------------------
