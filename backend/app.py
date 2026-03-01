@@ -67,15 +67,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-with app.app_context():
-    msg = Message(
-        subject="Prueba Render",
-        sender=app.config['MAIL_USERNAME'],
-        recipients=[app.config['MAIL_USERNAME']],
-        body="Correo de prueba desde producción"
-    )
-    mail.send(msg)
-    print("ENVIO SIMPLE OK")
+
 
 @app.route("/")
 def index():
