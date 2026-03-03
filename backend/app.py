@@ -260,7 +260,7 @@ def crear_incidencia():
     print("📧 Llamando función de correo...", flush=True)
 
     try:
-        resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo)
+        resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha_mexico)
         print("📧 Resultado envio:", resultado, flush=True)
     except Exception as e:
         print("💥 ERROR AL ENVIAR CORREO:", str(e), flush=True)
@@ -1235,8 +1235,7 @@ def obtener_correos_admin():
 from flask import current_app
 from flask_mail import Message
 
-def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
-    from datetime import datetime
+def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha):
     import requests, os
 
     print("📧 FUNCION DE CORREO EJECUTANDOSE", flush=True)
@@ -1254,8 +1253,6 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo):
         if not correos:
             print("❌ No hay destinatarios", flush=True)
             return False
-
-        fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
 
         data = {
             "personalizations": [
