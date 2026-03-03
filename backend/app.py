@@ -1283,7 +1283,7 @@ https://www.google.com/maps?q={lat},{lng}
         }
 
         headers = {
-            "Authorization": f"Bearer {os.environ.get('SENDGRID_API_KEY')}",
+            "Authorization": f"Bearer {os.environ.get('MAIL_PASSWORD')}",
             "Content-Type": "application/json"
         }
 
