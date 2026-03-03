@@ -15,6 +15,7 @@ from werkzeug.utils import secure_filename
 
 from flask_socketio import SocketIO, emit, join_room
 from dotenv import load_dotenv
+from zoneinfo import ZoneInfo
 
 
 load_dotenv()
@@ -241,6 +242,8 @@ def crear_incidencia():
         id_usuario = int(id_usuario)
     except ValueError:
         return jsonify({"error": "Datos inválidos"}), 400
+    
+    fecha_mexico = datetime.now(ZoneInfo("America/Mexico_City")).strftime("%Y-%m-%d %H:%M:%S")
 
     conn = get_db()
     cursor = conn.cursor()
@@ -248,8 +251,8 @@ def crear_incidencia():
     cursor.execute("""
         INSERT INTO incidencias
         (titulo, descripcion, tipo, estado, fecha, lat, lng, id_usuario, activo)
-        VALUES (?, ?, ?, 'activa', datetime('now','-6 hours'), ?, ?, ?, 1)
-    """, (titulo, descripcion, tipo, lat, lng, id_usuario))
+        VALUES (?, ?, ?, 'activa', ?, ?, ?, ?, 1)
+    """, (titulo, descripcion, tipo, fecha_mexico, lat, lng, id_usuario))
 
     conn.commit()
     conn.close()
