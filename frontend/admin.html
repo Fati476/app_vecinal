@@ -41,36 +41,39 @@
 <script src="js/incidencias-burbujas.js"></script>
 <!-- 🚨 BOTÓN SOS -->
 <!-- 🚨 BOTÓN SOS FLOTANTE -->
-<button id="btnSOS" title="Emergencia">
-  🚨
-</button>
+<!-- 🚨 BOTÓN SOS -->
+<button id="btnSOS" title="Emergencia">🚨</button>
 
 <button id="btnIA" class="boton-ia">🤖</button>
 
 <!-- PANEL CHAT IA -->
 <div id="panelIA" class="panel-ia oculto">
-    <div class="panel-header">
-        Asistente Vecinal
-        <span id="cerrarIA">✖</span>
-    </div>
+  <div class="panel-header">
+    Asistente Vecinal
+    <span id="cerrarIA">✖</span>
+  </div>
 
-    <div id="mensajesIA" class="panel-mensajes"></div>
+  <div id="mensajesIA" class="panel-mensajes"></div>
 
-    <div class="panel-input">
-        <input type="text" id="inputIA" placeholder="Escribe tu mensaje...">
-        <button onclick="enviarMensajeIA()">Enviar</button>
-    </div>
+  <div class="panel-input">
+    <input type="text" id="inputIA" placeholder="Escribe tu mensaje...">
+    <button onclick="enviarMensajeIA()">Enviar</button>
+  </div>
 </div>
 
-
-
-
+<!-- SOCKET.IO -->
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<script>
+window.socket = io("https://app-vecinal.onrender.com");
+console.log("🟢 Socket creado");
+</script>
+
+<!-- SCRIPTS -->
+<script src="js/incidencias-burbujas.js"></script>
 <script src="js/chat_ia.js"></script>
-<!-- JS DEL BOTÓN SOS -->
 <script src="js/sos.js"></script>
-
-
 <script src="js/menu.js"></script>
+
 </body>
 </html>
