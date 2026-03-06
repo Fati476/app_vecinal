@@ -41,9 +41,20 @@ fetch(`${API}/incidencias/activas`)
 .then(data=>{
 
 let index=0;
+const ahora = new Date();
 
 data.forEach(i=>{
+
+const fechaInc = parsearFechaLocal(i.fecha);
+
+if(!fechaInc) return;
+
+const horas = (ahora - fechaInc) / 3600000;
+
+if(horas > 24) return; // 🔥 solo menos de 24h
+
 crearBurbuja(i,index++);
+
 });
 
 })
@@ -74,11 +85,12 @@ bubble.innerHTML=`
 <b>🚨 Incidencia activa</b>
 <div><strong>${i.titulo}</strong></div>
 <small>👤 ${i.usuario || "Vecino"}</small><br>
-<small>🕒 ${i.fecha}</small>
+<small>🕒 ${formatearFecha(i.fecha)}</small>
 <button>📍 Ir a ubicación</button>
 `;
 
 document.body.appendChild(bubble);
+animarFlotacion(bubble);
 
 bubble.querySelector("button").onclick=()=>{
 window.open(`https://www.google.com/maps?q=${i.lat},${i.lng}`,"_blank");
