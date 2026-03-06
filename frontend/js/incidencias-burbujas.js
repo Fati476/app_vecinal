@@ -1,10 +1,10 @@
-var API = "https://app-vecinal.onrender.com";
+const API = "https://app-vecinal.onrender.com";
 
 /* ===============================
    SOCKET TIEMPO REAL
 ================================ */
 
-const socket = io(API);
+
 
 socket.on("connect", () => {
   console.log("🟢 Conectado al servidor en tiempo real");

@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io("https://app-vecinal.onrender.com");
 const chat = document.getElementById("mensajesIA");
 const input = document.getElementById("inputIA");
 const btnIA = document.getElementById("btnIA");
