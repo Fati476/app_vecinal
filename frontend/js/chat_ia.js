@@ -62,7 +62,7 @@ function enviarMensajeIA() {
 }
 
 /* ====== RECIBIR RESPUESTA ====== */
-socketIA.on("respuesta_ia"
+socketIA.on("respuesta_ia", (data) => {
     const typingMsg = document.getElementById("typingMsg");
     if (typingMsg) typingMsg.remove();
 
