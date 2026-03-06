@@ -1,4 +1,4 @@
-var API = "https://app-vecinal.onrender.com";
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
