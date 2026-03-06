@@ -1,4 +1,4 @@
-const API = "https://app-vecinal.onrender.com";
+var API = "https://app-vecinal.onrender.com";
 
 /* ===============================
    SOCKET TIEMPO REAL
