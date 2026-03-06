@@ -83,8 +83,13 @@
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
 <script>
-window.socket = io("https://app-vecinal.onrender.com");
-console.log("🟢 Socket creado:", window.socket);
+document.addEventListener("DOMContentLoaded", () => {
+
+  window.socket = io("https://app-vecinal.onrender.com");
+
+  console.log("🟢 Socket creado:", window.socket);
+
+});
 </script>
 
 <!-- IA -->
