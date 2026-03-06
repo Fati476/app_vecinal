@@ -242,7 +242,8 @@ def crear_incidencia():
         id_usuario = int(id_usuario)
     except ValueError:
         return jsonify({"error": "Datos inválidos"}), 400
-    
+
+    # Hora correcta de México
     fecha_mexico = datetime.now(ZoneInfo("America/Mexico_City")).strftime("%Y-%m-%d %H:%M:%S")
 
     conn = get_db()
@@ -255,6 +256,18 @@ def crear_incidencia():
     """, (titulo, descripcion, tipo, fecha_mexico, lat, lng, id_usuario))
 
     conn.commit()
+
+    # 🔴 EMITIR INCIDENCIA EN TIEMPO REAL
+    socketio.emit("nueva_incidencia", {
+        "titulo": titulo,
+        "descripcion": descripcion,
+        "tipo": tipo,
+        "lat": lat,
+        "lng": lng,
+        "fecha": fecha_mexico,
+        "id_usuario": id_usuario
+    })
+
     conn.close()
 
     print("📧 Llamando función de correo...", flush=True)
@@ -272,7 +285,6 @@ def crear_incidencia():
     print("SENDER:", app.config.get('MAIL_DEFAULT_SENDER'), flush=True)
 
     return jsonify({"mensaje": "🚨 Incidencia creada correctamente"}), 200
-
 
 
 

@@ -1,6 +1,29 @@
-document.addEventListener("DOMContentLoaded", () => {
+const API = "https://app-vecinal.onrender.com";
 
-  const API = "";
+/* ===============================
+   SOCKET TIEMPO REAL
+================================ */
+
+const socket = io(API);
+
+socket.on("connect", () => {
+  console.log("🟢 Conectado al servidor en tiempo real");
+});
+
+/* 🔔 nueva incidencia en vivo */
+socket.on("nueva_incidencia", (i) => {
+
+  console.log("🚨 Nueva incidencia recibida:", i);
+
+  crearBurbuja(i, 0);
+
+});
+
+/* ===============================
+   CARGAR INCIDENCIAS AL INICIO
+================================ */
+
+document.addEventListener("DOMContentLoaded", () => {
 
   // 🔐 ROL ACTUAL (admin / vecino)
   const ROL = document.body.dataset.rol || "anon";
@@ -19,13 +42,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       data.forEach(i => {
 
-        // ❌ ya vista SOLO PARA ESTE ROL
         if (vistas.includes(i.id)) return;
 
         const fechaInc = parsearFechaLocal(i.fecha);
         if (!fechaInc) return;
 
-        // ⏱ solo últimas 24h
         const horas = (ahora - fechaInc) / 3600000;
         if (horas >= 24) return;
 
@@ -36,17 +57,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ===============================
-   BURBUJA
+   CREAR BURBUJA
 ================================ */
+
 function crearBurbuja(i, index) {
 
   const bubble = document.createElement("div");
   bubble.className = "burbuja-incidencia";
 
-  // 📍 posición horizontal
   bubble.style.left = `${random(40, window.innerWidth - 320)}px`;
 
-  // 📏 rango vertical (no arriba del todo)
   const MARGEN_INFERIOR = 40;
   const MARGEN_SUPERIOR = 140;
 
@@ -60,31 +80,31 @@ function crearBurbuja(i, index) {
   bubble.innerHTML = `
     <b>🚨 Incidencia activa</b>
     <div><strong>${i.titulo}</strong></div>
-    <small>👤 ${i.usuario}</small><br>
+    <small>👤 ${i.usuario || "Vecino"}</small><br>
     <small>🕒 ${formatearFecha(i.fecha)}</small>
     <button>📍 Ir a ubicación</button>
   `;
 
   document.body.appendChild(bubble);
+
   animarFlotacion(bubble);
 
   bubble.querySelector("button").onclick = () => {
-  window.open(
-    `https://www.google.com/maps?q=${i.lat},${i.lng}`,
-    "_blank"
-  );
-};
-
+    window.open(
+      `https://www.google.com/maps?q=${i.lat},${i.lng}`,
+      "_blank"
+    );
+  };
 }
 
 /* ===============================
-   FECHAS (LOCAL REAL)
+   FECHAS
 ================================ */
 
 function parsearFechaLocal(fechaStr) {
+
   if (!fechaStr) return null;
 
-  // "2026-02-03 00:27:14"
   const [fecha, hora] = fechaStr.split(" ");
   const [y, m, d] = fecha.split("-").map(Number);
   const [hh, mm, ss] = hora.split(":").map(Number);
@@ -115,6 +135,7 @@ function formatearFecha(fechaStr) {
     if (minutos === 0) {
       return `hace ${horas} hora${horas === 1 ? "" : "s"}`;
     }
+
     return `hace ${horas} hora${horas === 1 ? "" : "s"} con ${minutos} minuto${minutos === 1 ? "" : "s"}`;
   }
 
@@ -131,10 +152,12 @@ function formatearFecha(fechaStr) {
 ================================ */
 
 function guardarVista(id) {
+
   const ROL = document.body.dataset.rol || "anon";
   const STORAGE_KEY = `incidencias_vistas_${ROL}`;
 
   let vistas = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
   if (!vistas.includes(id)) {
     vistas.push(id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(vistas));
@@ -142,15 +165,23 @@ function guardarVista(id) {
 }
 
 function animarFlotacion(bubble) {
+
   let x = parseFloat(bubble.style.left);
   const y = parseFloat(bubble.style.bottom);
+
   let dx = Math.random() * 0.6 - 0.3;
 
   setInterval(() => {
+
     x += dx;
-    if (x <= 20 || x >= window.innerWidth - 320) dx *= -1;
+
+    if (x <= 20 || x >= window.innerWidth - 320) {
+      dx *= -1;
+    }
+
     bubble.style.left = `${x}px`;
     bubble.style.bottom = `${y}px`;
+
   }, 30);
 }
 
