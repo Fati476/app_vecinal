@@ -3,7 +3,7 @@ const API = "https://app-vecinal.onrender.com";
 /* ===============================
    SOCKET TIEMPO REAL
 ================================ */
-
+const socket = io(API)
 
 
 socket.on("connect", () => {
