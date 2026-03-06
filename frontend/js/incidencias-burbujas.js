@@ -13,21 +13,27 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  console.log("🟢 Socket disponible");
+
+  let contadorBurbuja = 0;
+
   /* ===============================
      SOCKET TIEMPO REAL
   ============================== */
+
+  socket.off("nueva_incidencia"); // evita duplicados
 
   socket.on("connect", () => {
     console.log("🟢 Conectado al servidor en tiempo real");
   });
 
   /* 🔔 nueva incidencia en vivo */
+
   socket.on("nueva_incidencia", (i) => {
 
     console.log("🚨 Nueva incidencia recibida:", i);
 
-    crearBurbuja(i, 0);
-
+    crearBurbuja(i, contadorBurbuja++);
   });
 
   /* ===============================
@@ -46,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!Array.isArray(data)) return;
 
       const ahora = new Date();
-      let index = 0;
 
       data.forEach(i => {
 
@@ -56,15 +61,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!fechaInc) return;
 
         const horas = (ahora - fechaInc) / 3600000;
+
         if (horas >= 24) return;
 
-        crearBurbuja(i, index++);
+        crearBurbuja(i, contadorBurbuja++);
 
       });
     })
     .catch(err => console.error("❌ Error incidencias:", err));
 
 });
+
 
 /* ===============================
    CREAR BURBUJA
@@ -107,6 +114,7 @@ function crearBurbuja(i, index) {
   };
 }
 
+
 /* ===============================
    FECHAS
 ================================ */
@@ -116,11 +124,14 @@ function parsearFechaLocal(fechaStr) {
   if (!fechaStr) return null;
 
   const [fecha, hora] = fechaStr.split(" ");
+
   const [y, m, d] = fecha.split("-").map(Number);
   const [hh, mm, ss] = hora.split(":").map(Number);
 
   return new Date(y, m - 1, d, hh, mm, ss);
+
 }
+
 
 function formatearFecha(fechaStr) {
 
@@ -160,6 +171,7 @@ function formatearFecha(fechaStr) {
 
 }
 
+
 /* ===============================
    UTILIDADES
 ================================ */
@@ -177,6 +189,7 @@ function guardarVista(id) {
   }
 
 }
+
 
 function animarFlotacion(bubble) {
 
@@ -199,6 +212,7 @@ function animarFlotacion(bubble) {
   }, 30);
 
 }
+
 
 function random(min, max) {
   return Math.random() * (max - min) + min;

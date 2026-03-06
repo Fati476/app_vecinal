@@ -79,30 +79,31 @@
 
 
 
-<!-- Socket.IO (SIEMPRE primero) -->
+<!-- Socket.IO -->
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
 <script>
 window.socket = io("https://app-vecinal.onrender.com");
+console.log("🟢 Socket creado:", window.socket);
 </script>
 
-<!-- API / conexiones -->
+<!-- IA -->
 <script src="js/chat_ia.js"></script>
 
-<!-- incidencias en tiempo real -->
+<!-- incidencias tiempo real -->
 <script src="js/incidencias-burbujas.js"></script>
 
-<!-- botón SOS -->
+<!-- SOS -->
 <script src="js/sos.js"></script>
 
 <!-- chat -->
 <script src="js/chat.js"></script>
 
-<!-- otros scripts -->
+<!-- sistema -->
 <script src="js/menu.js"></script>
 <script src="js/admin_dashboard.js"></script>
 <script src="js/incidencias.js"></script>
 
-<!-- botón SOS -->
 <button id="btnSOS" title="Emergencia">🚨</button>
 
 </body>
