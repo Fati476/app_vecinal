@@ -1,9 +1,10 @@
-const API = "https://app-vecinal.onrender.com";
+var API = "https://app-vecinal.onrender.com";
+const socket = window.socket;
 
 /* ===============================
    SOCKET TIEMPO REAL
 ================================ */
-const socket = io(API)
+
 
 
 socket.on("connect", () => {
