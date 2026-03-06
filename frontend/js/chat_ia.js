@@ -1,18 +1,13 @@
-/* ===============================
-   SOCKET GLOBAL
-================================ */
-
-const socketIA = window.socket;
-
-if (!socketIA) {
-    console.error("❌ Socket no disponible");
-}
-
-/* ===============================
-   CUANDO CARGA EL DOM
-================================ */
-
 document.addEventListener("DOMContentLoaded", () => {
+
+    const socketIA = window.socket;
+
+    if (!socketIA) {
+        console.error("❌ Socket no disponible");
+        return;
+    }
+
+    console.log("🟢 Socket IA conectado");
 
     const chat = document.getElementById("mensajesIA");
     const input = document.getElementById("inputIA");
@@ -22,28 +17,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const CLAVE_CHAT = "chat_ia_historial";
 
-    if (!chat || !input || !btnIA || !panelIA) {
-        console.warn("⚠ Elementos del chat IA no encontrados");
-        return;
-    }
-
-    /* ===============================
-       ABRIR / CERRAR CHAT
-    ================================ */
+    /* ABRIR / CERRAR PANEL */
 
     btnIA.addEventListener("click", () => {
         panelIA.classList.toggle("oculto");
     });
 
-    if (cerrarIA) {
-        cerrarIA.addEventListener("click", () => {
-            panelIA.classList.add("oculto");
-        });
-    }
+    cerrarIA.addEventListener("click", () => {
+        panelIA.classList.add("oculto");
+    });
 
-    /* ===============================
-       GUARDAR MENSAJE
-    ================================ */
+    /* GUARDAR MENSAJE */
 
     function guardarMensaje(texto, tipo) {
         const historial = JSON.parse(localStorage.getItem(CLAVE_CHAT)) || [];
@@ -51,9 +35,16 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem(CLAVE_CHAT, JSON.stringify(historial));
     }
 
-    /* ===============================
-       AGREGAR MENSAJE
-    ================================ */
+    /* CARGAR HISTORIAL */
+
+    function cargarHistorial() {
+        const historial = JSON.parse(localStorage.getItem(CLAVE_CHAT)) || [];
+        historial.forEach(msg => {
+            agregarMensaje(msg.texto, msg.tipo, false);
+        });
+    }
+
+    /* AGREGAR MENSAJE */
 
     function agregarMensaje(texto, tipo, guardar = true) {
 
@@ -64,76 +55,48 @@ document.addEventListener("DOMContentLoaded", () => {
         chat.appendChild(div);
         chat.scrollTop = chat.scrollHeight;
 
-        if (guardar) {
-            guardarMensaje(texto, tipo);
-        }
+        if (guardar) guardarMensaje(texto, tipo);
     }
 
-    /* ===============================
-       CARGAR HISTORIAL
-    ================================ */
+    /* ENVIAR MENSAJE */
 
-    function cargarHistorial() {
-
-        const historial = JSON.parse(localStorage.getItem(CLAVE_CHAT)) || [];
-
-        historial.forEach(msg => {
-            agregarMensaje(msg.texto, msg.tipo, false);
-        });
-
-    }
-
-    cargarHistorial();
-
-    /* ===============================
-       ENVIAR MENSAJE
-    ================================ */
-
-    function enviarMensajeIA() {
+    window.enviarMensajeIA = function() {
 
         const mensaje = input.value.trim();
         if (!mensaje) return;
 
         agregarMensaje(mensaje, "user");
-
         input.value = "";
 
         const typing = document.createElement("div");
-        typing.classList.add("message", "ia", "typing");
+        typing.classList.add("message","ia","typing");
         typing.id = "typingMsg";
         typing.innerText = "Asistente está escribiendo...";
 
         chat.appendChild(typing);
 
-        if (socketIA) {
-            socketIA.emit("mensaje_ia", { mensaje });
-        }
-
+        socketIA.emit("mensaje_ia", {mensaje});
     }
 
-    /* ===============================
-       RECIBIR RESPUESTA IA
-    ================================ */
+    /* RESPUESTA IA */
 
-    if (socketIA) {
+    socketIA.on("respuesta_ia", (data) => {
 
-        socketIA.on("respuesta_ia", (data) => {
+        const typing = document.getElementById("typingMsg");
+        if (typing) typing.remove();
 
-            const typingMsg = document.getElementById("typingMsg");
-            if (typingMsg) typingMsg.remove();
+        agregarMensaje(data.respuesta, "ia");
 
-            agregarMensaje(data.respuesta, "ia");
-
-        });
-
-    }
-
-    /* ===============================
-       ENTER PARA ENVIAR
-    ================================ */
-
-    input.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") enviarMensajeIA();
     });
+
+    /* ENTER PARA ENVIAR */
+
+    input.addEventListener("keypress", (e)=>{
+        if(e.key==="Enter"){
+            enviarMensajeIA();
+        }
+    });
+
+    cargarHistorial();
 
 });

@@ -1,9 +1,5 @@
 var API = "https://app-vecinal.onrender.com";
 
-/* ===============================
-   CUANDO CARGA LA PÁGINA
-================================ */
-
 document.addEventListener("DOMContentLoaded", () => {
 
   const socket = window.socket;
@@ -17,102 +13,82 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let contadorBurbuja = 0;
 
-  /* ===============================
-     SOCKET TIEMPO REAL
-  ============================== */
-
-  socket.off("nueva_incidencia"); // evita duplicados
+  socket.off("nueva_incidencia");
 
   socket.on("connect", () => {
-    console.log("🟢 Conectado al servidor en tiempo real");
+    console.log("🟢 Conectado al servidor");
   });
-
-  /* 🔔 nueva incidencia en vivo */
 
   socket.on("nueva_incidencia", (i) => {
 
-    console.log("🚨 Nueva incidencia recibida:", i);
+    console.log("🚨 Nueva incidencia recibida", i);
 
     crearBurbuja(i, contadorBurbuja++);
   });
 
-  /* ===============================
-     CARGAR INCIDENCIAS AL INICIO
-  ============================== */
-
-  const ROL = document.body.dataset.rol || "anon";
-  const STORAGE_KEY = `incidencias_vistas_${ROL}`;
-
-  const vistas = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-  fetch(`${API}/incidencias/activas`)
-    .then(res => res.json())
-    .then(data => {
-
-      if (!Array.isArray(data)) return;
-
-      const ahora = new Date();
-
-      data.forEach(i => {
-
-        if (vistas.includes(i.id)) return;
-
-        const fechaInc = parsearFechaLocal(i.fecha);
-        if (!fechaInc) return;
-
-        const horas = (ahora - fechaInc) / 3600000;
-
-        if (horas >= 24) return;
-
-        crearBurbuja(i, contadorBurbuja++);
-
-      });
-    })
-    .catch(err => console.error("❌ Error incidencias:", err));
+  cargarIncidenciasIniciales();
 
 });
 
+/* ===============================
+   CARGAR INCIDENCIAS
+================================ */
+
+function cargarIncidenciasIniciales(){
+
+fetch(`${API}/incidencias/activas`)
+.then(res=>res.json())
+.then(data=>{
+
+let index=0;
+
+data.forEach(i=>{
+crearBurbuja(i,index++);
+});
+
+})
+.catch(err=>console.error("❌ Error incidencias",err));
+
+}
 
 /* ===============================
    CREAR BURBUJA
 ================================ */
 
-function crearBurbuja(i, index) {
+function crearBurbuja(i,index){
 
-  const bubble = document.createElement("div");
-  bubble.className = "burbuja-incidencia";
+const bubble=document.createElement("div");
+bubble.className="burbuja-incidencia";
 
-  bubble.style.left = `${random(40, window.innerWidth - 320)}px`;
+bubble.style.left=`${random(40,window.innerWidth-320)}px`;
 
-  const MARGEN_INFERIOR = 40;
-  const MARGEN_SUPERIOR = 140;
+const margenInferior=40;
+const margenSuperior=140;
 
-  const rango =
-    window.innerHeight - MARGEN_SUPERIOR - MARGEN_INFERIOR;
+const rango=window.innerHeight-margenSuperior-margenInferior;
+const offset=(index*120)%rango;
 
-  const offset = (index * 120) % rango;
+bubble.style.bottom=`${margenInferior+offset}px`;
 
-  bubble.style.bottom = `${MARGEN_INFERIOR + offset}px`;
+bubble.innerHTML=`
+<b>🚨 Incidencia activa</b>
+<div><strong>${i.titulo}</strong></div>
+<small>👤 ${i.usuario || "Vecino"}</small><br>
+<small>🕒 ${i.fecha}</small>
+<button>📍 Ir a ubicación</button>
+`;
 
-  bubble.innerHTML = `
-    <b>🚨 Incidencia activa</b>
-    <div><strong>${i.titulo}</strong></div>
-    <small>👤 ${i.usuario || "Vecino"}</small><br>
-    <small>🕒 ${formatearFecha(i.fecha)}</small>
-    <button>📍 Ir a ubicación</button>
-  `;
+document.body.appendChild(bubble);
 
-  document.body.appendChild(bubble);
+bubble.querySelector("button").onclick=()=>{
+window.open(`https://www.google.com/maps?q=${i.lat},${i.lng}`,"_blank");
+};
 
-  animarFlotacion(bubble);
-
-  bubble.querySelector("button").onclick = () => {
-    window.open(
-      `https://www.google.com/maps?q=${i.lat},${i.lng}`,
-      "_blank"
-    );
-  };
 }
+
+/* ===============================
+   UTILIDAD RANDOM
+================================ */
 
 
 /* ===============================
