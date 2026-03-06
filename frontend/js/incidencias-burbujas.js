@@ -1,5 +1,7 @@
 var API = "https://app-vecinal.onrender.com";
 
+const incidenciasMostradas = new Set();
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const socket = window.socket;
@@ -23,7 +25,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("🚨 Nueva incidencia recibida", i);
 
+    if (incidenciasMostradas.has(i.id)) return;
+
+    const fechaInc = parsearFechaLocal(i.fecha);
+    if (!fechaInc) return;
+
+    const horas = (new Date() - fechaInc) / 3600000;
+
+    if (horas > 24) return;
+
+    incidenciasMostradas.add(i.id);
+
     crearBurbuja(i, contadorBurbuja++);
+
   });
 
   cargarIncidenciasIniciales();
@@ -51,7 +65,11 @@ if(!fechaInc) return;
 
 const horas = (ahora - fechaInc) / 3600000;
 
-if(horas > 24) return; // 🔥 solo menos de 24h
+if(horas > 24) return;
+
+if (incidenciasMostradas.has(i.id)) return;
+
+incidenciasMostradas.add(i.id);
 
 crearBurbuja(i,index++);
 
@@ -90,6 +108,7 @@ bubble.innerHTML=`
 `;
 
 document.body.appendChild(bubble);
+
 animarFlotacion(bubble);
 
 bubble.querySelector("button").onclick=()=>{
@@ -97,11 +116,6 @@ window.open(`https://www.google.com/maps?q=${i.lat},${i.lng}`,"_blank");
 };
 
 }
-
-/* ===============================
-   UTILIDAD RANDOM
-================================ */
-
 
 /* ===============================
    FECHAS
@@ -119,7 +133,6 @@ function parsearFechaLocal(fechaStr) {
   return new Date(y, m - 1, d, hh, mm, ss);
 
 }
-
 
 function formatearFecha(fechaStr) {
 
@@ -159,7 +172,6 @@ function formatearFecha(fechaStr) {
 
 }
 
-
 /* ===============================
    UTILIDADES
 ================================ */
@@ -177,7 +189,6 @@ function guardarVista(id) {
   }
 
 }
-
 
 function animarFlotacion(bubble) {
 
@@ -200,7 +211,6 @@ function animarFlotacion(bubble) {
   }, 30);
 
 }
-
 
 function random(min, max) {
   return Math.random() * (max - min) + min;
