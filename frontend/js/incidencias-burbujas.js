@@ -1,32 +1,39 @@
 var API = "https://app-vecinal.onrender.com";
-const socket = window.socket;
 
 /* ===============================
-   SOCKET TIEMPO REAL
-================================ */
-
-
-
-socket.on("connect", () => {
-  console.log("🟢 Conectado al servidor en tiempo real");
-});
-
-/* 🔔 nueva incidencia en vivo */
-socket.on("nueva_incidencia", (i) => {
-
-  console.log("🚨 Nueva incidencia recibida:", i);
-
-  crearBurbuja(i, 0);
-
-});
-
-/* ===============================
-   CARGAR INCIDENCIAS AL INICIO
+   CUANDO CARGA LA PÁGINA
 ================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 🔐 ROL ACTUAL (admin / vecino)
+  const socket = window.socket;
+
+  if (!socket) {
+    console.error("❌ Socket no cargado");
+    return;
+  }
+
+  /* ===============================
+     SOCKET TIEMPO REAL
+  ============================== */
+
+  socket.on("connect", () => {
+    console.log("🟢 Conectado al servidor en tiempo real");
+  });
+
+  /* 🔔 nueva incidencia en vivo */
+  socket.on("nueva_incidencia", (i) => {
+
+    console.log("🚨 Nueva incidencia recibida:", i);
+
+    crearBurbuja(i, 0);
+
+  });
+
+  /* ===============================
+     CARGAR INCIDENCIAS AL INICIO
+  ============================== */
+
   const ROL = document.body.dataset.rol || "anon";
   const STORAGE_KEY = `incidencias_vistas_${ROL}`;
 
@@ -52,9 +59,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (horas >= 24) return;
 
         crearBurbuja(i, index++);
+
       });
     })
     .catch(err => console.error("❌ Error incidencias:", err));
+
 });
 
 /* ===============================
@@ -133,11 +142,13 @@ function formatearFecha(fechaStr) {
   const minutos = minutosTotales % 60;
 
   if (horas < 24) {
+
     if (minutos === 0) {
       return `hace ${horas} hora${horas === 1 ? "" : "s"}`;
     }
 
     return `hace ${horas} hora${horas === 1 ? "" : "s"} con ${minutos} minuto${minutos === 1 ? "" : "s"}`;
+
   }
 
   return fecha.toLocaleDateString("es-MX", {
@@ -146,6 +157,7 @@ function formatearFecha(fechaStr) {
     hour: "2-digit",
     minute: "2-digit"
   });
+
 }
 
 /* ===============================
@@ -163,6 +175,7 @@ function guardarVista(id) {
     vistas.push(id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(vistas));
   }
+
 }
 
 function animarFlotacion(bubble) {
@@ -184,6 +197,7 @@ function animarFlotacion(bubble) {
     bubble.style.bottom = `${y}px`;
 
   }, 30);
+
 }
 
 function random(min, max) {

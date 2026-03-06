@@ -1,4 +1,4 @@
-const socket = window.socket;
+const socketIA = window.socket;
 const chat = document.getElementById("mensajesIA");
 const input = document.getElementById("inputIA");
 const btnIA = document.getElementById("btnIA");
@@ -58,7 +58,7 @@ function enviarMensajeIA() {
     typing.innerText = "Asistente está escribiendo...";
     chat.appendChild(typing);
 
-    socket.emit("mensaje_ia", { mensaje });
+    socketIA.emit("mensaje_ia", { mensaje });  // 👈 CORREGIDO
 }
 
 /* ====== RECIBIR RESPUESTA ====== */
