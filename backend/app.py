@@ -249,18 +249,6 @@ def crear_incidencia():
     conn = get_db()
     cursor = conn.cursor()
 
-    # 🔹 Obtener nombre y rol del usuario
-    cursor.execute("SELECT nombre, rol FROM usuarios WHERE id = ?", (id_usuario,))
-    usuario = cursor.fetchone()
-
-    if usuario:
-        nombre_usuario = usuario["nombre"]
-        rol_usuario = usuario["rol"]
-    else:
-        nombre_usuario = "Vecino"
-        rol_usuario = "usuario"
-
-    # 🔹 Insertar incidencia
     cursor.execute("""
         INSERT INTO incidencias
         (titulo, descripcion, tipo, estado, fecha, lat, lng, id_usuario, activo)
@@ -277,9 +265,7 @@ def crear_incidencia():
         "lat": lat,
         "lng": lng,
         "fecha": fecha_mexico,
-        "id_usuario": id_usuario,
-        "usuario": nombre_usuario,
-        "rol": rol_usuario
+        "id_usuario": id_usuario
     })
 
     conn.close()
@@ -291,6 +277,12 @@ def crear_incidencia():
         print("📧 Resultado envio:", resultado, flush=True)
     except Exception as e:
         print("💥 ERROR AL ENVIAR CORREO:", str(e), flush=True)
+
+    print("📧 CONFIG SMTP:", flush=True)
+    print("SERVER:", app.config.get('MAIL_SERVER'), flush=True)
+    print("PORT:", app.config.get('MAIL_PORT'), flush=True)
+    print("USER:", app.config.get('MAIL_USERNAME'), flush=True)
+    print("SENDER:", app.config.get('MAIL_DEFAULT_SENDER'), flush=True)
 
     return jsonify({"mensaje": "🚨 Incidencia creada correctamente"}), 200
 

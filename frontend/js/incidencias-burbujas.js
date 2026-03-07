@@ -25,8 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("🚨 Nueva incidencia recibida", i);
 
-    if (!i.id) return;
-
     if (incidenciasMostradas.has(i.id)) return;
 
     const fechaInc = parsearFechaLocal(i.fecha);
@@ -104,7 +102,7 @@ bubble.style.bottom=`${margenInferior+offset}px`;
 bubble.innerHTML=`
 <b>🚨 Incidencia activa</b>
 <div><strong>${i.titulo}</strong></div>
-<small>👤 ${i.usuario || "Vecino"} - ${i.rol || "usuario"}</small><br>
+<small>👤 ${i.usuario || "Vecino"}</small><br>
 <small>🕒 ${formatearFecha(i.fecha)}</small>
 <button>📍 Ir a ubicación</button>
 `;
@@ -173,8 +171,6 @@ function formatearFecha(fechaStr) {
   });
 
 }
-
-
 
 /* ===============================
    UTILIDADES
