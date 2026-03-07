@@ -243,29 +243,50 @@ def crear_incidencia():
     except ValueError:
         return jsonify({"error": "Datos inválidos"}), 400
 
-    # Hora correcta de México
+    # Hora de México
     fecha_mexico = datetime.now(ZoneInfo("America/Mexico_City")).strftime("%Y-%m-%d %H:%M:%S")
 
     conn = get_db()
     cursor = conn.cursor()
 
+    # 🔹 Obtener nombre y rol del usuario
+    cursor.execute(
+        "SELECT nombre, rol FROM usuarios WHERE id_usuario = ?",
+        (id_usuario,)
+    )
+    usuario = cursor.fetchone()
+
+    if usuario:
+        nombre_usuario = usuario["nombre"]
+        rol_usuario = usuario["rol"]
+    else:
+        nombre_usuario = "Vecino"
+        rol_usuario = "usuario"
+
+    # 🔹 Insertar incidencia
     cursor.execute("""
         INSERT INTO incidencias
         (titulo, descripcion, tipo, estado, fecha, lat, lng, id_usuario, activo)
         VALUES (?, ?, ?, 'activa', ?, ?, ?, ?, 1)
     """, (titulo, descripcion, tipo, fecha_mexico, lat, lng, id_usuario))
 
+    # 🔹 Obtener ID de la incidencia creada
+    id_incidencia = cursor.lastrowid
+
     conn.commit()
 
-    # 🔴 EMITIR INCIDENCIA EN TIEMPO REAL
+    # 🔴 Emitir incidencia en tiempo real
     socketio.emit("nueva_incidencia", {
+        "id": id_incidencia,
         "titulo": titulo,
         "descripcion": descripcion,
         "tipo": tipo,
         "lat": lat,
         "lng": lng,
         "fecha": fecha_mexico,
-        "id_usuario": id_usuario
+        "id_usuario": id_usuario,
+        "usuario": nombre_usuario,
+        "rol": rol_usuario
     })
 
     conn.close()
