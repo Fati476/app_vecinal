@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 
 from flask_cors import CORS
 from flask_mail import Mail, Message
+import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import re
@@ -23,15 +24,16 @@ load_dotenv()
 
 
 API_KEY = os.getenv("OPENROUTER_API_KEY")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 usuarios_online = {}
-def get_db():
-    conn = sqlite3.connect(DB_PATH, timeout=15, check_same_thread=False)
-    conn.row_factory = sqlite3.Row
-    return conn
+#def get_db():
+    #conn = sqlite3.connect(DB_PATH, timeout=15, check_same_thread=False)
+    #conn.row_factory = sqlite3.Row
+    #return conn
 
 print("API KEY:", API_KEY)
 
@@ -59,14 +61,30 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 DB_PATH = os.path.join(BASE_DIR, "vecinal.db")
 FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
-print("DB PATH:", DB_PATH)
-print("EXISTE:", os.path.exists(DB_PATH))
+#print("DB PATH:", DB_PATH)
+#print("EXISTE:", os.path.exists(DB_PATH))
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
+def get_db():
+
+    # Si estamos en Render usa PostgreSQL
+    if DATABASE_URL:
+        print("🟢 Conectado a PostgreSQL")
+        conn = psycopg2.connect(DATABASE_URL)
+        return conn
+
+    # Si estamos en local usa SQLite
+    print("🟡 Usando SQLite local")
+    conn = sqlite3.connect(DB_PATH, timeout=15, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
 
 historial_conversaciones = {}
 
@@ -82,8 +100,8 @@ def static_files(path):
 # -----------------------------
 # Conexión a la base de datos
 # -----------------------------
-def conectar_db():
-    return sqlite3.connect(DB_PATH)
+#def conectar_db():
+    #return sqlite3.connect(DB_PATH)
 
 # -----------------------------
 # Ruta de prueba
@@ -122,7 +140,7 @@ def registro():
             "error": "La contraseña debe tener mínimo 8 caracteres, letras, números y un símbolo"
         }), 400
 
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     # 4️ Verificar correo duplicado
@@ -161,7 +179,7 @@ def login():
     if not correo or not password:
         return jsonify({"error": "Faltan datos"}), 400
 
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -193,7 +211,7 @@ def login():
 
 @app.route('/usuarios', methods=['GET'])
 def ver_usuarios():
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -511,7 +529,7 @@ def marcar_atendida(id):
 
 @app.route('/incidencias/usuario/<int:id_usuario>', methods=['GET'])
 def incidencias_usuario(id_usuario):
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -545,7 +563,7 @@ def incidencias_usuario(id_usuario):
 @app.route('/incidencias_mapa', methods=['GET'])
 def incidencias_mapa():
 
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -589,7 +607,7 @@ def guardar_geolocalizacion():
     if not latitud or not longitud or not id_incidencia:
         return jsonify({"error": "Faltan datos"}), 400
 
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -604,7 +622,7 @@ def guardar_geolocalizacion():
 @app.route('/mapa/incidencias', methods=['GET'])
 def incidencias_con_ubicacion():
 
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -644,7 +662,7 @@ def crear_notificacion():
     if not mensaje or not id_usuario:
         return jsonify({"error": "Faltan datos"}), 400
 
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -660,7 +678,7 @@ def crear_notificacion():
 @app.route('/notificaciones/<int:id_usuario>', methods=['GET'])
 def ver_notificaciones(id_usuario):
 
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -689,7 +707,7 @@ def ver_notificaciones(id_usuario):
 @app.route('/notificaciones/leida/<int:id_notificacion>', methods=['PUT'])
 def marcar_leida(id_notificacion):
 
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -709,7 +727,7 @@ def marcar_leida(id_notificacion):
 @app.route('/mensajes/<int:usuario1>/<int:usuario2>', methods=['GET'])
 def ver_conversacion(usuario1, usuario2):
 
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -738,7 +756,7 @@ def ver_conversacion(usuario1, usuario2):
 
 @app.route('/admin/solicitudes', methods=['GET'])
 def solicitudes_pendientes():
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -761,7 +779,7 @@ def solicitudes_pendientes():
 
 @app.route('/admin/aprobar/<int:id_usuario>', methods=['PUT'])
 def aprobar_usuario(id_usuario):
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -809,7 +827,7 @@ def aprobar_usuario(id_usuario):
 
 @app.route('/admin/rechazar/<int:id_usuario>', methods=['PUT'])
 def rechazar_usuario(id_usuario):
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -852,7 +870,7 @@ def enviar_correo(destinatario, asunto, mensaje):
 
 @app.route('/admin/aprobados', methods=['GET'])
 def usuarios_aprobados():
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -879,7 +897,7 @@ def usuarios_aprobados():
 
 @app.route('/admin/eliminar/<int:id_usuario>', methods=['DELETE'])
 def eliminar_usuario(id_usuario):
-    conexion = conectar_db()
+    conexion = get_db()
     cursor = conexion.cursor()
 
     cursor.execute("""
@@ -895,7 +913,7 @@ def eliminar_usuario(id_usuario):
 
 @app.route('/admin/dashboard')
 def dashboard():
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("SELECT COUNT(*) FROM usuarios WHERE estado='pendiente'")
@@ -921,7 +939,7 @@ def dashboard():
 def recuperar():
     correo = request.json.get("correo")
 
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -983,7 +1001,7 @@ def resetear():
         print("❌ Faltan datos")
         return jsonify({"error": "Completa todos los campos"}), 400
 
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1056,7 +1074,7 @@ def crear_reporte():
         foto.save(ruta)
         ruta_foto = filename
 
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1082,7 +1100,7 @@ def uploaded_file(filename):
 
 @app.route('/reportes', methods=['GET'])
 def ver_reportes():
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1124,7 +1142,7 @@ def eliminar_reporte(id_reporte):
 
     id_usuario = int(id_usuario)
 
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1178,7 +1196,7 @@ def editar_reporte(id_reporte):
     if rol not in ["vecino", "admin"]:
         return jsonify({"error": "Rol no permitido"}), 403
 
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1232,7 +1250,7 @@ def editar_reporte(id_reporte):
 
 
 def obtener_correos_vecinos():
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1248,7 +1266,7 @@ def obtener_correos_vecinos():
 
 
 def obtener_correos_admin():
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1341,7 +1359,7 @@ https://www.google.com/maps?q={lat},{lng}
 
 @app.route("/api/perfil/<int:id_usuario>", methods=["GET"])
 def obtener_perfil(id_usuario):
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1383,7 +1401,7 @@ def subir_foto_perfil():
 
     foto.save(ruta)
 
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
     cursor.execute(
         "UPDATE usuarios SET foto = ? WHERE id_usuario = ?",
@@ -1413,7 +1431,7 @@ def actualizar_perfil(id_usuario):
     direccion = data.get("direccion")
 
     try:
-        conn = conectar_db()
+        conn = get_db()
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -1441,7 +1459,7 @@ def mostrar_foto(filename):
 
 @app.route("/api/perfil/foto/<int:id_usuario>", methods=["DELETE"])
 def eliminar_foto(id_usuario):
-    conn = conectar_db()
+    conn = get_db()
     cursor = conn.cursor()
 
     # 🔎 Obtener nombre de la foto actual
