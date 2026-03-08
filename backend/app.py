@@ -1528,7 +1528,7 @@ def preguntar_ia(mensaje_usuario):
     }
 
     data = {
-        "model": "mistralai/mistral-7b-instruct",
+        "model": "meta-llama/llama-3-8b-instruct:free",
         "messages": [
             {"role": "system", "content": contexto},
             {"role": "user", "content": mensaje_usuario}
