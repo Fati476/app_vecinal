@@ -1561,13 +1561,14 @@ def preguntar_ia(mensaje_usuario):
 
 @socketio.on("mensaje_ia")
 def manejar_mensaje(data):
+    print("📩 MENSAJE IA RECIBIDO:", data, flush=True)
     mensaje = data["mensaje"].lower()
 
     if "reporte" in mensaje or "activo" in mensaje or "pendiente" in mensaje:
         respuesta = obtener_reportes_activos()
     else:
         respuesta = preguntar_ia(mensaje)
-
+    print("🤖 RESPUESTA IA:", respuesta, flush=True)
     emit("respuesta_ia", {"respuesta": respuesta})
 
 
