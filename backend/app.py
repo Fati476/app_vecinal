@@ -1514,21 +1514,10 @@ def preguntar_ia(mensaje_usuario):
 
     Si preguntan sobre la Sección 130, da información real de San Mateo Tlalchichilpan.
     Si preguntan sobre otras secciones, responde que solo tienes información de la Sección 130.
-    Si preguntan sobre la aplicación, explica únicamente sus funciones reales:
-    - Reportes de incidencias que es algo que al momento de crear un vecino una incidencia se generara en automatico las cuales se generaran en una burbuja flotante en la pagina con un boton de ir a la ubicacion, de igual forma se encontra un apartado den en el lado lateral del menu donde las podras visualizar y se encotraran en orden de fecha y hora, ademas de que se muestra quien la hizo y con el boton de ir a la ubicaicion, en caso de que sea de ellos la podran marcar como atendidas y en automatico se borran en 7 dias.
-    - Reportes vecinales son como un reporte de luz, un bache, un poste caído, etc. que los vecinos pueden crear con una foto, descripción y ubicación. Estos reportes se muestran en un apartado del menú y en un mapa. Los vecinos pueden eliminar o editar sus propios reportes, y los administradores pueden eliminar cualquier reporte.
-    - Envío de mensajes
-    - Se envia una notificación a los vecinos cuando se crea un reporte SOS o una incidencia, y a los administradores por cualquier reporte o incidencia por correo electrónico.
-    - Un perfil de usuario donde pueden actualizar su información y foto de perfil.
-    - Un sistema de aprobación de cuentas donde los administradores aprueban o rechazan las solicitudes de registro, y se envía un correo al usuario con la decisión.
-    - Un sistema de recuperación de contraseña con código enviado por correo.
-    - Un dashboard para administradores con estadísticas de usuarios.
-    - Un chat privado entre vecinos.
-    - Un boton de emegencia SOS que notifica a todos los vecinos y administradores.
 
-    No inventes funciones que no existen.
-    Puedes responder preguntas generales, pero siempre mantente dentro del contexto comunitario.
-    Sé profesional, amable y claro.
+    Explica solo funciones reales de la app:
+    reportes vecinales, incidencias, SOS, chat, perfil, recuperación de contraseña,
+    aprobación de cuentas y dashboard de administradores.
     """
 
     url = "https://openrouter.ai/api/v1/chat/completions"
@@ -1546,10 +1535,27 @@ def preguntar_ia(mensaje_usuario):
         ]
     }
 
-    response = requests.post(url, headers=headers, json=data)
-    resultado = response.json()
+    try:
 
-    return resultado["choices"][0]["message"]["content"]
+        response = requests.post(url, headers=headers, json=data)
+        resultado = response.json()
+
+        # 🔎 ver respuesta real en logs
+        print("IA RESPONSE:", resultado)
+
+        if "choices" in resultado:
+            return resultado["choices"][0]["message"]["content"]
+
+        # si la API devuelve error
+        if "error" in resultado:
+            print("❌ ERROR OPENROUTER:", resultado["error"])
+            return "Lo siento, el asistente no está disponible en este momento."
+
+        return "No pude generar una respuesta."
+
+    except Exception as e:
+        print("❌ ERROR IA:", e)
+        return "Ocurrió un error al consultar el asistente."
 
 
 
