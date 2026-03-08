@@ -68,7 +68,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-
+historial_conversaciones = {}
 
 @app.route("/")
 def index():
@@ -1501,7 +1501,7 @@ def obtener_reportes_activos():
 
 
 
-def preguntar_ia(mensaje_usuario):
+def preguntar_ia(mensaje_usuario, sid):
 
     contexto = """
     Eres el asistente virtual de la aplicación vecinal de la Sección 130 
@@ -1520,6 +1520,18 @@ def preguntar_ia(mensaje_usuario):
     aprobación de cuentas y dashboard de administradores.
     """
 
+    # crear historial si no existe
+    if sid not in historial_conversaciones:
+        historial_conversaciones[sid] = [
+            {"role": "system", "content": contexto}
+        ]
+
+    # guardar mensaje del usuario
+    historial_conversaciones[sid].append({
+        "role": "user",
+        "content": mensaje_usuario
+    })
+
     url = "https://openrouter.ai/api/v1/chat/completions"
 
     headers = {
@@ -1529,10 +1541,7 @@ def preguntar_ia(mensaje_usuario):
 
     data = {
         "model": "meta-llama/llama-3-8b-instruct",
-        "messages": [
-            {"role": "system", "content": contexto},
-            {"role": "user", "content": mensaje_usuario}
-        ]
+        "messages": historial_conversaciones[sid]
     }
 
     try:
@@ -1540,13 +1549,20 @@ def preguntar_ia(mensaje_usuario):
         response = requests.post(url, headers=headers, json=data)
         resultado = response.json()
 
-        # 🔎 ver respuesta real en logs
         print("IA RESPONSE:", resultado)
 
         if "choices" in resultado:
-            return resultado["choices"][0]["message"]["content"]
 
-        # si la API devuelve error
+            respuesta = resultado["choices"][0]["message"]["content"]
+
+            # guardar respuesta de la IA
+            historial_conversaciones[sid].append({
+                "role": "assistant",
+                "content": respuesta
+            })
+
+            return respuesta
+
         if "error" in resultado:
             print("❌ ERROR OPENROUTER:", resultado["error"])
             return "Lo siento, el asistente no está disponible en este momento."
@@ -1561,14 +1577,16 @@ def preguntar_ia(mensaje_usuario):
 
 @socketio.on("mensaje_ia")
 def manejar_mensaje(data):
+
     print("📩 MENSAJE IA RECIBIDO:", data, flush=True)
+
     mensaje = data["mensaje"].lower()
 
     if "reporte" in mensaje or "activo" in mensaje or "pendiente" in mensaje:
         respuesta = obtener_reportes_activos()
     else:
-        respuesta = preguntar_ia(mensaje)
-    print("🤖 RESPUESTA IA:", respuesta, flush=True)
+        respuesta = preguntar_ia(mensaje, request.sid)
+
     emit("respuesta_ia", {"respuesta": respuesta})
 
 
