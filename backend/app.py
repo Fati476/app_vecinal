@@ -1528,7 +1528,7 @@ def preguntar_ia(mensaje_usuario):
     }
 
     data = {
-        "model": "meta-llama/llama-3-8b-instruct:free",
+        "model": "meta-llama/llama-3-8b-instruct",
         "messages": [
             {"role": "system", "content": contexto},
             {"role": "user", "content": mensaje_usuario}
