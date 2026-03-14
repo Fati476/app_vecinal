@@ -1294,10 +1294,16 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha, usuario
     print("📧 FUNCION DE CORREO EJECUTANDOSE", flush=True)
 
     try:
+        print("🔎 Obteniendo correos admin...", flush=True)
         correos = obtener_correos_admin()
 
+        print("📧 Correos admin:", correos, flush=True)
+
         if tipo == "SOS":
-            correos += obtener_correos_vecinos()
+            print("🔎 Obteniendo correos vecinos...", flush=True)
+            vecinos = obtener_correos_vecinos()
+            print("📧 Correos vecinos:", vecinos, flush=True)
+            correos += vecinos
 
         correos = list(set(correos))
 
@@ -1307,71 +1313,6 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha, usuario
             print("❌ No hay destinatarios", flush=True)
             return False
 
-        data = {
-            "personalizations": [
-                {
-                    "to": [{"email": c} for c in correos],
-                    "subject": "🚨 Nueva incidencia vecinal"
-                }
-            ],
-            "from": {
-                "email": app.config['MAIL_DEFAULT_SENDER'],
-                "name": "Sistema Vecinal"
-            },
-            "content": [
-                {
-                    "type": "text/html",
-                    "value": f"""
-                    <h2>🚨 Nueva Incidencia Reportada</h2>
-
-                    <p><b>Usuario:</b> {usuario}</p>
-                    <p><b>Título:</b> {titulo}</p>
-                    <p><b>Descripción:</b> {descripcion}</p>
-                    <p><b>Tipo:</b> {tipo}</p>
-                    <p><b>Fecha:</b> {fecha}</p>
-
-                    <p>
-                    <a href="https://www.google.com/maps?q={lat},{lng}" 
-                    style="
-                        background:#e63946;
-                        color:white;
-                        padding:10px 15px;
-                        text-decoration:none;
-                        border-radius:5px;
-                        font-weight:bold;
-                    ">
-                    📍 Ver ubicación en mapa
-                    </a>
-                    </p>
-
-                    <hr>
-
-                    <p style="color:gray;font-size:12px;">
-                    Sistema de reportes vecinales
-                    </p>
-                    """
-                }
-            ]
-        }
-        print("API KEY EXISTE:", app.config['MAIL_PASSWORD'][:10], flush=True)
-
-        headers = {
-            "Authorization": f"Bearer {app.config['MAIL_PASSWORD']}",
-            "Content-Type": "application/json"
-        }
-
-        print("📤 Enviando por API...", flush=True)
-
-        response = requests.post(
-            "https://api.sendgrid.com/v3/mail/send",
-            headers=headers,
-            json=data
-        )
-
-        print("📬 STATUS:", response.status_code, flush=True)
-        print("📬 RESPUESTA:", response.text, flush=True)
-
-        return response.status_code in (200, 202)
 
     except Exception as e:
         print("💥 ERROR ENVIO:", str(e), flush=True)
