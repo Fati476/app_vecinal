@@ -315,7 +315,8 @@ def crear_incidencia():
     print("📧 Llamando función de correo...", flush=True)
 
     try:
-        resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha_mexico)
+        resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha_mexico, nombre_usuario)
+
         print("📧 Resultado envio:", resultado, flush=True)
     except Exception as e:
         print("💥 ERROR AL ENVIAR CORREO:", str(e), flush=True)
@@ -1288,7 +1289,7 @@ def obtener_correos_admin():
 from flask import current_app
 from flask_mail import Message
 
-def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha):
+def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha, usuario):
     import requests, os
 
     print("📧 FUNCION DE CORREO EJECUTANDOSE", flush=True)
@@ -1311,26 +1312,45 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha):
             "personalizations": [
                 {
                     "to": [{"email": c} for c in correos],
-                    "subject": "🚨 Incidencia Vecinal"
+                    "subject": "🚨 Nueva incidencia vecinal"
                 }
             ],
             "from": {
-                "email": app.config['MAIL_DEFAULT_SENDER']
+                "email": app.config['MAIL_DEFAULT_SENDER'],
+                "name": "Sistema Vecinal"
             },
             "content": [
                 {
-                    "type": "text/plain",
+                    "type": "text/html",
                     "value": f"""
-INCIDENCIA VECINAL
+                    <h2>🚨 Nueva Incidencia Reportada</h2>
 
-Título: {titulo}
-Descripción: {descripcion}
-Tipo: {tipo}
-Fecha: {fecha}
+                    <p><b>Usuario:</b> {usuario}</p>
+                    <p><b>Título:</b> {titulo}</p>
+                    <p><b>Descripción:</b> {descripcion}</p>
+                    <p><b>Tipo:</b> {tipo}</p>
+                    <p><b>Fecha:</b> {fecha}</p>
 
-Ubicación:
-https://www.google.com/maps%sq={lat},{lng}
-"""
+                    <p>
+                    <a href="https://www.google.com/maps?q={lat},{lng}" 
+                    style="
+                        background:#e63946;
+                        color:white;
+                        padding:10px 15px;
+                        text-decoration:none;
+                        border-radius:5px;
+                        font-weight:bold;
+                    ">
+                    📍 Ver ubicación en mapa
+                    </a>
+                    </p>
+
+                    <hr>
+
+                    <p style="color:gray;font-size:12px;">
+                    Sistema de reportes vecinales
+                    </p>
+                    """
                 }
             ]
         }
@@ -1356,6 +1376,7 @@ https://www.google.com/maps%sq={lat},{lng}
     except Exception as e:
         print("💥 ERROR ENVIO:", str(e), flush=True)
         return False
+
 
 #perfil---------------------------------------------------------------------------------------------------------
 
