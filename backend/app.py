@@ -72,17 +72,20 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 def get_db():
 
-    # Si existe DATABASE_URL usamos PostgreSQL (Render)
+    
+
+    # Si estamos en Render usamos PostgreSQL
     if DATABASE_URL:
-        print("🟢 Usando PostgreSQL (Render)")
+        print("🟢 Conectado a PostgreSQL")
         conn = psycopg2.connect(DATABASE_URL)
         return conn
 
-    # Si no existe usamos SQLite (local)
-    print("🟡 Usando SQLite local")
-    conn = sqlite3.connect(DB_PATH, timeout=15, check_same_thread=False)
-    conn.row_factory = sqlite3.Row
-    return conn
+    # Si estamos en local usamos SQLite
+    else:
+        print("🟡 Conectado a SQLite")
+        conn = sqlite3.connect("backend/vecinal.db", timeout=15, check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        return conn
 
 
 
