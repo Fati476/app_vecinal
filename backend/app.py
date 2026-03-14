@@ -289,6 +289,7 @@ def crear_incidencia():
         INSERT INTO incidencias
         (titulo, descripcion, tipo, estado, fecha, lat, lng, id_usuario, activo)
         VALUES (%s, %s, %s, 'activa', %s, %s, %s, %s, 1)
+        RETURNING id_incidencia
     """, (titulo, descripcion, tipo, fecha_mexico, lat, lng, id_usuario))
 
     # 🔹 Obtener ID de la incidencia creada
