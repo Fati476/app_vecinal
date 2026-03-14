@@ -84,7 +84,7 @@ def get_db():
     else:
         print("🟡 Conectado a SQLite")
         conn = sqlite3.connect("backend/vecinal.db", timeout=15, check_same_thread=False)
-        conn.row_factory = sqlite3.Row
+        #conn.row_factory = sqlite3.Row
         return conn
 
 
@@ -337,7 +337,7 @@ def crear_incidencia():
 @app.route("/incidencias/activas", methods=["GET"])
 def incidencias_activas():
     conn = get_db()
-    conn.row_factory = sqlite3.Row
+    #conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -373,7 +373,7 @@ def incidencias_activas():
 def ver_incidencias():
     conn = get_db()
 
-    conn.row_factory = sqlite3.Row
+    #conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -407,7 +407,7 @@ def listar_incidencias_menu():
     id_usuario = request.args.get('id_usuario', type=int)
 
     conn = get_db()
-    conn.row_factory = sqlite3.Row
+    #conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -463,7 +463,7 @@ def marcar_atendida(id):
     id_usuario = data.get('id_usuario')
 
     conn = get_db()
-    conn.row_factory = sqlite3.Row
+    #conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     # 🔎 Usuario
@@ -1712,7 +1712,7 @@ def cargar_mensajes(data):
     grupo_id = data["grupo_id"]
 
     conn = get_db()
-    conn.row_factory = sqlite3.Row
+    #conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     cursor.execute("""
