@@ -1353,9 +1353,10 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha, usuario
                 }
             ]
         }
+        print("API KEY EXISTE:", app.config['MAIL_PASSWORD'][:10], flush=True)
 
         headers = {
-            "Authorization": f"Bearer {os.environ.get('MAIL_PASSWORD')}",
+            "Authorization": f"Bearer {app.config['MAIL_PASSWORD']}",
             "Content-Type": "application/json"
         }
 
