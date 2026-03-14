@@ -315,8 +315,7 @@ def crear_incidencia():
     print("📧 Llamando función de correo...", flush=True)
 
     try:
-        resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha_mexico, nombre_usuario)
-
+        resultado = enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha_mexico,nombre_usuario)
         print("📧 Resultado envio:", resultado, flush=True)
     except Exception as e:
         print("💥 ERROR AL ENVIAR CORREO:", str(e), flush=True)
