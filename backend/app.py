@@ -352,7 +352,7 @@ def incidencias_activas():
         FROM incidencias i
         JOIN usuarios u ON i.id_usuario = u.id_usuario
         WHERE i.activo = 1
-        ORDER BY datetime(i.fecha) DESC
+        ORDER BY i.fecha DESC
         LIMIT 100
     """)
 
@@ -389,7 +389,7 @@ def ver_incidencias():
             u.nombre AS usuario
         FROM incidencias i
         JOIN usuarios u ON i.id_usuario = u.id_usuario
-        ORDER BY datetime(i.fecha) DESC
+        ORDER BY i.fecha DESC
         LIMIT 100
     """)
 
@@ -439,7 +439,7 @@ def listar_incidencias_menu():
         FROM incidencias i
         JOIN usuarios u ON i.id_usuario = u.id_usuario
         WHERE i.activo = 1
-        ORDER BY datetime(i.fecha) DESC
+        ORDER BY i.fecha DESC
         LIMIT 100
     """, (id_usuario, id_usuario))
 
