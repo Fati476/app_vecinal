@@ -10,7 +10,7 @@ def guardar_mensaje(emisor, receptor, mensaje):
     cur = conn.cursor()
     cur.execute("""
         INSERT INTO mensajes (mensaje, fecha, id_emisor, id_receptor)
-        VALUES (?, datetime('now'), ?, ?)
+        VALUES (%s, datetime('now'), %s, %s)
     """, (mensaje, emisor, receptor))
     conn.commit()
     conn.close()
@@ -51,8 +51,8 @@ def obtener_historial(usuario1: str, usuario2: str = None):
         cur.execute("""
             SELECT mensaje, id_emisor, id_receptor, fecha
             FROM mensajes
-            WHERE (id_emisor=? AND id_receptor=?)
-               OR (id_emisor=? AND id_receptor=?)
+            WHERE (id_emisor=%s AND id_receptor=%s)
+               OR (id_emisor=%s AND id_receptor=%s)
             ORDER BY fecha
         """, (usuario1, usuario2, usuario2, usuario1))
 

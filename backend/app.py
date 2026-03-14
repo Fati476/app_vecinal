@@ -136,7 +136,7 @@ def registro():
         return jsonify({"error": "Las contraseñas no coinciden"}), 400
 
     # 3️ Validar contraseña segura
-    patron = r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$'
+    patron = r'^(%s=.*[A-Z])(%s=.*\d)(%s=.*[^A-Za-z0-9]).{8,}$'
 
     if not re.match(patron, password):
         return jsonify({
@@ -147,7 +147,7 @@ def registro():
     cursor = conexion.cursor()
 
     # 4️ Verificar correo duplicado
-    cursor.execute("SELECT id_usuario FROM usuarios WHERE correo = ?", (correo,))
+    cursor.execute("SELECT id_usuario FROM usuarios WHERE correo = %s", (correo,))
     if cursor.fetchone():
         conexion.close()
         return jsonify({"error": "El correo ya está registrado"}), 400
@@ -159,7 +159,7 @@ def registro():
     cursor.execute("""
         INSERT INTO usuarios 
         (nombre, correo, contraseña, telefono, direccion, rol, estado, fecha_registro)
-        VALUES (?, ?, ?, ?, ?, 'vecino', 'pendiente', DATE('now'))
+        VALUES (%s, %s, %s, %s, %s, 'vecino', 'pendiente', DATE('now'))
     """, (nombre, correo, password_hash, telefono, direccion))
 
     conexion.commit()
@@ -188,7 +188,7 @@ def login():
     cursor.execute("""
         SELECT id_usuario, nombre, rol, contraseña, estado
         FROM usuarios
-        WHERE correo = ?
+        WHERE correo = %s
     """, (correo,))
 
     usuario = cursor.fetchone()
@@ -272,7 +272,7 @@ def crear_incidencia():
 
     # 🔹 Obtener nombre y rol del usuario
     cursor.execute(
-        "SELECT nombre, rol FROM usuarios WHERE id_usuario = ?",
+        "SELECT nombre, rol FROM usuarios WHERE id_usuario = %s",
         (id_usuario,)
     )
     usuario = cursor.fetchone()
@@ -288,7 +288,7 @@ def crear_incidencia():
     cursor.execute("""
         INSERT INTO incidencias
         (titulo, descripcion, tipo, estado, fecha, lat, lng, id_usuario, activo)
-        VALUES (?, ?, ?, 'activa', ?, ?, ?, ?, 1)
+        VALUES (%s, %s, %s, 'activa', %s, %s, %s, %s, 1)
     """, (titulo, descripcion, tipo, fecha_mexico, lat, lng, id_usuario))
 
     # 🔹 Obtener ID de la incidencia creada
@@ -425,7 +425,7 @@ def listar_incidencias_menu():
             i.lng,
 
             CASE 
-                WHEN i.id_usuario = ? THEN 1 ELSE 0 
+                WHEN i.id_usuario = %s THEN 1 ELSE 0 
             END AS es_mia,
 
             (
@@ -433,7 +433,7 @@ def listar_incidencias_menu():
                 WHEN rol = 'admin' THEN 1 ELSE 0 
               END
               FROM usuarios
-              WHERE id_usuario = ?
+              WHERE id_usuario = %s
             ) AS es_admin
 
         FROM incidencias i
@@ -468,7 +468,7 @@ def marcar_atendida(id):
 
     # 🔎 Usuario
     cursor.execute(
-        "SELECT id_usuario, rol FROM usuarios WHERE id_usuario = ?",
+        "SELECT id_usuario, rol FROM usuarios WHERE id_usuario = %s",
         (id_usuario,)
     )
     usuario = cursor.fetchone()
@@ -479,7 +479,7 @@ def marcar_atendida(id):
 
     # 🔎 Incidencia
     cursor.execute(
-        "SELECT id_usuario FROM incidencias WHERE id_incidencia = ?",
+        "SELECT id_usuario FROM incidencias WHERE id_incidencia = %s",
         (id,)
     )
     incidencia = cursor.fetchone()
@@ -495,7 +495,7 @@ def marcar_atendida(id):
 
     # ✅ Marcar atendida
     cursor.execute(
-        "UPDATE incidencias SET estado = 'atendida' WHERE id_incidencia = ?",
+        "UPDATE incidencias SET estado = 'atendida' WHERE id_incidencia = %s",
         (id,)
     )
     
@@ -538,7 +538,7 @@ def incidencias_usuario(id_usuario):
     cursor.execute("""
         SELECT id_incidencia, titulo, descripcion, tipo, estado, fecha
         FROM incidencias
-        WHERE id_usuario = ?
+        WHERE id_usuario = %s
         ORDER BY fecha DESC
     """, (id_usuario,))
 
@@ -615,7 +615,7 @@ def guardar_geolocalizacion():
 
     cursor.execute("""
         INSERT INTO geolocalizacion (latitud, longitud, id_incidencia)
-        VALUES (?, ?, ?)
+        VALUES (%s, %s, %s)
     """, (latitud, longitud, id_incidencia))
 
     conexion.commit()
@@ -670,7 +670,7 @@ def crear_notificacion():
 
     cursor.execute("""
         INSERT INTO notificaciones (mensaje, fecha, leida, id_usuario)
-        VALUES (?, DATE('now'), 0, ?)
+        VALUES (%s, DATE('now'), 0, %s)
     """, (mensaje, id_usuario))
 
     conexion.commit()
@@ -687,7 +687,7 @@ def ver_notificaciones(id_usuario):
     cursor.execute("""
         SELECT id_notificacion, mensaje, fecha, leida
         FROM notificaciones
-        WHERE id_usuario = ?
+        WHERE id_usuario = %s
         ORDER BY fecha DESC
     """, (id_usuario,))
 
@@ -716,7 +716,7 @@ def marcar_leida(id_notificacion):
     cursor.execute("""
         UPDATE notificaciones
         SET leida = 1
-        WHERE id_notificacion = ?
+        WHERE id_notificacion = %s
     """, (id_notificacion,))
 
     conexion.commit()
@@ -736,8 +736,8 @@ def ver_conversacion(usuario1, usuario2):
     cursor.execute("""
         SELECT mensaje, fecha, id_emisor
         FROM mensajes
-        WHERE (id_emisor = ? AND id_receptor = ?)
-           OR (id_emisor = ? AND id_receptor = ?)
+        WHERE (id_emisor = %s AND id_receptor = %s)
+           OR (id_emisor = %s AND id_receptor = %s)
         ORDER BY fecha
     """, (usuario1, usuario2, usuario2, usuario1))
 
@@ -788,7 +788,7 @@ def aprobar_usuario(id_usuario):
     cursor.execute("""
         SELECT correo, nombre
         FROM usuarios
-        WHERE id_usuario = ?
+        WHERE id_usuario = %s
     """, (id_usuario,))
 
     usuario = cursor.fetchone()
@@ -802,12 +802,12 @@ def aprobar_usuario(id_usuario):
     cursor.execute("""
         UPDATE usuarios
         SET estado = 'aprobado'
-        WHERE id_usuario = ?
+        WHERE id_usuario = %s
     """, (id_usuario,))
     # Agregar automáticamente al grupo general (id = 1)
     cursor.execute("""
         INSERT OR IGNORE INTO miembros_grupo (grupo_id, usuario_id)
-        VALUES (1, ?)
+        VALUES (1, %s)
     """, (id_usuario,))
 
     conexion.commit()
@@ -836,7 +836,7 @@ def rechazar_usuario(id_usuario):
     cursor.execute("""
         SELECT correo, nombre
         FROM usuarios
-        WHERE id_usuario = ?
+        WHERE id_usuario = %s
     """, (id_usuario,))
 
     usuario = cursor.fetchone()
@@ -844,7 +844,7 @@ def rechazar_usuario(id_usuario):
     cursor.execute("""
         UPDATE usuarios
         SET estado = 'rechazado'
-        WHERE id_usuario = ?
+        WHERE id_usuario = %s
     """, (id_usuario,))
 
     conexion.commit()
@@ -905,7 +905,7 @@ def eliminar_usuario(id_usuario):
 
     cursor.execute("""
         DELETE FROM usuarios
-        WHERE id_usuario = ?
+        WHERE id_usuario = %s
           AND rol = 'vecino'
     """, (id_usuario,))
 
@@ -948,7 +948,7 @@ def recuperar():
     cursor.execute("""
         SELECT id_usuario, estado
         FROM usuarios
-        WHERE correo = ?
+        WHERE correo = %s
     """, (correo.strip(),))
 
     user = cursor.fetchone()
@@ -966,8 +966,8 @@ def recuperar():
 
     cursor.execute("""
         UPDATE usuarios
-        SET reset_code = ?, reset_expira = ?
-        WHERE correo = ?
+        SET reset_code = %s, reset_expira = %s
+        WHERE correo = %s
     """, (codigo, expira, correo.strip()))
 
     conn.commit()
@@ -1010,7 +1010,7 @@ def resetear():
     cursor.execute("""
         SELECT reset_code, reset_expira
         FROM usuarios
-        WHERE correo = ?
+        WHERE correo = %s
     """, (correo.strip(),))
 
     user = cursor.fetchone()
@@ -1035,7 +1035,7 @@ def resetear():
         return jsonify({"error": "Código incorrecto"}), 400
 
     # 🔐 VALIDAR CONTRASEÑA
-    regex = r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$'
+    regex = r'^(%s=.*[A-Z])(%s=.*\d)(%s=.*[^A-Za-z0-9]).{8,}$'
     if not re.match(regex, nueva):
         return jsonify({"error": "Contraseña insegura"}), 400
 
@@ -1043,8 +1043,8 @@ def resetear():
 
     cursor.execute("""
         UPDATE usuarios
-        SET contraseña = ?, reset_code = NULL, reset_expira = NULL
-        WHERE correo = ?
+        SET contraseña = %s, reset_code = NULL, reset_expira = NULL
+        WHERE correo = %s
     """, (hash_pass, correo.strip()))
 
     conn.commit()
@@ -1082,7 +1082,7 @@ def crear_reporte():
 
     cursor.execute("""
         INSERT INTO reportes (titulo, descripcion, foto, fecha, id_usuario, lat, lng, activo)
-        VALUES (?, ?, ?, DATE('now'), ?, ?, ?, 1)
+        VALUES (%s, %s, %s, DATE('now'), %s, %s, %s, 1)
     """, (titulo, descripcion, ruta_foto, id_usuario, lat, lng))
 
     conn.commit()
@@ -1151,7 +1151,7 @@ def eliminar_reporte(id_reporte):
     cursor.execute("""
         SELECT id_usuario
         FROM reportes
-        WHERE id_reporte = ?
+        WHERE id_reporte = %s
     """, (id_reporte,))
 
     reporte = cursor.fetchone()
@@ -1170,7 +1170,7 @@ def eliminar_reporte(id_reporte):
     cursor.execute("""
         UPDATE reportes
         SET activo = 0
-        WHERE id_reporte = ?
+        WHERE id_reporte = %s
     """, (id_reporte,))
 
     conn.commit()
@@ -1205,7 +1205,7 @@ def editar_reporte(id_reporte):
     cursor.execute("""
         SELECT id_usuario, foto
         FROM reportes
-        WHERE id_reporte = ?
+        WHERE id_reporte = %s
     """, (id_reporte,))
 
     reporte = cursor.fetchone()
@@ -1239,8 +1239,8 @@ def editar_reporte(id_reporte):
 
     cursor.execute("""
         UPDATE reportes
-        SET titulo = ?, descripcion = ?, foto = ?
-        WHERE id_reporte = ?
+        SET titulo = %s, descripcion = %s, foto = %
+        WHERE id_reporte = %s
     """, (titulo, descripcion, nombre_foto, id_reporte))
 
     conn.commit()
@@ -1330,7 +1330,7 @@ Tipo: {tipo}
 Fecha: {fecha}
 
 Ubicación:
-https://www.google.com/maps?q={lat},{lng}
+https://www.google.com/maps%sq={lat},{lng}
 """
                 }
             ]
@@ -1368,7 +1368,7 @@ def obtener_perfil(id_usuario):
     cursor.execute("""
         SELECT nombre, correo, rol, telefono, direccion, foto
         FROM usuarios
-        WHERE id_usuario = ?
+        WHERE id_usuario = %s
     """, (id_usuario,))
 
     usuario = cursor.fetchone()
@@ -1407,7 +1407,7 @@ def subir_foto_perfil():
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE usuarios SET foto = ? WHERE id_usuario = ?",
+        "UPDATE usuarios SET foto = %s WHERE id_usuario = %s",
         (nombre_archivo, id_usuario)
     )
     conn.commit()
@@ -1439,8 +1439,8 @@ def actualizar_perfil(id_usuario):
 
         cursor.execute("""
             UPDATE usuarios
-            SET nombre = ?, telefono = ?, direccion = ?
-            WHERE id_usuario = ?
+            SET nombre = %s, telefono = %s, direccion = %s
+            WHERE id_usuario = %s
         """, (nombre, telefono, direccion, id_usuario))
 
         conn.commit()
@@ -1466,7 +1466,7 @@ def eliminar_foto(id_usuario):
     cursor = conn.cursor()
 
     # 🔎 Obtener nombre de la foto actual
-    cursor.execute("SELECT foto FROM usuarios WHERE id_usuario = ?", (id_usuario,))
+    cursor.execute("SELECT foto FROM usuarios WHERE id_usuario = %s", (id_usuario,))
     usuario = cursor.fetchone()
 
     if usuario and usuario[0]:
@@ -1479,7 +1479,7 @@ def eliminar_foto(id_usuario):
 
     # 🧹 poner foto en NULL en la BD
     cursor.execute(
-        "UPDATE usuarios SET foto = NULL WHERE id_usuario = ?",
+        "UPDATE usuarios SET foto = NULL WHERE id_usuario = %s",
         (id_usuario,)
     )
 
@@ -1638,12 +1638,12 @@ def manejar_mensaje_grupo(data):
 
     cursor.execute("""
         INSERT INTO mensajes_grupo (grupo_id, usuario_id, mensaje)
-        VALUES (?, ?, ?)
+        VALUES (%s, %s, %s)
     """, (grupo_id, usuario_id, mensaje))
     conn.commit()
 
     cursor.execute("""
-        SELECT nombre FROM usuarios WHERE id_usuario = ?
+        SELECT nombre FROM usuarios WHERE id_usuario = %s
     """, (usuario_id,))
     usuario = cursor.fetchone()
     conn.close()
@@ -1695,7 +1695,7 @@ def mensaje_privado(data):
 
     cursor.execute("""
         INSERT INTO mensajes_privados (emisor_id, receptor_id, mensaje)
-        VALUES (?, ?, ?)
+        VALUES (%s, %s, %s)
     """, (emisor, receptor, mensaje))
 
     conn.commit()
@@ -1724,7 +1724,7 @@ def cargar_mensajes(data):
         FROM mensajes_grupo
         JOIN usuarios 
             ON mensajes_grupo.usuario_id = usuarios.id_usuario
-        WHERE grupo_id = ?
+        WHERE grupo_id = %s
         ORDER BY fecha ASC
     """, (grupo_id,))
 
@@ -1744,7 +1744,7 @@ def usuario_escribiendo(data):
 
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT nombre FROM usuarios WHERE id_usuario = ?", (usuario_id,))
+    cursor.execute("SELECT nombre FROM usuarios WHERE id_usuario = %s", (usuario_id,))
     usuario = cursor.fetchone()
     conn.close()
 
