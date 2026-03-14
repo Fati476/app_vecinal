@@ -1262,7 +1262,8 @@ def obtener_correos_vecinos():
         AND estado = 'aprobado'
     """)
 
-    correos = [fila[0] for fila in cursor.fetchall()]
+    correos = [fila["correo"] for fila in cursor.fetchall()]
+
     conn.close()
     return correos
 
@@ -1278,7 +1279,8 @@ def obtener_correos_admin():
         AND estado = 'aprobado'
     """)
 
-    correos = [fila[0] for fila in cursor.fetchall()]
+    correos = [fila["correo"] for fila in cursor.fetchall()]
+
     conn.close()
     return correos
 
