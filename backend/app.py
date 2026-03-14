@@ -1316,6 +1316,60 @@ def enviar_correo_incidencia(titulo, descripcion, lat, lng, tipo, fecha, usuario
             return False
 
 
+        data = {
+            "personalizations": [
+                {
+                    "to": [{"email": c} for c in correos],
+                    "subject": f"🚨 Nueva incidencia vecinal ({tipo})"
+                }
+            ],
+            "from": {
+                "email": os.environ.get("MAIL_DEFAULT_SENDER")
+            },
+            "content": [
+                {
+                    "type": "text/plain",
+                    "value": f"""
+🚨 INCIDENCIA VECINAL
+
+👤 Reportado por: {usuario}
+
+📌 Título: {titulo}
+
+📝 Descripción:
+{descripcion}
+
+⚠ Tipo:
+{tipo}
+
+📅 Fecha:
+{fecha}
+
+📍 Ubicación:
+https://www.google.com/maps?q={lat},{lng}
+"""
+                }
+            ]
+        }
+
+        headers = {
+            "Authorization": f"Bearer {os.environ.get('MAIL_PASSWORD')}",
+            "Content-Type": "application/json"
+        }
+
+        print("📤 Enviando correo con SendGrid...", flush=True)
+
+        response = requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers=headers,
+            json=data
+        )
+
+        print("📬 STATUS:", response.status_code, flush=True)
+        print("📬 RESPUESTA:", response.text, flush=True)
+
+        return response.status_code in (200, 202)
+
     except Exception as e:
         print("💥 ERROR ENVIO:", str(e), flush=True)
         return False
