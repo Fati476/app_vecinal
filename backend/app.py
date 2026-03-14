@@ -17,7 +17,7 @@ from werkzeug.utils import secure_filename
 from flask_socketio import SocketIO, emit, join_room
 from dotenv import load_dotenv
 from zoneinfo import ZoneInfo
-
+from psycopg2.extras import RealDictCursor
 
 load_dotenv()
 
@@ -268,7 +268,7 @@ def crear_incidencia():
     fecha_mexico = datetime.now(ZoneInfo("America/Mexico_City")).strftime("%Y-%m-%d %H:%M:%S")
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # 🔹 Obtener nombre y rol del usuario
     cursor.execute(
@@ -292,8 +292,7 @@ def crear_incidencia():
     """, (titulo, descripcion, tipo, fecha_mexico, lat, lng, id_usuario))
 
     # 🔹 Obtener ID de la incidencia creada
-    id_incidencia = cursor.lastrowid
-
+    id_incidencia = cursor.fetchone()["id_incidencia"]
     conn.commit()
 
     # 🔴 Emitir incidencia en tiempo real
@@ -338,8 +337,7 @@ def crear_incidencia():
 def incidencias_activas():
     conn = get_db()
     #conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute("""
         SELECT
             i.id_incidencia AS id,
@@ -374,7 +372,7 @@ def ver_incidencias():
     conn = get_db()
 
     #conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -408,7 +406,7 @@ def listar_incidencias_menu():
 
     conn = get_db()
     #conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -464,7 +462,7 @@ def marcar_atendida(id):
 
     conn = get_db()
     #conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # 🔎 Usuario
     cursor.execute(
@@ -533,7 +531,7 @@ def marcar_atendida(id):
 @app.route('/incidencias/usuario/<int:id_usuario>', methods=['GET'])
 def incidencias_usuario(id_usuario):
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT id_incidencia, titulo, descripcion, tipo, estado, fecha
@@ -917,7 +915,7 @@ def eliminar_usuario(id_usuario):
 @app.route('/admin/dashboard')
 def dashboard():
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("SELECT COUNT(*) FROM usuarios WHERE estado='pendiente'")
     pendientes = cursor.fetchone()[0]
@@ -943,7 +941,7 @@ def recuperar():
     correo = request.json.get("correo")
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT id_usuario, estado
@@ -1005,7 +1003,7 @@ def resetear():
         return jsonify({"error": "Completa todos los campos"}), 400
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)()
 
     cursor.execute("""
         SELECT reset_code, reset_expira
@@ -1078,7 +1076,7 @@ def crear_reporte():
         ruta_foto = filename
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         INSERT INTO reportes (titulo, descripcion, foto, fecha, id_usuario, lat, lng, activo)
@@ -1104,7 +1102,7 @@ def uploaded_file(filename):
 @app.route('/reportes', methods=['GET'])
 def ver_reportes():
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT r.id_reporte, r.titulo, r.descripcion, r.foto, r.fecha,
@@ -1146,7 +1144,7 @@ def eliminar_reporte(id_reporte):
     id_usuario = int(id_usuario)
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT id_usuario
@@ -1200,7 +1198,7 @@ def editar_reporte(id_reporte):
         return jsonify({"error": "Rol no permitido"}), 403
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT id_usuario, foto
@@ -1254,7 +1252,7 @@ def editar_reporte(id_reporte):
 
 def obtener_correos_vecinos():
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT correo
@@ -1270,7 +1268,7 @@ def obtener_correos_vecinos():
 
 def obtener_correos_admin():
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT correo
@@ -1363,7 +1361,7 @@ https://www.google.com/maps%sq={lat},{lng}
 @app.route("/api/perfil/<int:id_usuario>", methods=["GET"])
 def obtener_perfil(id_usuario):
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT nombre, correo, rol, telefono, direccion, foto
@@ -1405,7 +1403,7 @@ def subir_foto_perfil():
     foto.save(ruta)
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute(
         "UPDATE usuarios SET foto = %s WHERE id_usuario = %s",
         (nombre_archivo, id_usuario)
@@ -1435,7 +1433,7 @@ def actualizar_perfil(id_usuario):
 
     try:
         conn = get_db()
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         cursor.execute("""
             UPDATE usuarios
@@ -1463,7 +1461,7 @@ def mostrar_foto(filename):
 @app.route("/api/perfil/foto/<int:id_usuario>", methods=["DELETE"])
 def eliminar_foto(id_usuario):
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # 🔎 Obtener nombre de la foto actual
     cursor.execute("SELECT foto FROM usuarios WHERE id_usuario = %s", (id_usuario,))
@@ -1502,7 +1500,7 @@ import requests
 
 def obtener_reportes_activos():
     conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("SELECT descripcion FROM reportes WHERE activo = 1")
     resultados = cursor.fetchall()
@@ -1634,7 +1632,7 @@ def manejar_mensaje_grupo(data):
     mensaje = data["mensaje"]
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         INSERT INTO mensajes_grupo (grupo_id, usuario_id, mensaje)
@@ -1691,7 +1689,7 @@ def mensaje_privado(data):
     mensaje = data["mensaje"]
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         INSERT INTO mensajes_privados (emisor_id, receptor_id, mensaje)
@@ -1713,7 +1711,7 @@ def cargar_mensajes(data):
 
     conn = get_db()
     #conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT 
@@ -1743,7 +1741,7 @@ def usuario_escribiendo(data):
     usuario_id = data["usuario_id"]
 
     conn = get_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute("SELECT nombre FROM usuarios WHERE id_usuario = %s", (usuario_id,))
     usuario = cursor.fetchone()
     conn.close()
