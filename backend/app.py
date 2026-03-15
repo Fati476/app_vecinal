@@ -669,7 +669,7 @@ def crear_notificacion():
 
     cursor.execute("""
         INSERT INTO notificaciones (mensaje, fecha, leida, id_usuario)
-        VALUES (%s, DATE('now'), 0, %s)
+        VALUES (%s, NOW(), 0, %s)
     """, (mensaje, id_usuario))
 
     conexion.commit()
@@ -1081,7 +1081,7 @@ def crear_reporte():
 
     cursor.execute("""
         INSERT INTO reportes (titulo, descripcion, foto, fecha, id_usuario, lat, lng, activo)
-        VALUES (%s, %s, %s, DATE('now'), %s, %s, %s, 1)
+        VALUES (%s, %s, %s, NOW(), %s, %s, %s, 1)
     """, (titulo, descripcion, ruta_foto, id_usuario, lat, lng))
 
     conn.commit()
@@ -1119,15 +1119,15 @@ def ver_reportes():
 
     return jsonify([
         {
-            "id": r[0],
-            "titulo": r[1],
-            "descripcion": r[2],
-            "foto": r[3],
-            "fecha": r[4],
-            "autor": r[5],
-            "id_usuario": r[6],
-            "lat": r[7],
-            "lng": r[8]
+            "id": r["id_reporte"],
+            "titulo": r["titulo"],
+            "descripcion": r["descripcion"],
+            "foto": r["foto"],
+            "fecha": r["fecha"],
+            "autor": r["nombre"],
+            "id_usuario": r["id_usuario"],
+            "lat": r["lat"],
+            "lng": r["lng"]
         } for r in datos
     ])
 
@@ -1159,7 +1159,7 @@ def eliminar_reporte(id_reporte):
         conn.close()
         return jsonify({"error": "Reporte no encontrado"}), 404
 
-    dueño = reporte[0]
+    dueño = reporte["id_usuario"]
 
     if rol == "vecino" and id_usuario != dueño:
         conn.close()
@@ -1238,7 +1238,7 @@ def editar_reporte(id_reporte):
 
     cursor.execute("""
         UPDATE reportes
-        SET titulo = %s, descripcion = %s, foto = %
+        SET titulo = %s, descripcion = %s, foto = %s
         WHERE id_reporte = %s
     """, (titulo, descripcion, nombre_foto, id_reporte))
 
