@@ -51,7 +51,7 @@
 </main>
 
 
-<!-- BOTÓN FLOTANTE IA -->
+<!-- BOTÓN IA -->
 <button id="btnIA" class="boton-ia">🤖</button>
 
 <!-- PANEL CHAT IA -->
@@ -72,22 +72,19 @@
 <!-- SOCKET.IO -->
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
-<!-- CREAR CONEXIÓN SOCKET -->
 <script>
-    const socket = io();
+window.socket = io("https://app-vecinal.onrender.com");
+console.log("🟢 Socket creado");
 </script>
 
-<!-- CHAT IA -->
-<script src="js/chat_ia.js"></script>
-
-<!-- MENU -->
+<!-- SCRIPTS -->
+<script src="./js/chat_ia.js"></script>
 <script src="./js/menu.js"></script>
 
 <script>
-  const VISTA = "admin";
+const VISTA = "admin";
 </script>
 
-<!-- INCIDENCIAS -->
 <script src="./js/incidencias.js"></script>
 
 </body>
