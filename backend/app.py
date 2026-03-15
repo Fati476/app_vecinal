@@ -58,12 +58,13 @@ print("MAIL_USERNAME:", app.config['MAIL_USERNAME'])
 print("MAIL_PASSWORD existe:", app.config['MAIL_PASSWORD'] is not None)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+
 DB_PATH = os.path.join(BASE_DIR, "vecinal.db")
 FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
 #print("DB PATH:", DB_PATH)
 #print("EXISTE:", os.path.exists(DB_PATH))
-
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "..", "uploads")
+UPLOAD_FOLDER = os.path.abspath(UPLOAD_FOLDER)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
