@@ -88,6 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
         cont.innerHTML = "";
 
         data.forEach(r => {
+          const fecha = new Date(r.fecha).toLocaleString("es-MX", {
+            dateStyle: "medium",
+            timeStyle: "short"
+          });
 
           const div = document.createElement("div");
           div.className = "reporte";
@@ -95,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
           div.innerHTML = `
             <strong>${r.titulo}</strong>
             <p>${r.descripcion}</p>
-            <small>👤 ${r.autor} | 📅 ${r.fecha}</small>
+            <small>👤 ${r.autor} | 📅 ${fecha}</small>
             ${r.foto ? `<img src="${API}/uploads/${r.foto}" class="img-reporte">` : ""}
             <div class="acciones">
               <button class="btn-mapa">📍 Ir a la ubicación</button>
