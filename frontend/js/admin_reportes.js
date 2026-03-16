@@ -82,6 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(r => r.json())
       .then(data => {
 
+        console.log("DATOS DE REPORTES:", data);
+
         const cont = document.getElementById("listaReportes");
         cont.innerHTML = "";
 
