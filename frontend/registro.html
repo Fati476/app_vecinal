@@ -8,17 +8,36 @@
 <body>
 
 <div class="auth-container">
+
     <div class="auth-left">
+
         <h1>Crear cuenta</h1>
         <p>Registro vecinal</p>
 
         <input type="text" id="nombre" placeholder="Nombre completo">
+
         <input type="email" id="correo" placeholder="Correo electrónico">
+
         <input type="text" id="telefono" placeholder="Teléfono">
+
         <input type="text" id="direccion" placeholder="Dirección">
 
-        <input type="password" id="password" placeholder="Contraseña">
-        <input type="password" id="confirm" placeholder="Confirmar contraseña">
+
+        <!-- CONTRASEÑA -->
+        <div class="password-box">
+            <input type="password" id="password" placeholder="Contraseña">
+            <span class="toggle" onclick="togglePassword('password')">👁</span>
+        </div>
+
+        <!-- INDICADOR SEGURIDAD -->
+        <div id="seguridad" class="seguridad"></div>
+
+
+        <!-- CONFIRMAR CONTRASEÑA -->
+        <div class="password-box">
+            <input type="password" id="confirm" placeholder="Confirmar contraseña">
+            <span class="toggle" onclick="togglePassword('confirm')">👁</span>
+        </div>
 
 
         <button type="button" onclick="registrar()">Registrarme</button>
@@ -30,13 +49,17 @@
         </p>
 
         <p id="mensaje" class="mensaje"></p>
+
     </div>
+
 
     <div class="auth-right">
         <img src="img/ilustracion.png" alt="Registro">
     </div>
+
 </div>
 
 <script src="js/register.js"></script>
+
 </body>
 </html>

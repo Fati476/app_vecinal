@@ -166,6 +166,28 @@ def registro():
     conexion.commit()
     conexion.close()
 
+    try:
+
+        msg = Message(
+            "Registro recibido - Plataforma Vecinal",
+            recipients=[correo]
+        )
+
+        msg.body = f"""
+Hola {nombre},
+
+Tu registro fue recibido correctamente.
+
+Un administrador revisará tu solicitud antes de activar tu cuenta.
+
+Gracias por usar la Plataforma Vecinal.
+"""
+
+        mail.send(msg)
+
+    except Exception as e:
+        print("Error enviando correo:", e)
+
     return jsonify({
         "mensaje": "Registro enviado. Tu cuenta será revisada por el administrador."
     })

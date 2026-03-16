@@ -1,4 +1,5 @@
 function registrar() {
+
     const nombre = document.getElementById("nombre").value.trim();
     const correo = document.getElementById("correo").value.trim();
     const telefono = document.getElementById("telefono").value.trim();
@@ -49,16 +50,85 @@ function registrar() {
     })
     .then(res => res.json())
     .then(data => {
+
         if (data.error) {
+
             mensaje.innerText = "⚠️ " + data.error;
             mensaje.style.color = "red";
+
         } else {
-            alert("✅ Registro enviado. Un administrador revisará tu solicitud.");
-            window.location.href = "login.html";
+
+            mensaje.innerText = "📧 Se envió un correo de confirmación";
+            mensaje.style.color = "green";
+
+            alert("✅ Registro enviado. Revisa tu correo para confirmar tu registro.");
+
+            setTimeout(()=>{
+                window.location.href = "login.html";
+            },2000)
+
         }
+
     })
     .catch(() => {
+
         mensaje.innerText = "❌ Error al conectar con el servidor";
         mensaje.style.color = "red";
+
     });
 }
+
+
+/* =================================
+👁 MOSTRAR / OCULTAR CONTRASEÑA
+================================= */
+
+function togglePassword(id){
+
+    const input = document.getElementById(id);
+
+    if(input.type === "password"){
+        input.type = "text";
+    }else{
+        input.type = "password";
+    }
+
+}
+
+
+/* =================================
+🔒 INDICADOR SEGURIDAD CONTRASEÑA
+================================= */
+
+document.getElementById("password").addEventListener("input", function(){
+
+    const pass = this.value;
+    const seguridad = document.getElementById("seguridad");
+
+    let nivel = 0;
+
+    if(pass.length >= 8) nivel++;
+    if(/[A-Z]/.test(pass)) nivel++;
+    if(/[0-9]/.test(pass)) nivel++;
+    if(/[^A-Za-z0-9]/.test(pass)) nivel++;
+
+    if(nivel <= 1){
+
+        seguridad.innerText = "🔴 Contraseña débil";
+        seguridad.style.color = "red";
+
+    }
+    else if(nivel === 2 || nivel === 3){
+
+        seguridad.innerText = "🟡 Contraseña media";
+        seguridad.style.color = "orange";
+
+    }
+    else{
+
+        seguridad.innerText = "🟢 Contraseña segura";
+        seguridad.style.color = "green";
+
+    }
+
+});
