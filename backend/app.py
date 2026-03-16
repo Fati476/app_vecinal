@@ -168,34 +168,23 @@ def registro():
 
     try:
 
-        msg = Message(
+        enviar_correo(
+            correo,
             "Registro recibido - ConectaVecinos",
-            recipients=[correo]
+            f"""
+    Hola {nombre},
+
+    Tu registro fue recibido correctamente.
+
+    Un administrador revisará tu solicitud antes de activar tu cuenta.
+
+    ConectaVecinos
+    """
         )
-
-        msg.body = f"""
-Hola {nombre},
-
-Tu registro fue recibido correctamente.
-
-Un administrador revisará tu solicitud antes de activar tu cuenta.
-
-Gracias por usar ConectaVecinos.
-"""
-
-        mail.send(msg)
-
-        return jsonify({
-            "mensaje": "Registro enviado correctamente. Revisa tu correo."
-        })
 
     except Exception as e:
 
         print("ERROR CORREO:", e)
-
-        return jsonify({
-            "mensaje": "Registro guardado pero el correo no se pudo enviar."
-        })
 
 # -----------------------------
 # API: Login
@@ -888,9 +877,11 @@ def rechazar_usuario(id_usuario):
 
 
 def enviar_correo(destinatario, asunto, mensaje):
+
     msg = Message(
         subject=asunto,
-        recipients=[destinatario]
+        recipients=[destinatario],
+        sender=app.config["MAIL_DEFAULT_SENDER"]
     )
 
     msg.body = mensaje
