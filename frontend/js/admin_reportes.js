@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // 🗑 eliminar
           const btnEliminar = document.createElement("button");
           btnEliminar.textContent = "🗑 Eliminar";
-          btnEliminar.onclick = () => eliminarReporte(r.id);
+          btnEliminar.onclick = () => eliminarReporte(r.id_reporte);
           acciones.appendChild(btnEliminar);
 
           cont.appendChild(div);
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function editarReporte(r) {
     modalEditar.style.display = "flex";
 
-    edit_id.value = r.id;
+    edit_id.value = r.id_reporte;
     edit_titulo.value = r.titulo;
     edit_descripcion.value = r.descripcion;
     edit_lat.value = r.lat;
@@ -182,6 +182,7 @@ document.getElementById("formEditar").addEventListener("submit", e => {
   if (foto) {
     fd.append("foto", foto);
   }
+  console.log("ID QUE SE ENVÍA:", id);
 
   fetch(`${API}/reportes/${id}`, {
     method: "PUT",

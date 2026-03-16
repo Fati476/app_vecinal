@@ -1214,7 +1214,8 @@ def editar_reporte(id_reporte):
         conn.close()
         return jsonify({"error": "Reporte no encontrado"}), 404
 
-    dueño, foto_anterior = reporte
+    dueño = reporte["id_usuario"]
+    foto_anterior = reporte["foto"]
 
     # 🔐 Vecino solo edita lo suyo
     if rol == "vecino" and id_usuario != dueño:
