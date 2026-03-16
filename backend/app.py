@@ -169,7 +169,7 @@ def registro():
     try:
 
         msg = Message(
-            "Registro recibido - Plataforma Vecinal",
+            "Registro recibido - ConectaVecinos",
             recipients=[correo]
         )
 
@@ -180,17 +180,22 @@ Tu registro fue recibido correctamente.
 
 Un administrador revisará tu solicitud antes de activar tu cuenta.
 
-Gracias por usar la Plataforma Vecinal.
+Gracias por usar ConectaVecinos.
 """
 
         mail.send(msg)
 
-    except Exception as e:
-        print("Error enviando correo:", e)
+        return jsonify({
+            "mensaje": "Registro enviado correctamente. Revisa tu correo."
+        })
 
-    return jsonify({
-        "mensaje": "Registro enviado. Tu cuenta será revisada por el administrador."
-    })
+    except Exception as e:
+
+        print("ERROR CORREO:", e)
+
+        return jsonify({
+            "mensaje": "Registro guardado pero el correo no se pudo enviar."
+        })
 
 # -----------------------------
 # API: Login
