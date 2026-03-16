@@ -163,6 +163,52 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /* ===============================
+   💾 GUARDAR EDICIÓN
+================================ */
+document.getElementById("formEditar").addEventListener("submit", e => {
+
+  e.preventDefault();
+
+  const id = document.getElementById("edit_id").value;
+
+  const fd = new FormData();
+
+  fd.append("titulo", document.getElementById("edit_titulo").value);
+  fd.append("descripcion", document.getElementById("edit_descripcion").value);
+  fd.append("id_usuario", usuario.id);
+  fd.append("rol", usuario.rol);
+
+  const foto = document.getElementById("edit_foto").files[0];
+  if (foto) {
+    fd.append("foto", foto);
+  }
+
+  fetch(`${API}/reportes/${id}`, {
+    method: "PUT",
+    body: fd
+  })
+  .then(r => r.json())
+  .then(data => {
+
+    if (data.error) {
+      alert(data.error);
+      return;
+    }
+
+    alert("Reporte actualizado");
+
+    modalEditar.style.display = "none";
+
+    cargarReportes();
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Error al actualizar");
+  });
+
+});
+
+  /* ===============================
      🗑 ELIMINAR
   ================================ */
   function eliminarReporte(id) {
@@ -173,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
       .then(() => cargarReportes());
   }
+  
 
   /* ===============================
      🚀 INICIAR
