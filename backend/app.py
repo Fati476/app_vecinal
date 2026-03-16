@@ -137,7 +137,7 @@ def registro():
         return jsonify({"error": "Las contraseñas no coinciden"}), 400
 
     # 3️ Validar contraseña segura
-    patron = r'^(%s=.*[A-Z])(%s=.*\d)(%s=.*[^A-Za-z0-9]).{8,}$'
+    patron = r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$'
 
     if not re.match(patron, password):
         return jsonify({
@@ -160,7 +160,7 @@ def registro():
     cursor.execute("""
         INSERT INTO usuarios 
         (nombre, correo, contraseña, telefono, direccion, rol, estado, fecha_registro)
-        VALUES (%s, %s, %s, %s, %s, 'vecino', 'pendiente', DATE('now'))
+        VALUES (%s, %s, %s, %s, %s, 'vecino', 'pendiente', NOW())
     """, (nombre, correo, password_hash, telefono, direccion))
 
     conexion.commit()
