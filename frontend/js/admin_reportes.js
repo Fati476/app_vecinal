@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // 🗑 eliminar
           const btnEliminar = document.createElement("button");
           btnEliminar.textContent = "🗑 Eliminar";
-          btnEliminar.onclick = () => eliminarReporte(r.id_reporte);
+          btnEliminar.onclick = () => eliminarReporte(r.id);
           acciones.appendChild(btnEliminar);
 
           cont.appendChild(div);
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function editarReporte(r) {
     modalEditar.style.display = "flex";
 
-    edit_id.value = r.id_reporte;
+    document.getElementById("edit_id").value = r.id;
     edit_titulo.value = r.titulo;
     edit_descripcion.value = r.descripcion;
     edit_lat.value = r.lat;
