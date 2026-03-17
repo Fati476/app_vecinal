@@ -1,7 +1,7 @@
 const API_URL = "";
 
 document.addEventListener("DOMContentLoaded", cargarSolicitudes);
-
+console.log("ADMIN SOLICITUDES JS CARGADO");
 function cargarSolicitudes() {
   fetch(`${API_URL}/admin/solicitudes`)
     .then(res => res.json())
