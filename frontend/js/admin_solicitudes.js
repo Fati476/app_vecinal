@@ -29,10 +29,10 @@ function cargarSolicitudes() {
           <td>${s.correo}</td>
           <td>${s.fecha}</td>
           <td>
-            <button class="btn aprobar" onclick="aprobar(${s.id})">
+            <button class="btn aprobar" onclick="aprobar(${s.id_usuario})">
               Aprobar
             </button>
-            <button class="btn rechazar" onclick="rechazar(${s.id})">
+            <button class="btn rechazar" onclick="rechazar(${s.id_usuario})">
               Rechazar
             </button>
           </td>

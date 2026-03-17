@@ -773,7 +773,7 @@ def solicitudes_pendientes():
 
     return jsonify([
         {
-            "id": s[0],
+            "id_usuario": s[0],
             "nombre": s[1],
             "correo": s[2],
             "fecha": s[3]
@@ -801,7 +801,8 @@ def aprobar_usuario(id_usuario):
         conexion.close()
         return jsonify({"error": "Usuario no encontrado"}), 404
 
-    correo, nombre = usuario
+    correo = usuario[0]
+    nombre = usuario[1]
 
     cursor.execute("""
         UPDATE usuarios
