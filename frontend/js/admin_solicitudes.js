@@ -45,9 +45,11 @@ function cargarSolicitudes() {
 }
 
 function aprobar(id) {
-  console.log("🟡 Aprobando ID:", id);
+  const url = "https://app-vecinal.onrender.com/admin/aprobar/" + id;
 
-  fetch(`/admin/aprobar/${id}`, {
+  console.log("🔥 URL FINAL:", url);
+  console.log("TIPO URL:", typeof url);
+  fetch(url, {
     method: "POST"
   })
     .then(res => {
@@ -56,18 +58,11 @@ function aprobar(id) {
     })
     .then(data => {
       console.log("📨 Respuesta:", data);
-
-      if (data.error) {
-        alert("Error: " + data.error);
-      } else {
-        alert(data.mensaje);
-      }
-
+      alert(data.mensaje || data.error);
       cargarSolicitudes();
     })
     .catch(err => {
       console.error("❌ Error:", err);
-      alert("Error en la petición");
     });
 }
 
