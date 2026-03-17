@@ -35,47 +35,49 @@ function registrar() {
     }
 
     fetch("/registro", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            nombre,
-            correo,
-            telefono,
-            direccion,
-            password,
-            password2: confirm
-        })
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        nombre,
+        correo,
+        telefono,
+        direccion,
+        password,
+        password2: confirm
     })
-    .then(res => res.json())
-    .then(data => {
+})
+.then(async res => {
 
-        if (data.error) {
+    const data = await res.json();
 
-            mensaje.innerText = "⚠️ " + data.error;
-            mensaje.style.color = "red";
+    if (!res.ok) {
 
-        } else {
-
-            mensaje.innerText = "📧 Se envió un correo de confirmación";
-            mensaje.style.color = "green";
-
-            alert("✅ Registro enviado. Revisa tu correo para confirmar tu registro.");
-
-            setTimeout(()=>{
-                window.location.href = "login.html";
-            },2000)
-
-        }
-
-    })
-    .catch(() => {
-
-        mensaje.innerText = "❌ Error al conectar con el servidor";
+        mensaje.innerText = "⚠️ " + (data.error || "Error en el registro");
         mensaje.style.color = "red";
+        return;
 
-    });
+    }
+
+    mensaje.innerText = "📧 Registro enviado correctamente";
+    mensaje.style.color = "green";
+
+    alert("✅ Registro enviado. Un administrador revisará tu solicitud.");
+
+    setTimeout(() => {
+        window.location.href = "login.html";
+    }, 2000);
+
+})
+.catch(error => {
+
+    console.error(error);
+
+    mensaje.innerText = "❌ Error al conectar con el servidor";
+    mensaje.style.color = "red";
+
+});
 }
 
 
