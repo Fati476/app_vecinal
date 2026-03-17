@@ -821,11 +821,11 @@ def aprobar_usuario(id_usuario):
         print("📧 Intentando enviar correo a:", correo)
 
         # 🔥 ESTA ES LA LÍNEA IMPORTANTE
-        enviar_correo(
+        enviar_correo_async(
             correo,
             "Cuenta aprobada - ConectaVecinos",
             f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
-        )        
+        )
 
         return jsonify({"mensaje": "Usuario aprobado correctamente"})
 
