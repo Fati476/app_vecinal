@@ -814,6 +814,7 @@ def aprobar_usuario(id_usuario):
     conexion.commit()
     conexion.close()
 
+    print("📧 Intentando enviar correo a:", correo)
     try:
         enviar_correo(
             correo,
