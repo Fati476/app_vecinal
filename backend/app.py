@@ -783,54 +783,57 @@ def solicitudes_pendientes():
 @app.route('/admin/aprobar/<int:id_usuario>', methods=['POST'])
 def aprobar_usuario(id_usuario):
 
-    print("⚡ Entró a aprobar_usuario")
-    conexion = get_db()
-    cursor = conexion.cursor()
-
-    cursor.execute("""
-        SELECT correo, nombre
-        FROM usuarios
-        WHERE id_usuario = %s
-    """, (id_usuario,))
-
-    usuario = cursor.fetchone()
-
-    print("👤 Usuario encontrado:", usuario)
-
-    if not usuario:
-        conexion.close()
-        return jsonify({"error": "Usuario no encontrado"}), 404
-
-    correo = usuario[0]
-    nombre = usuario[1]
-
-    cursor.execute("""
-        UPDATE usuarios
-        SET estado = 'aprobado'
-        WHERE id_usuario = %s
-    """, (id_usuario,))
-    # Agregar automáticamente al grupo general (id = 1)
-    cursor.execute("""
-       INSERT INTO miembros_grupo (grupo_id, usuario_id)
-       VALUES (1, %s)
-       ON CONFLICT DO NOTHING
-    """, (id_usuario,))
-
-    conexion.commit()
-    conexion.close()
-
-    print("📧 Intentando enviar correo a:", correo)
     try:
-        enviar_correo(
-            correo,
-            "Cuenta aprobada - ConectaVecinos",
-            f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
-        )
-    except Exception as e:
-        print("ERROR AL ENVIAR CORREO:", e)
-        return jsonify({"error": "No se pudo enviar el correo"}), 500
+        print("⚡ Entró a aprobar_usuario")
 
-    return jsonify({"mensaje": "Usuario aprobado y correo enviado"})
+        conexion = get_db()
+        cursor = conexion.cursor()
+
+        cursor.execute("""
+            SELECT correo, nombre
+            FROM usuarios
+            WHERE id_usuario = %s
+        """, (id_usuario,))
+
+        usuario = cursor.fetchone()
+        print("👤 Usuario encontrado:", usuario)
+
+        if not usuario:
+            conexion.close()
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        correo, nombre = usuario
+
+        cursor.execute("""
+            UPDATE usuarios
+            SET estado = 'aprobado'
+            WHERE id_usuario = %s
+        """, (id_usuario,))
+
+        cursor.execute("""
+           INSERT INTO miembros_grupo (grupo_id, usuario_id)
+           VALUES (1, %s)
+        """, (id_usuario,))
+
+        conexion.commit()
+        conexion.close()
+
+        print("📧 Intentando enviar correo a:", correo)
+
+        try:
+            enviar_correo(
+                correo,
+                "Cuenta aprobada - ConectaVecinos",
+                f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
+            )
+        except Exception as e:
+            print("⚠️ ERROR AL ENVIAR CORREO:", e)
+
+        return jsonify({"mensaje": "Usuario aprobado correctamente"})
+
+    except Exception as e:
+        print("💥 ERROR GENERAL:", e)
+        return jsonify({"error": str(e)}), 500
 
 
 
