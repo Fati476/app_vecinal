@@ -47,10 +47,12 @@ function cargarSolicitudes() {
 function aprobar(id) {
   const url = "https://app-vecinal.onrender.com/admin/aprobar/" + id;
 
-  console.log("🔥 URL FINAL:", url);
-  console.log("TIPO URL:", typeof url);
   fetch(url, {
-    method: "POST"
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({}) // 🔥 CLAVE
   })
     .then(res => {
       console.log("📡 Status:", res.status);
