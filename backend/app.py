@@ -782,6 +782,8 @@ def solicitudes_pendientes():
 
 @app.route('/admin/aprobar/<int:id_usuario>', methods=['PUT'])
 def aprobar_usuario(id_usuario):
+
+    print("⚡ Entró a aprobar_usuario")
     conexion = get_db()
     cursor = conexion.cursor()
 
@@ -792,6 +794,8 @@ def aprobar_usuario(id_usuario):
     """, (id_usuario,))
 
     usuario = cursor.fetchone()
+
+    print("👤 Usuario encontrado:", usuario)
 
     if not usuario:
         conexion.close()
