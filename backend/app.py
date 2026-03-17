@@ -166,25 +166,9 @@ def registro():
     conexion.commit()
     conexion.close()
 
-    try:
-
-        enviar_correo(
-            correo,
-            "Registro recibido - ConectaVecinos",
-            f"""
-    Hola {nombre},
-
-    Tu registro fue recibido correctamente.
-
-    Un administrador revisará tu solicitud antes de activar tu cuenta.
-
-    ConectaVecinos
-    """
-        )
-
-    except Exception as e:
-
-        print("ERROR CORREO:", e)
+    return jsonify({
+        "mensaje": "Registro exitoso. Tu cuenta será revisada por el administrador."
+    })
 
 # -----------------------------
 # API: Login

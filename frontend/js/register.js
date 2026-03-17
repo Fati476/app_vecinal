@@ -60,7 +60,7 @@ function registrar() {
 
     }
 
-    mensaje.innerText = "📧 Registro enviado correctamente";
+    mensaje.innerText = "✅ Registro exitoso. Un administrador revisará tu solicitud.";
     mensaje.style.color = "green";
 
     alert("✅ Registro enviado. Un administrador revisará tu solicitud.");
