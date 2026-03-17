@@ -820,14 +820,12 @@ def aprobar_usuario(id_usuario):
 
         print("📧 Intentando enviar correo a:", correo)
 
-        #try:
-            #enviar_correo(
-                #correo,
-                #"Cuenta aprobada - ConectaVecinos",
-                #f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
-            #)
-        #except Exception as e:
-            #print("⚠️ ERROR AL ENVIAR CORREO:", e)
+        # 🔥 ESTA ES LA LÍNEA IMPORTANTE
+        enviar_correo_async(
+            correo,
+            "Cuenta aprobada - ConectaVecinos",
+            f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
+        )
 
         return jsonify({"mensaje": "Usuario aprobado correctamente"})
 
@@ -890,6 +888,15 @@ def enviar_correo(destinatario, asunto, mensaje):
     except Exception as e:
         print("❌ ERROR REAL AL ENVIAR:", e)
         raise e
+
+def enviar_correo_async(destinatario, asunto, mensaje):
+    def tarea():
+        try:
+            enviar_correo(destinatario, asunto, mensaje)
+        except Exception as e:
+            print("💥 ERROR EN HILO:", e)
+
+    threading.Thread(target=tarea).start()
 
 @app.route('/admin/aprobados', methods=['GET'])
 def usuarios_aprobados():
