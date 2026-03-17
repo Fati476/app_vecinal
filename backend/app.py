@@ -820,14 +820,14 @@ def aprobar_usuario(id_usuario):
 
         print("📧 Intentando enviar correo a:", correo)
 
-        try:
-            enviar_correo(
-                correo,
-                "Cuenta aprobada - ConectaVecinos",
-                f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
-            )
-        except Exception as e:
-            print("⚠️ ERROR AL ENVIAR CORREO:", e)
+        #try:
+            #enviar_correo(
+                #correo,
+                #"Cuenta aprobada - ConectaVecinos",
+                #f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
+            #)
+        #except Exception as e:
+            #print("⚠️ ERROR AL ENVIAR CORREO:", e)
 
         return jsonify({"mensaje": "Usuario aprobado correctamente"})
 
