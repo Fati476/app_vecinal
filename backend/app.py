@@ -868,17 +868,25 @@ def rechazar_usuario(id_usuario):
 
 
 def enviar_correo(destinatario, asunto, mensaje):
+    print("📤 Preparando correo a:", destinatario)
 
-    msg = Message(
-        subject=asunto,
-        recipients=[destinatario],
-        sender=app.config["MAIL_DEFAULT_SENDER"]
-    )
+    try:
+        msg = Message(
+            subject=asunto,
+            recipients=[destinatario],
+            sender=app.config["MAIL_DEFAULT_SENDER"]
+        )
 
-    msg.body = mensaje
-    msg.charset = "utf-8"
+        msg.body = mensaje
+        msg.charset = "utf-8"
 
-    mail.send(msg)
+        mail.send(msg)
+
+        print("✅ Correo enviado correctamente")
+
+    except Exception as e:
+        print("❌ ERROR REAL AL ENVIAR:", e)
+        raise e
 
 @app.route('/admin/aprobados', methods=['GET'])
 def usuarios_aprobados():
