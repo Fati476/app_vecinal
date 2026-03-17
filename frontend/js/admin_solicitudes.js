@@ -45,10 +45,17 @@ function cargarSolicitudes() {
 }
 
 function aprobar(id) {
-  fetch(`${API_URL}/admin/aprobar/${id}`, { method: "POST" })
-    .then(res => res.json())
+  console.log("🟡 Aprobando ID:", id);
+
+  fetch(`/admin/aprobar/${id}`, {
+    method: "POST"
+  })
+    .then(res => {
+      console.log("📡 Status:", res.status);
+      return res.json();
+    })
     .then(data => {
-      console.log("RESPUESTA:", data);
+      console.log("📨 Respuesta:", data);
 
       if (data.error) {
         alert("Error: " + data.error);
@@ -59,7 +66,7 @@ function aprobar(id) {
       cargarSolicitudes();
     })
     .catch(err => {
-      console.error("Error:", err);
+      console.error("❌ Error:", err);
       alert("Error en la petición");
     });
 }
