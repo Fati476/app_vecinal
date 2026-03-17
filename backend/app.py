@@ -806,8 +806,9 @@ def aprobar_usuario(id_usuario):
     """, (id_usuario,))
     # Agregar automáticamente al grupo general (id = 1)
     cursor.execute("""
-       INSERT OR IGNORE INTO miembros_grupo (grupo_id, usuario_id)
-        VALUES (1, %s)
+       INSERT INTO miembros_grupo (grupo_id, usuario_id)
+       VALUES (1, %s)
+       ON CONFLICT DO NOTHING
     """, (id_usuario,))
 
     conexion.commit()
