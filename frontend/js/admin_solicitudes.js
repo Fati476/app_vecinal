@@ -45,11 +45,11 @@ function cargarSolicitudes() {
 }
 
 function aprobar(id) {
-  fetch(`${API_URL}/admin/aprobar/${id}`, { method: "PUT" })
+  fetch(`${API_URL}/admin/aprobar/${id}`, { method: "POST" })
     .then(() => cargarSolicitudes());
 }
 
 function rechazar(id) {
-  fetch(`${API_URL}/admin/rechazar/${id}`, { method: "PUT" })
+  fetch(`${API_URL}/admin/rechazar/${id}`, { method: "POST" })
     .then(() => cargarSolicitudes());
 }

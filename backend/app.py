@@ -780,7 +780,7 @@ def solicitudes_pendientes():
         } for s in datos
     ])
 
-@app.route('/admin/aprobar/<int:id_usuario>', methods=['PUT'])
+@app.route('/admin/aprobar/<int:id_usuario>', methods=['POST'])
 def aprobar_usuario(id_usuario):
 
     print("⚡ Entró a aprobar_usuario")
@@ -835,7 +835,7 @@ def aprobar_usuario(id_usuario):
 
 
 
-@app.route('/admin/rechazar/<int:id_usuario>', methods=['PUT'])
+@app.route('/admin/rechazar/<int:id_usuario>', methods=['POST'])
 def rechazar_usuario(id_usuario):
     conexion = get_db()
     cursor = conexion.cursor()
