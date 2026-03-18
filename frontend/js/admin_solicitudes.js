@@ -1,15 +1,21 @@
-const API_URL = "";
+const API_URL = "https://app-vecinal.onrender.com";
 
-document.addEventListener("DOMContentLoaded", cargarSolicitudes);
-console.log("ADMIN SOLICITUDES JS CARGADO");
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("🚀 ADMIN SOLICITUDES CARGADO");
+  cargarSolicitudes();
+});
+
+// 🔹 CARGAR SOLICITUDES
 function cargarSolicitudes() {
+  console.log("📥 Cargando solicitudes...");
+
   fetch(`${API_URL}/admin/solicitudes`)
     .then(res => res.json())
     .then(data => {
       const tbody = document.getElementById("tablaSolicitudes");
       tbody.innerHTML = "";
 
-      if (data.length === 0) {
+      if (!data || data.length === 0) {
         tbody.innerHTML = `
           <tr class="fila-animada">
             <td colspan="4" style="text-align:center;">
@@ -30,10 +36,10 @@ function cargarSolicitudes() {
           <td>${s.fecha}</td>
           <td>
             <button class="btn aprobar" onclick="aprobar(${s.id_usuario})">
-              Aprobar
+              ✅ Aprobar
             </button>
             <button class="btn rechazar" onclick="rechazar(${s.id_usuario})">
-              Rechazar
+              ❌ Rechazar
             </button>
           </td>
         `;
@@ -41,18 +47,20 @@ function cargarSolicitudes() {
         tbody.appendChild(fila);
       });
     })
-    .catch(err => console.error("Error:", err));
+    .catch(err => {
+      console.error("❌ Error cargando solicitudes:", err);
+    });
 }
 
+// 🔹 APROBAR USUARIO
 function aprobar(id) {
-  const url = "https://app-vecinal.onrender.com/admin/aprobar/" + id;
+  console.log("🟡 Aprobando usuario ID:", id);
 
-  fetch(url, {
+  fetch(`${API_URL}/admin/aprobar/${id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
-    },
-    body: JSON.stringify({}) // 🔥 CLAVE
+    }
   })
     .then(res => {
       console.log("📡 Status:", res.status);
@@ -60,15 +68,34 @@ function aprobar(id) {
     })
     .then(data => {
       console.log("📨 Respuesta:", data);
-      alert(data.mensaje || data.error);
-      cargarSolicitudes();
+
+      if (data.error) {
+        alert("❌ " + data.error);
+      } else {
+        alert("✅ " + data.mensaje);
+      }
+
+      cargarSolicitudes(); // refrescar tabla
     })
     .catch(err => {
-      console.error("❌ Error:", err);
+      console.error("❌ Error al aprobar:", err);
+      alert("Error al aprobar usuario");
     });
 }
 
+// 🔹 RECHAZAR USUARIO
 function rechazar(id) {
-  fetch(`${API_URL}/admin/rechazar/${id}`, { method: "POST" })
-    .then(() => cargarSolicitudes());
+  console.log("🔴 Rechazando usuario ID:", id);
+
+  fetch(`${API_URL}/admin/rechazar/${id}`, {
+    method: "POST"
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("📨 Respuesta:", data);
+      cargarSolicitudes();
+    })
+    .catch(err => {
+      console.error("❌ Error al rechazar:", err);
+    });
 }

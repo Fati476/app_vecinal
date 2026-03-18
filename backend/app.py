@@ -784,13 +784,13 @@ def solicitudes_pendientes():
 @app.route('/admin/aprobar/<int:id_usuario>', methods=['POST'])
 def aprobar_usuario(id_usuario):
 
-    print("🚨 1. ENTRÓ A LA RUTA /admin/aprobar")
+    print("🚨 1. ENTRÓ A LA RUTA /admin/aprobar", flush=True)
 
     try:
         conexion = get_db()
         cursor = conexion.cursor()
 
-        print("🚨 2. CONEXIÓN OK")
+        print("🚨 2. CONEXIÓN OK", flush=True)
 
         cursor.execute("""
             SELECT correo, nombre
@@ -799,10 +799,9 @@ def aprobar_usuario(id_usuario):
         """, (id_usuario,))
 
         usuario = cursor.fetchone()
-        print("🚨 3. USUARIO:", usuario)
+        print("🚨 3. USUARIO:", usuario, flush=True)
 
         if not usuario:
-            print("❌ NO EXISTE USUARIO")
             conexion.close()
             return jsonify({"error": "Usuario no encontrado"}), 404
 
@@ -814,8 +813,6 @@ def aprobar_usuario(id_usuario):
             WHERE id_usuario = %s
         """, (id_usuario,))
 
-        print("🚨 4. UPDATE OK")
-
         cursor.execute("""
             INSERT INTO miembros_grupo (grupo_id, usuario_id)
             VALUES (1, %s)
@@ -824,21 +821,69 @@ def aprobar_usuario(id_usuario):
         conexion.commit()
         conexion.close()
 
-        print("🚨 5. ANTES DE ENVIAR CORREO")
+        print("📧 Enviando correo con SendGrid...", flush=True)
 
-        enviar_correo(
-            correo,
-            "Cuenta aprobada - ConectaVecinos",
-            f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
-        )
+        # 🔥 USAR ESTA FUNCIÓN
+        resultado = enviar_correo_aprobacion(correo, nombre)
 
-        print("🚨 6. FIN TODO OK")
+        print("📧 Resultado:", resultado, flush=True)
 
         return jsonify({"mensaje": "Usuario aprobado y correo enviado"})
 
     except Exception as e:
-        print("💥 ERROR GENERAL:", e)
+        print("💥 ERROR GENERAL:", e, flush=True)
         return jsonify({"error": str(e)}), 500
+    
+def enviar_correo_aprobacion(correo, nombre):
+    import requests, os
+
+    print("📧 ENVIANDO CORREO DE APROBACIÓN", flush=True)
+
+    try:
+        data = {
+            "personalizations": [
+                {
+                    "to": [{"email": correo}],
+                    "subject": "Cuenta aprobada - ConectaVecinos"
+                }
+            ],
+            "from": {
+                "email": os.environ.get("MAIL_DEFAULT_SENDER")
+            },
+            "content": [
+                {
+                    "type": "text/plain",
+                    "value": f"""
+Hola {nombre},
+
+Tu cuenta ha sido APROBADA 🎉
+Ya puedes iniciar sesión.
+
+ConectaVecinos
+"""
+                }
+            ]
+        }
+
+        headers = {
+            "Authorization": f"Bearer {os.environ.get('MAIL_PASSWORD')}",
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers=headers,
+            json=data
+        )
+
+        print("📬 STATUS:", response.status_code, flush=True)
+        print("📬 RESPUESTA:", response.text, flush=True)
+
+        return response.status_code in (200, 202)
+
+    except Exception as e:
+        print("💥 ERROR CORREO:", str(e), flush=True)
+        return False
 
 
 
