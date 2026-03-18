@@ -28,6 +28,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 app = Flask(__name__)
 CORS(app)
+print("🔥 VERSION NUEVA DESPLEGADA 🔥")
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 usuarios_online = {}
 #def get_db():
