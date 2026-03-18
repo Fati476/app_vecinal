@@ -784,11 +784,13 @@ def solicitudes_pendientes():
 @app.route('/admin/aprobar/<int:id_usuario>', methods=['POST'])
 def aprobar_usuario(id_usuario):
 
-    try:
-        print("⚡ Entró a aprobar_usuario")
+    print("🚨 1. ENTRÓ A LA RUTA /admin/aprobar")
 
+    try:
         conexion = get_db()
         cursor = conexion.cursor()
+
+        print("🚨 2. CONEXIÓN OK")
 
         cursor.execute("""
             SELECT correo, nombre
@@ -797,9 +799,10 @@ def aprobar_usuario(id_usuario):
         """, (id_usuario,))
 
         usuario = cursor.fetchone()
-        print("👤 Usuario encontrado:", usuario)
+        print("🚨 3. USUARIO:", usuario)
 
         if not usuario:
+            print("❌ NO EXISTE USUARIO")
             conexion.close()
             return jsonify({"error": "Usuario no encontrado"}), 404
 
@@ -811,27 +814,25 @@ def aprobar_usuario(id_usuario):
             WHERE id_usuario = %s
         """, (id_usuario,))
 
-        cursor.execute("""
-           INSERT INTO miembros_grupo (grupo_id, usuario_id)
-           VALUES (1, %s)
-        """, (id_usuario,))
+        print("🚨 4. UPDATE OK")
 
         conexion.commit()
         conexion.close()
 
-        print("📧 Intentando enviar correo a:", correo)
+        print("🚨 5. ANTES DE ENVIAR CORREO")
 
-        # 🔥 ESTA ES LA LÍNEA IMPORTANTE
-        enviar_correo_async(
+        enviar_correo(
             correo,
-            "Cuenta aprobada - ConectaVecinos",
-            f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
+            "Cuenta aprobada",
+            f"Hola {nombre}"
         )
 
-        return jsonify({"mensaje": "Usuario aprobado correctamente"})
+        print("🚨 6. CORREO ENVIADO")
+
+        return jsonify({"mensaje": "OK"})
 
     except Exception as e:
-        print("💥 ERROR GENERAL:", e)
+        print("💥 ERROR REAL:", e)
         return jsonify({"error": str(e)}), 500
 
 
