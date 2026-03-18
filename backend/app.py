@@ -821,7 +821,7 @@ def aprobar_usuario(id_usuario):
 
         print("🚨 5. ANTES DE ENVIAR CORREO")
 
-        enviar_correo(
+        enviar_correo_async(
             correo,
             "Cuenta aprobada",
             f"Hola {nombre}"
