@@ -784,9 +784,61 @@ def solicitudes_pendientes():
 @app.route('/admin/aprobar/<int:id_usuario>', methods=['POST'])
 def aprobar_usuario(id_usuario):
 
-    print("🚨🚨🚨 ESTA ES LA RUTA NUEVA 🚨🚨🚨")
+    print("🚨 1. ENTRÓ A LA RUTA /admin/aprobar")
 
-    return jsonify({"mensaje": "RUTA NUEVA"})
+    try:
+        conexion = get_db()
+        cursor = conexion.cursor()
+
+        print("🚨 2. CONEXIÓN OK")
+
+        cursor.execute("""
+            SELECT correo, nombre
+            FROM usuarios
+            WHERE id_usuario = %s
+        """, (id_usuario,))
+
+        usuario = cursor.fetchone()
+        print("🚨 3. USUARIO:", usuario)
+
+        if not usuario:
+            print("❌ NO EXISTE USUARIO")
+            conexion.close()
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        correo, nombre = usuario
+
+        cursor.execute("""
+            UPDATE usuarios
+            SET estado = 'aprobado'
+            WHERE id_usuario = %s
+        """, (id_usuario,))
+
+        print("🚨 4. UPDATE OK")
+
+        cursor.execute("""
+            INSERT INTO miembros_grupo (grupo_id, usuario_id)
+            VALUES (1, %s)
+        """, (id_usuario,))
+
+        conexion.commit()
+        conexion.close()
+
+        print("🚨 5. ANTES DE ENVIAR CORREO")
+
+        enviar_correo(
+            correo,
+            "Cuenta aprobada - ConectaVecinos",
+            f"Hola {nombre},\n\nTu cuenta ha sido APROBADA.\nYa puedes iniciar sesión.\n\nConectaVecinos"
+        )
+
+        print("🚨 6. FIN TODO OK")
+
+        return jsonify({"mensaje": "Usuario aprobado y correo enviado"})
+
+    except Exception as e:
+        print("💥 ERROR GENERAL:", e)
+        return jsonify({"error": str(e)}), 500
 
 
 
@@ -827,21 +879,21 @@ def enviar_correo(destinatario, asunto, mensaje):
     print("📤 Preparando correo a:", destinatario)
 
     try:
-        msg = Message(
-            subject=asunto,
-            recipients=[destinatario],
-            sender=app.config["MAIL_DEFAULT_SENDER"]
-        )
+        with app.app_context():  # 👈 CLAVE
+            msg = Message(
+                subject=asunto,
+                recipients=[destinatario],
+                sender=app.config["MAIL_DEFAULT_SENDER"]
+            )
 
-        msg.body = mensaje
-        msg.charset = "utf-8"
+            msg.body = mensaje
 
-        mail.send(msg)
+            mail.send(msg)
 
-        print("✅ Correo enviado correctamente")
+        print("✅ CORREO ENVIADO")
 
     except Exception as e:
-        print("❌ ERROR REAL AL ENVIAR:", e)
+        print("💥 ERROR CORREO:", e)
         raise e
 
 def enviar_correo_async(destinatario, asunto, mensaje):
