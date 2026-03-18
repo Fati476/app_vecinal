@@ -784,56 +784,9 @@ def solicitudes_pendientes():
 @app.route('/admin/aprobar/<int:id_usuario>', methods=['POST'])
 def aprobar_usuario(id_usuario):
 
-    print("🚨 1. ENTRÓ A LA RUTA /admin/aprobar")
+    print("🚨🚨🚨 ESTA ES LA RUTA NUEVA 🚨🚨🚨")
 
-    try:
-        conexion = get_db()
-        cursor = conexion.cursor()
-
-        print("🚨 2. CONEXIÓN OK")
-
-        cursor.execute("""
-            SELECT correo, nombre
-            FROM usuarios
-            WHERE id_usuario = %s
-        """, (id_usuario,))
-
-        usuario = cursor.fetchone()
-        print("🚨 3. USUARIO:", usuario)
-
-        if not usuario:
-            print("❌ NO EXISTE USUARIO")
-            conexion.close()
-            return jsonify({"error": "Usuario no encontrado"}), 404
-
-        correo, nombre = usuario
-
-        cursor.execute("""
-            UPDATE usuarios
-            SET estado = 'aprobado'
-            WHERE id_usuario = %s
-        """, (id_usuario,))
-
-        print("🚨 4. UPDATE OK")
-
-        conexion.commit()
-        conexion.close()
-
-        print("🚨 5. ANTES DE ENVIAR CORREO")
-
-        enviar_correo_async(
-            correo,
-            "Cuenta aprobada",
-            f"Hola {nombre}"
-        )
-
-        print("🚨 6. CORREO ENVIADO")
-
-        return jsonify({"mensaje": "OK"})
-
-    except Exception as e:
-        print("💥 ERROR REAL:", e)
-        return jsonify({"error": str(e)}), 500
+    return jsonify({"mensaje": "RUTA NUEVA"})
 
 
 
