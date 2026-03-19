@@ -890,34 +890,102 @@ ConectaVecinos
 
 @app.route('/admin/rechazar/<int:id_usuario>', methods=['POST'])
 def rechazar_usuario(id_usuario):
-    conexion = get_db()
-    cursor = conexion.cursor()
 
-    cursor.execute("""
-        SELECT correo, nombre
-        FROM usuarios
-        WHERE id_usuario = %s
-    """, (id_usuario,))
+    print("🚨 ENTRÓ A /admin/rechazar", flush=True)
 
-    usuario = cursor.fetchone()
+    try:
+        conexion = get_db()
+        cursor = conexion.cursor()
 
-    cursor.execute("""
-        UPDATE usuarios
-        SET estado = 'rechazado'
-        WHERE id_usuario = %s
-    """, (id_usuario,))
+        cursor.execute("""
+            SELECT correo, nombre
+            FROM usuarios
+            WHERE id_usuario = %s
+        """, (id_usuario,))
 
-    conexion.commit()
-    conexion.close()
+        usuario = cursor.fetchone()
 
-    # 📧 Enviar correo
-    enviar_correo(
-        usuario[0],
-        "Solicitud rechazada - ConectaVecinos",
-        f"Hola {usuario[1]},\n\nTu solicitud fue RECHAZADA.\nPara más información contacta al administrador.\n\nConectaVecinos"
-    )
+        if not usuario:
+            conexion.close()
+            return jsonify({"error": "Usuario no encontrado"}), 404
 
-    return jsonify({"mensaje": "Usuario rechazado"})
+        correo, nombre = usuario
+
+        cursor.execute("""
+            UPDATE usuarios
+            SET estado = 'rechazado'
+            WHERE id_usuario = %s
+        """, (id_usuario,))
+
+        conexion.commit()
+        conexion.close()
+
+        print("📧 Enviando correo de rechazo...", flush=True)
+
+        resultado = enviar_correo_rechazo(correo, nombre)
+
+        print("📧 Resultado:", resultado, flush=True)
+
+        return jsonify({"mensaje": "Usuario rechazado y correo enviado"})
+
+    except Exception as e:
+        print("💥 ERROR:", e, flush=True)
+        return jsonify({"error": str(e)}), 500
+
+
+def enviar_correo_rechazo(correo, nombre):
+    import requests, os
+
+    print("📧 ENVIANDO CORREO DE RECHAZO", flush=True)
+
+    try:
+        data = {
+            "personalizations": [
+                {
+                    "to": [{"email": correo}],
+                    "subject": "Solicitud rechazada - ConectaVecinos"
+                }
+            ],
+            "from": {
+                "email": os.environ.get("MAIL_DEFAULT_SENDER")
+            },
+            "content": [
+                {
+                    "type": "text/plain",
+                    "value": f"""
+Hola {nombre},
+
+Tu solicitud fue RECHAZADA ❌
+
+Para más información contacta al administrador.
+
+ConectaVecinos
+"""
+                }
+            ]
+        }
+
+        headers = {
+            "Authorization": f"Bearer {os.environ.get('MAIL_PASSWORD')}",
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers=headers,
+            json=data
+        )
+
+        print("📬 STATUS:", response.status_code, flush=True)
+        print("📬 RESPUESTA:", response.text, flush=True)
+
+        return response.status_code in (200, 202)
+
+    except Exception as e:
+        print("💥 ERROR CORREO:", str(e), flush=True)
+        return False
+    
+
 
 
 def enviar_correo(destinatario, asunto, mensaje):
