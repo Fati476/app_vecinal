@@ -1068,16 +1068,21 @@ def usuarios_aprobados():
     datos = cursor.fetchall()
     conexion.close()
 
-    return jsonify([
-        {
+    resultado = []
+
+    for u in datos:
+        fecha_formateada = u[5].strftime("%d/%m/%Y %H:%M") if u[5] else ""
+
+        resultado.append({
             "id": u[0],
             "nombre": u[1],
             "correo": u[2],
             "telefono": u[3],
             "direccion": u[4],
-            "fecha": u[5]
-        } for u in datos
-    ])
+            "fecha": fecha_formateada
+        })
+
+    return jsonify(resultado)
 
 def enviar_correo_eliminacion(correo, nombre):
     import requests, os
