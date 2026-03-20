@@ -139,7 +139,6 @@ def registro():
 
     # 3️ Validar contraseña segura
     patron = r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$'
-
     if not re.match(patron, password):
         return jsonify({
             "error": "La contraseña debe tener mínimo 8 caracteres, letras, números y un símbolo"
@@ -148,16 +147,52 @@ def registro():
     conexion = get_db()
     cursor = conexion.cursor()
 
-    # 4️ Verificar correo duplicado
-    cursor.execute("SELECT id_usuario FROM usuarios WHERE correo = %s", (correo,))
-    if cursor.fetchone():
-        conexion.close()
-        return jsonify({"error": "El correo ya está registrado"}), 400
+    # 4️ Verificar si el correo ya existe
+    cursor.execute("""
+        SELECT id_usuario, estado 
+        FROM usuarios 
+        WHERE correo = %s
+    """, (correo,))
+
+    usuario = cursor.fetchone()
 
     # 5️ Hash de contraseña
     password_hash = generate_password_hash(password)
 
-    # 6️ Insertar usuario (PENDIENTE)
+    # 🔁 SI YA EXISTE
+    if usuario:
+        id_usuario, estado = usuario
+
+        # 🔄 SI ESTÁ RECHAZADO → REACTIVAR
+        if estado == "rechazado":
+            print("🔄 Reactivando usuario rechazado...", flush=True)
+
+            cursor.execute("""
+                UPDATE usuarios
+                SET nombre = %s,
+                    contraseña = %s,
+                    telefono = %s,
+                    direccion = %s,
+                    estado = 'pendiente',
+                    fecha_registro = NOW()
+                WHERE id_usuario = %s
+            """, (nombre, password_hash, telefono, direccion, id_usuario))
+
+            conexion.commit()
+            conexion.close()
+
+            return jsonify({
+                "mensaje": "Solicitud reenviada. Será revisada nuevamente."
+            }), 200
+
+        # ❌ SI YA EXISTE (PENDIENTE O APROBADO)
+        else:
+            conexion.close()
+            return jsonify({
+                "error": "El correo ya está registrado"
+            }), 400
+
+    # 🆕 SI NO EXISTE → CREAR NUEVO
     cursor.execute("""
         INSERT INTO usuarios 
         (nombre, correo, contraseña, telefono, direccion, rol, estado, fecha_registro)
@@ -169,7 +204,7 @@ def registro():
 
     return jsonify({
         "mensaje": "Registro exitoso. Tu cuenta será revisada por el administrador."
-    })
+    }), 200
 
 # -----------------------------
 # API: Login

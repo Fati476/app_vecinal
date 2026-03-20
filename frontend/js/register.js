@@ -60,6 +60,16 @@ function registrar() {
 
     }
 
+    if (data.mensaje && data.mensaje.toLowerCase().includes("reenviada")) {
+        mensaje.innerText = "🔄 Tu solicitud fue reenviada para revisión";
+        mensaje.style.color = "orange";
+        alert("🔄 Tu solicitud fue reenviada para revisión");
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 2000);
+        return;
+    }
+
     mensaje.innerText = "✅ Registro exitoso. Un administrador revisará tu solicitud.";
     mensaje.style.color = "green";
 
