@@ -14,33 +14,39 @@
         <div id="paso1">
             <h1>Recuperar contraseña</h1>
 
-            <input type="email" id="correo" placeholder="Ingresa tu correo">
+            <input type="email" id="correo" placeholder="Ingresa tu correo" required>
 
-            <button onclick="enviarCodigo()">Enviar código</button>
-
-            <button class="secundario" onclick="mostrarPaso2()">
-                Ingresar código
-            </button>
+            <button type="button" onclick="enviarCodigo()">Enviar código</button>
         </div>
 
         <!-- PASO 2 -->
         <div id="paso2" style="display:none;">
             <h1>Verifica tu código</h1>
 
-            <input type="text" id="codigo" placeholder="Código recibido">
+            <input type="text" id="codigo" placeholder="Código recibido" required>
 
-            <input type="password" id="password" placeholder="Nueva contraseña">
+            <!-- PASSWORD -->
+            <div>
+                <input type="password" id="password" placeholder="Nueva contraseña" required>
+                <button type="button" onclick="togglePassword('password')">👁</button>
+            </div>
 
-            <input type="password" id="password2" placeholder="Confirmar contraseña">
+            <!-- SEGURIDAD -->
+            <div id="seguridad"></div>
 
-            <button onclick="cambiarPassword()">Cambiar contraseña</button>
+            <!-- CONFIRM PASSWORD -->
+            <div>
+                <input type="password" id="password2" placeholder="Confirmar contraseña" required>
+                <button type="button" onclick="togglePassword('password2')">👁</button>
+            </div>
 
-            <button class="secundario" onclick="reenviarCodigo()">
-              Reenviar código
+            <button type="button" onclick="cambiarPassword()">Cambiar contraseña</button>
+
+            <button type="button" class="secundario" onclick="reenviarCodigo()">
+                Reenviar código
             </button>
 
-
-            <button class="secundario" onclick="mostrarPaso1()">
+            <button type="button" class="secundario" onclick="mostrarPaso1()">
                 Volver
             </button>
         </div>
@@ -50,13 +56,15 @@
         <p class="switch">
             <a href="login.html">Volver al login</a>
         </p>
+
     </div>
 
     <div class="auth-right">
-        <img src="img/ilustracion.png" alt="Recuperar">
+        <img src="img/ilustracion.png" alt="Recuperar contraseña">
     </div>
 </div>
 
 <script src="js/recuperar.js"></script>
+
 </body>
 </html>
