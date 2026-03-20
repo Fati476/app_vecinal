@@ -1079,22 +1079,107 @@ def usuarios_aprobados():
         } for u in datos
     ])
 
+def enviar_correo_eliminacion(correo, nombre):
+    import requests, os
+
+    print("📧 ENVIANDO CORREO DE ELIMINACIÓN", flush=True)
+
+    try:
+        data = {
+            "personalizations": [
+                {
+                    "to": [{"email": correo}],
+                    "subject": "Cuenta eliminada - ConectaVecinos"
+                }
+            ],
+            "from": {
+                "email": os.environ.get("MAIL_DEFAULT_SENDER")
+            },
+            "content": [
+                {
+                    "type": "text/plain",
+                    "value": f"""
+Hola {nombre},
+
+Tu cuenta ha sido eliminada por el administrador.
+
+Si consideras que esto fue un error, puedes volver a registrarte o contactar al administrador.
+
+ConectaVecinos
+"""
+                }
+            ]
+        }
+
+        headers = {
+            "Authorization": f"Bearer {os.environ.get('MAIL_PASSWORD')}",
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers=headers,
+            json=data
+        )
+
+        print("📬 STATUS:", response.status_code, flush=True)
+        print("📬 RESPUESTA:", response.text, flush=True)
+
+        return response.status_code in (200, 202)
+
+    except Exception as e:
+        print("💥 ERROR CORREO:", str(e), flush=True)
+        return False
+    
 
 @app.route('/admin/eliminar/<int:id_usuario>', methods=['DELETE'])
 def eliminar_usuario(id_usuario):
-    conexion = get_db()
-    cursor = conexion.cursor()
 
-    cursor.execute("""
-        DELETE FROM usuarios
-        WHERE id_usuario = %s
-          AND rol = 'vecino'
-    """, (id_usuario,))
+    print("🚨 ELIMINANDO USUARIO:", id_usuario, flush=True)
 
-    conexion.commit()
-    conexion.close()
+    try:
+        conexion = get_db()
+        cursor = conexion.cursor()
 
-    return jsonify({"mensaje": "Usuario eliminado correctamente"})
+        # 🔍 Obtener datos del usuario
+        cursor.execute("""
+            SELECT correo, nombre
+            FROM usuarios
+            WHERE id_usuario = %s AND rol = 'vecino'
+        """, (id_usuario,))
+
+        usuario = cursor.fetchone()
+
+        if not usuario:
+            conexion.close()
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        correo, nombre = usuario
+
+        print("👤 Usuario:", correo, nombre, flush=True)
+
+        # 🗑️ Eliminar usuario
+        cursor.execute("""
+            DELETE FROM usuarios
+            WHERE id_usuario = %s AND rol = 'vecino'
+        """, (id_usuario,))
+
+        conexion.commit()
+        conexion.close()
+
+        print("🗑️ Usuario eliminado", flush=True)
+
+        # 📧 Enviar correo (NO rompe si falla)
+        try:
+            enviar_correo_eliminacion(correo, nombre)
+        except Exception as e:
+            print("⚠️ Error enviando correo:", e, flush=True)
+
+        return jsonify({"mensaje": "Usuario eliminado correctamente"})
+
+    except Exception as e:
+        print("💥 ERROR GENERAL:", e, flush=True)
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/admin/dashboard')
 def dashboard():
