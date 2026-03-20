@@ -5,6 +5,19 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarSolicitudes();
 });
 
+// 🔥 FUNCIÓN PARA FORMATEAR FECHA
+function formatearFecha(fecha) {
+  const f = new Date(fecha);
+
+  return f.toLocaleString("es-MX", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
 // 🔹 CARGAR SOLICITUDES
 function cargarSolicitudes() {
   console.log("📥 Cargando solicitudes...");
@@ -33,7 +46,7 @@ function cargarSolicitudes() {
         fila.innerHTML = `
           <td>${s.nombre}</td>
           <td>${s.correo}</td>
-          <td>${s.fecha}</td>
+          <td>${formatearFecha(s.fecha)}</td> <!-- 🔥 AQUÍ SE USA -->
           <td>
             <button class="btn aprobar" onclick="aprobar(${s.id_usuario})">
               ✅ Aprobar
@@ -75,7 +88,7 @@ function aprobar(id) {
         alert("✅ " + data.mensaje);
       }
 
-      cargarSolicitudes(); // refrescar tabla
+      cargarSolicitudes();
     })
     .catch(err => {
       console.error("❌ Error al aprobar:", err);
