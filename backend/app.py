@@ -1071,7 +1071,14 @@ def usuarios_aprobados():
     resultado = []
 
     for u in datos:
-        fecha_formateada = u[5].strftime("%d/%m/%Y %H:%M") if u[5] else ""
+        fecha = u[5]
+
+        # 🔥 SI YA ES STRING → solo cortar bonito
+        if isinstance(fecha, str):
+            fecha_formateada = fecha.split(".")[0].replace("T", " ")
+        else:
+            # 🔥 SI ES DATETIME → formatear
+            fecha_formateada = fecha.strftime("%d/%m/%Y %H:%M")
 
         resultado.append({
             "id": u[0],
