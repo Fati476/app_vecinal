@@ -26,19 +26,17 @@
             <input type="text" id="codigo" placeholder="Código recibido" required>
 
             <!-- PASSWORD -->
-            <div>
-                <input type="password" id="password" placeholder="Nueva contraseña" required>
-                <button type="button" onclick="togglePassword('password')">👁</button>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Nueva contraseña">
+                <span class="eye" onclick="togglePassword('password')">👁</span>
             </div>
 
-            <!-- SEGURIDAD -->
             <div id="seguridad"></div>
 
-            <!-- CONFIRM PASSWORD -->
-            <div>
-                <input type="password" id="password2" placeholder="Confirmar contraseña" required>
-                <button type="button" onclick="togglePassword('password2')">👁</button>
-            </div>
+            <div class="input-group">
+                <input type="password" id="password2" placeholder="Confirmar contraseña">
+                <span class="eye" onclick="togglePassword('password2')">👁</span>
+            </div>            
 
             <button type="button" onclick="cambiarPassword()">Cambiar contraseña</button>
 
