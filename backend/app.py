@@ -1227,14 +1227,13 @@ def resetear():
     codigo = data.get('codigo')
     nueva = data.get('password')
 
-    print("📩 DATA RECIBIDA:", data)
+    print("📩 DATA RECIBIDA:", data, flush=True)
 
     if not correo or not codigo or not nueva:
-        print("❌ Faltan datos")
         return jsonify({"error": "Completa todos los campos"}), 400
 
     conn = get_db()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)  # ✅ CORREGIDO
 
     cursor.execute("""
         SELECT reset_code, reset_expira
@@ -1243,29 +1242,34 @@ def resetear():
     """, (correo.strip(),))
 
     user = cursor.fetchone()
-    print("🧾 Resultado BD:", user)
+    print("🧾 Resultado BD:", user, flush=True)
 
-    if not user or not user[0]:
+    # ❌ VALIDAR EXISTENCIA
+    if not user or not user["reset_code"]:
+        conn.close()
         return jsonify({"error": "Código no válido o ya expirado"}), 400
 
-    codigo_bd, expira = user
+    codigo_bd = user["reset_code"]
+    expira = user["reset_expira"]
 
-    # ⏳ VALIDAR EXPIRACIÓN (FORMA SEGURA)
+    # ⏳ VALIDAR EXPIRACIÓN
     if expira:
         try:
-            expira_dt = datetime.strptime(expira.split(".")[0], "%Y-%m-%d %H:%M:%S")
-            if datetime.now() > expira_dt:
+            if datetime.now() > expira:
+                conn.close()
                 return jsonify({"error": "El código ha expirado, solicita uno nuevo"}), 400
         except Exception as e:
-            print("⚠️ Error al validar fecha:", e)
+            print("⚠️ Error al validar fecha:", e, flush=True)
 
     # 🔢 VALIDAR CÓDIGO
     if codigo.strip() != codigo_bd.strip():
+        conn.close()
         return jsonify({"error": "Código incorrecto"}), 400
 
-    # 🔐 VALIDAR CONTRASEÑA
-    regex = r'^(%s=.*[A-Z])(%s=.*\d)(%s=.*[^A-Za-z0-9]).{8,}$'
+    # 🔐 VALIDAR CONTRASEÑA (CORREGIDA)
+    regex = r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$'
     if not re.match(regex, nueva):
+        conn.close()
         return jsonify({"error": "Contraseña insegura"}), 400
 
     hash_pass = generate_password_hash(nueva)
@@ -1278,6 +1282,8 @@ def resetear():
 
     conn.commit()
     conn.close()
+
+    print("✅ CONTRASEÑA ACTUALIZADA", flush=True)
 
     return jsonify({"mensaje": "Contraseña actualizada correctamente"})
 
