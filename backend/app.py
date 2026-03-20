@@ -1136,14 +1136,16 @@ def recuperar():
     user = cursor.fetchone()
 
     if not user:
+        conn.close()
         return jsonify({"error": "Correo no registrado"}), 400
 
-    if user[1] != "aprobado":
+    if user["estado"] != "aprobado":
+        conn.close()
         return jsonify({"error": "Cuenta no aprobada"}), 403
 
     codigo = str(random.randint(100000, 999999))
 
-    # ⏱ EXPIRA EN 10 MINUTOS
+    # ⏱ Expira en 10 minutos
     expira = datetime.now() + timedelta(minutes=10)
 
     cursor.execute("""
@@ -1155,20 +1157,65 @@ def recuperar():
     conn.commit()
     conn.close()
 
-    enviar_correo(
-        correo,
-        "Recuperar contraseña - ConectaVecinos",
-        f"""Tu código de recuperación es:
+    print("📧 Enviando código de recuperación...", flush=True)
+
+    # ✅ LLAMADA CORRECTA
+    resultado = enviar_correo_codigo(correo, codigo)
+
+    print("📧 Resultado envío:", resultado, flush=True)
+
+    return jsonify({"mensaje": "Código enviado al correo"})
+
+def enviar_correo_codigo(correo, codigo):
+    import requests, os
+
+    print("📧 ENVIANDO CÓDIGO DE RECUPERACIÓN", flush=True)
+
+    try:
+        data = {
+            "personalizations": [
+                {
+                    "to": [{"email": correo}],
+                    "subject": "Recuperar contraseña - ConectaVecinos"
+                }
+            ],
+            "from": {
+                "email": os.environ.get("MAIL_DEFAULT_SENDER")
+            },
+            "content": [
+                {
+                    "type": "text/plain",
+                    "value": f"""
+Tu código de recuperación es:
 
 {codigo}
 
 ⏱ Este código expira en 10 minutos.
 Si no lo solicitaste, ignora este correo.
 """
-    )
+                }
+            ]
+        }
 
-    return jsonify({"mensaje": "Código enviado al correo"})
+        headers = {
+            "Authorization": f"Bearer {os.environ.get('MAIL_PASSWORD')}",
+            "Content-Type": "application/json"
+        }
 
+        response = requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers=headers,
+            json=data
+        )
+
+        print("📬 STATUS:", response.status_code, flush=True)
+        print("📬 RESPUESTA:", response.text, flush=True)
+
+        return response.status_code in (200, 202)
+
+    except Exception as e:
+        print("💥 ERROR CORREO:", str(e), flush=True)
+        return False
 
 
 
