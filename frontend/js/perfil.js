@@ -30,7 +30,7 @@ fetch(`/api/perfil/${idUsuario}`)
     const fotoNueva = sessionStorage.getItem("foto_actualizada");
 
     if (fotoNueva) {
-      fotoPerfil.src =`/uploads/${data.foto}?t=${Date.now()}`
+      fotoPerfil.src =`/uploads/${fotoNueva}?t=${Date.now()}`;
 
       sessionStorage.removeItem("foto_actualizada");
     }
