@@ -1055,41 +1055,46 @@ def enviar_correo_async(destinatario, asunto, mensaje):
 
 @app.route('/admin/aprobados', methods=['GET'])
 def usuarios_aprobados():
-    conexion = get_db()
-    cursor = conexion.cursor()
+    try:
+        conexion = get_db()
+        cursor = conexion.cursor()
 
-    cursor.execute("""
-        SELECT id_usuario, nombre, correo, telefono, direccion, fecha_registro
-        FROM usuarios
-        WHERE estado = 'aprobado'
-          AND rol = 'vecino'
-    """)
+        cursor.execute("""
+            SELECT id_usuario, nombre, correo, telefono, direccion, fecha_registro
+            FROM usuarios
+            WHERE estado = 'aprobado'
+              AND rol = 'vecino'
+        """)
 
-    datos = cursor.fetchall()
-    conexion.close()
+        datos = cursor.fetchall()
+        conexion.close()
 
-    resultado = []
+        resultado = []
 
-    for u in datos:
-        fecha = u[5]
+        for u in datos:
+            fecha = u[5]
 
-        # 🔥 SI YA ES STRING → solo cortar bonito
-        if isinstance(fecha, str):
-            fecha_formateada = fecha.split(".")[0].replace("T", " ")
-        else:
-            # 🔥 SI ES DATETIME → formatear
-            fecha_formateada = fecha.strftime("%d/%m/%Y %H:%M")
+            if not fecha:
+                fecha_formateada = ""
+            elif isinstance(fecha, str):
+                fecha_formateada = fecha.split(".")[0].replace("T", " ")
+            else:
+                fecha_formateada = fecha.strftime("%d/%m/%Y %H:%M")
 
-        resultado.append({
-            "id": u[0],
-            "nombre": u[1],
-            "correo": u[2],
-            "telefono": u[3],
-            "direccion": u[4],
-            "fecha": fecha_formateada
-        })
+            resultado.append({
+                "id": u[0],
+                "nombre": u[1],
+                "correo": u[2],
+                "telefono": u[3],
+                "direccion": u[4],
+                "fecha": fecha_formateada
+            })
 
-    return jsonify(resultado)
+        return jsonify(resultado)
+
+    except Exception as e:
+        print("💥 ERROR EN /admin/aprobados:", str(e), flush=True)
+        return jsonify({"error": "Error interno del servidor"}), 500
 
 def enviar_correo_eliminacion(correo, nombre):
     import requests, os
