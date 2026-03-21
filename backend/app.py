@@ -13,6 +13,7 @@ import random
 
 import os
 from werkzeug.utils import secure_filename
+import uuid
 
 from flask_socketio import SocketIO, emit, join_room
 from dotenv import load_dotenv
@@ -1408,6 +1409,8 @@ def resetear():
 
 
 
+
+
 @app.route('/reportes', methods=['POST'])
 def crear_reporte():
     titulo = request.form.get('titulo')
@@ -1423,13 +1426,19 @@ def crear_reporte():
     ruta_foto = None
 
     if foto:
-        filename = secure_filename(foto.filename.lower())
-        ruta = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        # 🔥 nombre único + nombre original limpio
+        nombre_original = secure_filename(foto.filename)
+        extension = nombre_original.split('.')[-1]
+
+        nombre_unico = f"{uuid.uuid4().hex}.{extension}"
+
+        ruta = os.path.join(app.config["UPLOAD_FOLDER"], nombre_unico)
         foto.save(ruta)
-        ruta_foto = filename
+
+        ruta_foto = nombre_unico
 
     conn = get_db()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor = conn.cursor()
 
     cursor.execute("""
         INSERT INTO reportes (titulo, descripcion, foto, fecha, id_usuario, lat, lng, activo)
@@ -1439,7 +1448,10 @@ def crear_reporte():
     conn.commit()
     conn.close()
 
-    return jsonify({"mensaje": "Reporte creado correctamente"})
+    return jsonify({
+        "mensaje": "Reporte creado correctamente",
+        "foto": ruta_foto
+    })
 
 
 
