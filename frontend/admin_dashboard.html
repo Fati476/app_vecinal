@@ -6,15 +6,12 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/sos.css">
-<link rel="stylesheet" href="css/incidencias.css">
-<link rel="stylesheet" href="css/chat.css">
-<link rel="stylesheet" href="css/admin.css">
-<link rel="stylesheet" href="css/chat_ia.css">
-
-
+  <link rel="stylesheet" href="css/incidencias.css">
+  <link rel="stylesheet" href="css/chat.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/chat_ia.css">
 </head>
 <body>
-
 
 <!-- 🔝 TOPBAR -->
 <div class="topbar">
@@ -37,7 +34,7 @@
   <a href="login.html" class="logout">🚪 Cerrar sesión</a>
 </aside>
 
-<!-- 📊 CONTENIDO PRINCIPAL -->
+<!-- 📊 CONTENIDO -->
 <main class="main">
   <h1>Resumen general del sistema</h1>
 
@@ -59,46 +56,36 @@
   </div>
 </main>
 
-
 <button id="btnIA" class="boton-ia">🤖</button>
 
-<!-- PANEL CHAT IA -->
+<!-- PANEL IA -->
 <div id="panelIA" class="panel-ia oculto">
-    <div class="panel-header">
-        Asistente Vecinal
-        <span id="cerrarIA">✖</span>
-    </div>
+  <div class="panel-header">
+    Asistente Vecinal
+    <span id="cerrarIA">✖</span>
+  </div>
 
-    <div id="mensajesIA" class="panel-mensajes"></div>
+  <div id="mensajesIA" class="panel-mensajes"></div>
 
-    <div class="panel-input">
-        <input type="text" id="inputIA" placeholder="Escribe tu mensaje...">
-        <button onclick="enviarMensajeIA()">Enviar</button>
-    </div>
+  <div class="panel-input">
+    <input type="text" id="inputIA" placeholder="Escribe tu mensaje...">
+    <button onclick="enviarMensajeIA()">Enviar</button>
+  </div>
 </div>
 
-
-
-<!-- Socket.IO -->
+<!-- SOCKET -->
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+window.socket = io("https://app-vecinal.onrender.com");
+console.log("🟢 Socket creado");
+</script>
 
-<script src="js/socket.js"></script>
-<!-- IA -->
+<!-- SISTEMA -->
 <script src="js/chat_ia.js"></script>
-
-<!-- incidencias tiempo real -->
 <script src="js/incidencias-burbujas.js"></script>
-
-<!-- SOS -->
 <script src="js/sos.js"></script>
-
-<!-- chat -->
-<script src="js/chat.js"></script>
-
-<!-- sistema -->
 <script src="js/menu.js"></script>
 <script src="js/admin_dashboard.js"></script>
-<script src="js/incidencias.js"></script>
 
 <button id="btnSOS" title="Emergencia">🚨</button>
 
