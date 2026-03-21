@@ -29,10 +29,6 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 app = Flask(__name__)
 CORS(app)
 print("🔥 VERSION NUEVA DESPLEGADA 🔥")
-@app.errorhandler(Exception)
-def handle_exception(e):
-    print("💥 ERROR GLOBAL:", str(e), flush=True)
-    return jsonify({"error": "Error interno"}), 500
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 usuarios_online = {}
 #def get_db():
@@ -105,7 +101,9 @@ def index():
 @app.route("/<path:path>")
 def static_files(path):
     return send_from_directory(FRONTEND_DIR, path)
-
+def handle_exception(e):
+    print("💥 ERROR GLOBAL:", str(e), flush=True)
+    return jsonify({"error": "Error interno"}), 500
 # -----------------------------
 # Conexión a la base de datos
 # -----------------------------
