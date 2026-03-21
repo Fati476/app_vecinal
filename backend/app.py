@@ -1053,6 +1053,34 @@ def enviar_correo_async(destinatario, asunto, mensaje):
 
     threading.Thread(target=tarea).start()
 
+
+
+#fecha 
+
+
+def formatear_fecha_iso(fecha):
+    try:
+        if not fecha:
+            return ""
+
+        # 🔥 si viene como string
+        if isinstance(fecha, str):
+            # quitar zona horaria si existe (+00)
+            fecha = fecha.split("+")[0]
+
+            # si no tiene T → convertir a ISO
+            if "T" not in fecha:
+                fecha = fecha.replace(" ", "T")
+
+            return fecha
+
+        # 🔥 si viene como datetime
+        return fecha.isoformat()
+
+    except Exception as e:
+        print("❌ ERROR FECHA:", e)
+        return ""
+
 @app.route('/admin/aprobados', methods=['GET'])
 def usuarios_aprobados():
     conexion = get_db()
@@ -1071,22 +1099,13 @@ def usuarios_aprobados():
     resultado = []
 
     for u in datos:
-        fecha = u[5]
-
-        # 🔥 SI YA ES STRING → solo cortar bonito
-        if isinstance(fecha, str):
-            fecha_formateada = fecha.split(".")[0].replace("T", " ")
-        else:
-            # 🔥 SI ES DATETIME → formatear
-            fecha_formateada = fecha.strftime("%d/%m/%Y %H:%M")
-
         resultado.append({
             "id": u[0],
             "nombre": u[1],
             "correo": u[2],
             "telefono": u[3],
             "direccion": u[4],
-            "fecha": fecha_formateada
+            "fecha": formatear_fecha_iso(u[5])
         })
 
     return jsonify(resultado)
