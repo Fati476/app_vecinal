@@ -32,7 +32,7 @@ function subirFoto() {
         document.body.classList.add("fade-out");
 
         setTimeout(() => {
-          history.back();
+          window.location.href = "admin_perfil.html";
         }, 300);
 
       } else {

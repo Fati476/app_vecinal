@@ -6,49 +6,55 @@ if (!idUsuario) {
   window.location.href = "login.html";
 }
 
+// 🌐 URL base (IMPORTANTE en producción)
+const API_URL = "https://app-vecinal.onrender.com";
+
 // ==============================
 // 🔹 CARGAR DATOS DEL PERFIL
 // ==============================
 
-fetch(`/api/perfil/${idUsuario}`)
-  .then(res => res.json())
-  .then(data => {
+function cargarPerfil() {
+  fetch(`${API_URL}/api/perfil/${idUsuario}`)
+    .then(res => res.json())
+    .then(data => {
 
-    document.getElementById("nombre").textContent = data.nombre;
-    document.getElementById("correo").textContent = data.correo;
-    document.getElementById("rol").textContent = data.rol;
+      document.getElementById("nombre").textContent = data.nombre;
+      document.getElementById("correo").textContent = data.correo;
+      document.getElementById("rol").textContent = data.rol;
 
-    document.getElementById("telefono").textContent =
-      data.telefono || "No registrado";
+      document.getElementById("telefono").textContent =
+        data.telefono || "No registrado";
 
-    document.getElementById("direccion").textContent =
-      data.direccion || "No registrada";
+      document.getElementById("direccion").textContent =
+        data.direccion || "No registrada";
 
-    const fotoPerfil = document.getElementById("fotoPerfil");
+      const fotoPerfil = document.getElementById("fotoPerfil");
 
-    // 🧠 1️⃣ Si viene una foto recién actualizada
-    const fotoNueva = sessionStorage.getItem("foto_actualizada");
+      // 🧠 1️⃣ Si viene foto recién actualizada
+      const fotoNueva = sessionStorage.getItem("foto_actualizada");
 
-    if (fotoNueva) {
-      fotoPerfil.src =`/uploads/${fotoNueva}?t=${Date.now()}`;
+      if (fotoNueva) {
+        fotoPerfil.src = `${API_URL}/uploads/${fotoNueva}?t=${Date.now()}`;
+        sessionStorage.removeItem("foto_actualizada");
+      }
 
-      sessionStorage.removeItem("foto_actualizada");
-    }
+      // 🧠 2️⃣ Si ya existe foto en BD
+      else if (data.foto) {
+        fotoPerfil.src = `${API_URL}/uploads/${data.foto}?t=${Date.now()}`;
+      }
 
-    // 🧠 2️⃣ Si ya existe foto guardada
-    else if (data.foto) {
-      fotoPerfil.src =
-        `/uploads/${data.foto}?t=${Date.now()}`;
-    }
+      // 🧠 3️⃣ Default
+      else {
+        fotoPerfil.src = "img/default.jpg";
+      }
+    })
+    .catch(err => {
+      console.error("Error al cargar perfil:", err);
+    });
+}
 
-    // 🧠 3️⃣ Si NO hay foto → default
-    else {
-      fotoPerfil.src = "img/default.jpg";
-    }
-  })
-  .catch(err => {
-    console.error("Error al cargar perfil:", err);
-  });
+// 🔥 Ejecutar al cargar
+cargarPerfil();
 
 
 // ==============================
@@ -85,20 +91,22 @@ function cerrarModal() {
 
 // ✅ Confirmar eliminación
 function confirmarEliminar() {
-  fetch(`/api/perfil/foto/${idUsuario}`, {
+  fetch(`${API_URL}/api/perfil/foto/${idUsuario}`, {
     method: "DELETE"
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
 
-      // Cambiar imagen a default inmediatamente
-      document.getElementById("fotoPerfil").src = "img/default.jpg";
+        const fotoPerfil = document.getElementById("fotoPerfil");
 
-      cerrarModal();
-    }
-  })
-  .catch(err => {
-    console.error("Error eliminando foto:", err);
-  });
+        // 🔥 Cambiar a default inmediatamente
+        fotoPerfil.src = "img/default.jpg?t=" + Date.now();
+
+        cerrarModal();
+      }
+    })
+    .catch(err => {
+      console.error("Error eliminando foto:", err);
+    });
 }
