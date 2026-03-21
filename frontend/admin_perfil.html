@@ -87,8 +87,7 @@
  </div>
 </main>
 
-
-
+<!-- 🤖 BOTÓN IA -->
 <button id="btnIA" class="boton-ia">🤖</button>
 
 <!-- PANEL CHAT IA -->
@@ -106,22 +105,30 @@
     </div>
 </div>
 
-
-
-<!-- JS DEL BOTÓN SOS -->
+<!-- 🔌 SOCKET.IO -->
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<!-- 🔥 SOCKET GLOBAL -->
+<script>
+window.socket = io("https://app-vecinal.onrender.com");
+console.log("🟢 Socket creado");
+</script>
+
+<!-- IA -->
 <script src="js/chat_ia.js"></script>
 
-<!-- 🫧 BURBUJAS / SOS / CHAT -->
+<!-- INCIDENCIAS -->
 <script src="js/incidencias-burbujas.js"></script>
+
+<!-- 🚨 BOTÓN SOS -->
 <button id="btnSOS" title="Emergencia">🚨</button>
-<script src="js/chat.js"></script>
 <script src="js/sos.js"></script>
 
-<!-- JS -->
+<!-- SISTEMA -->
 <script src="js/menu.js"></script>
 <script src="js/perfil.js"></script>
-</body>
+
+<!-- 🧾 MODAL -->
 <div id="modalConfirm" class="modal">
   <div class="modal-content">
     <p>¿Estás segura que deseas eliminar tu foto?</p>
@@ -131,4 +138,6 @@
     </div>
   </div>
 </div>
+
+</body>
 </html>
