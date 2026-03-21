@@ -1746,12 +1746,12 @@ def obtener_perfil(id_usuario):
 
     if usuario:
         return jsonify({
-            "nombre": usuario[0],
-            "correo": usuario[1],
-            "rol": usuario[2],
-            "telefono": usuario[3],
-            "direccion": usuario[4],
-            "foto": usuario[5]   # 👈 NUEVO
+            "nombre": usuario["nombre"],
+            "correo": usuario["correo"],
+            "rol": usuario["rol"],
+            "telefono": usuario["telefono"],
+            "direccion": usuario["direccion"],
+            "foto": usuario["foto"]
         })
 
     return jsonify({"error": "Usuario no encontrado"}), 404
