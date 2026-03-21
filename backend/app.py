@@ -101,6 +101,8 @@ def index():
 @app.route("/<path:path>")
 def static_files(path):
     return send_from_directory(FRONTEND_DIR, path)
+
+@app.errorhandler(Exception)
 def handle_exception(e):
     print("💥 ERROR GLOBAL:", str(e), flush=True)
     return jsonify({"error": "Error interno"}), 500
