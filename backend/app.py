@@ -1217,14 +1217,14 @@ def dashboard():
     conn = get_db()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-    cursor.execute("SELECT COUNT(*) FROM usuarios WHERE estado='pendiente'")
-    pendientes = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) AS total FROM usuarios WHERE estado='pendiente'")
+    pendientes = cursor.fetchone()["total"]
 
-    cursor.execute("SELECT COUNT(*) FROM usuarios WHERE estado='aprobado'")
-    aprobados = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) AS total FROM usuarios WHERE estado='aprobado'")
+    aprobados = cursor.fetchone()["total"]
 
-    cursor.execute("SELECT COUNT(*) FROM usuarios WHERE estado='rechazado'")
-    rechazados = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) AS total FROM usuarios WHERE estado='rechazado'")
+    rechazados = cursor.fetchone()["total"]
 
     conn.close()
 
