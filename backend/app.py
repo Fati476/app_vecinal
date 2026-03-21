@@ -1839,8 +1839,8 @@ def eliminar_foto(id_usuario):
     cursor.execute("SELECT foto FROM usuarios WHERE id_usuario = %s", (id_usuario,))
     usuario = cursor.fetchone()
 
-    if usuario and usuario[0]:
-        nombre_foto = usuario[0]
+    if usuario and usuario["foto"]:
+        nombre_foto = usuario["foto"]
         ruta = os.path.join(app.config["UPLOAD_FOLDER"], nombre_foto)
 
         # 🗑 borrar archivo físico si existe
