@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <strong>${r.titulo}</strong>
             <p>${r.descripcion}</p>
             <small>👤 ${r.autor || "Anónimo"} | 📅 ${fechaBonita}</small>
-            ${r.foto ? `<img src="${API}/uploads/${r.foto}?t=${Date.now()}" class="img-reporte">` : ""}
+            ${r.foto ? `<img src="${r.foto}" class="img-reporte">` : ""}
             <div class="acciones">
               <button class="btn-mapa">📍 Ir a la ubicación</button>
             </div>

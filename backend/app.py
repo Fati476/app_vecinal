@@ -19,7 +19,8 @@ from flask_socketio import SocketIO, emit, join_room
 from dotenv import load_dotenv
 from zoneinfo import ZoneInfo
 from psycopg2.extras import RealDictCursor
-
+import cloudinary
+import cloudinary.uploader
 load_dotenv()
 
 
@@ -69,6 +70,11 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, "..", "uploads")
 UPLOAD_FOLDER = os.path.abspath(UPLOAD_FOLDER)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+)
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -1426,16 +1432,11 @@ def crear_reporte():
     ruta_foto = None
 
     if foto:
-        # 🔥 nombre único + nombre original limpio
-        nombre_original = secure_filename(foto.filename)
-        extension = nombre_original.split('.')[-1]
-
-        nombre_unico = f"{uuid.uuid4().hex}.{extension}"
-
-        ruta = os.path.join(app.config["UPLOAD_FOLDER"], nombre_unico)
-        foto.save(ruta)
-
-        ruta_foto = nombre_unico
+        resultado = cloudinary.uploader.upload(
+            foto,
+            folder="reportes"
+        )
+        ruta_foto = resultado["secure_url"]
 
     conn = get_db()
     cursor = conn.cursor()
@@ -1554,13 +1555,7 @@ def editar_reporte(id_reporte):
     if not titulo or not descripcion or not id_usuario or not rol:
         return jsonify({"error": "Datos incompletos"}), 400
 
-    try:
-        id_usuario = int(id_usuario)
-    except:
-        return jsonify({"error": "Usuario inválido"}), 400
-
-    if rol not in ["vecino", "admin"]:
-        return jsonify({"error": "Rol no permitido"}), 403
+    id_usuario = int(id_usuario)
 
     conn = get_db()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -1578,34 +1573,26 @@ def editar_reporte(id_reporte):
         return jsonify({"error": "Reporte no encontrado"}), 404
 
     dueño = reporte["id_usuario"]
-    foto_anterior = reporte["foto"]
 
-    # 🔐 Vecino solo edita lo suyo
     if rol == "vecino" and id_usuario != dueño:
         conn.close()
         return jsonify({"error": "No autorizado"}), 403
 
-    nombre_foto = foto_anterior
+    ruta_foto = reporte["foto"]
 
-    # 📸 si hay nueva imagen
+    # 🔥 NUEVA IMAGEN (Cloudinary)
     if foto:
-        filename = secure_filename(foto.filename.lower())
-        ruta = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        foto.save(ruta)
-
-        # borrar imagen vieja
-        if foto_anterior:
-            ruta_old = os.path.join(app.config["UPLOAD_FOLDER"], foto_anterior)
-            if os.path.exists(ruta_old):
-                os.remove(ruta_old)
-
-        nombre_foto = filename
+        resultado = cloudinary.uploader.upload(
+            foto,
+            folder="reportes"
+        )
+        ruta_foto = resultado["secure_url"]
 
     cursor.execute("""
         UPDATE reportes
         SET titulo = %s, descripcion = %s, foto = %s
         WHERE id_reporte = %s
-    """, (titulo, descripcion, nombre_foto, id_reporte))
+    """, (titulo, descripcion, ruta_foto, id_reporte))
 
     conn.commit()
     conn.close()
