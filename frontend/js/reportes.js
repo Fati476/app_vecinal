@@ -142,14 +142,14 @@ document.addEventListener("DOMContentLoaded", () => {
   ================================ */
   function editarReporte(r) {
 
-    modal.style.display = "flex";
+    modalEditar.style.display = "flex";
 
   // 🔥 llenar datos
     document.getElementById("edit_id").value = r.id;
-    document.getElementById("edit_titulo").value = r.titulo;
-    document.getElementById("edit_descripcion").value = r.descripcion;
-    document.getElementById("edit_lat").value = r.lat;
-    document.getElementById("edit_lng").value = r.lng;
+    edit_titulo.value = r.titulo;
+    edit_descripcion.value = r.descripcion;
+    edit_lat.value = r.lat;
+    edit_lng.value = r.lng;
 
     const preview = document.getElementById("preview_foto");
 
@@ -203,6 +203,7 @@ document.getElementById("formEditar").addEventListener("submit", e => {
   if (foto) {
     fd.append("foto", foto);
   }
+  console.log("ID QUE SE ENVÍA:", id);
 
   fetch(`${API}/reportes/${id}`, {
     method: "PUT",
@@ -218,7 +219,7 @@ document.getElementById("formEditar").addEventListener("submit", e => {
 
     alert("Reporte actualizado");
 
-    document.getElementById("modalEditar").style.display = "none";
+    modalEditar.style.display = "none";
 
     cargarReportes();
   })
