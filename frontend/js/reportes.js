@@ -16,10 +16,21 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  /* ===============================
+     📌 ELEMENTOS
+  ================================ */
   const latInput = document.getElementById("lat");
   const lngInput = document.getElementById("lng");
 
+  const modalEditar = document.getElementById("modalEditar");
+
+  const edit_titulo = document.getElementById("edit_titulo");
+  const edit_descripcion = document.getElementById("edit_descripcion");
+  const edit_lat = document.getElementById("edit_lat");
+  const edit_lng = document.getElementById("edit_lng");
+
   let mapa, marcador;
+  let mapaEditar, marcadorEditar;
 
   /* ===============================
      📍 MAPA CREAR
@@ -84,14 +95,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         data.forEach(r => {
 
-          // 🔥 FECHA BONITA (igual que admin)
           const fechaBonita = r.fecha
             ? new Date(r.fecha).toLocaleString("es-MX", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "numeric",
-                minute: "2-digit"
+                dateStyle: "medium",
+                timeStyle: "short"
               })
             : "";
 
@@ -99,31 +106,29 @@ document.addEventListener("DOMContentLoaded", () => {
           div.className = "reporte";
 
           div.innerHTML = `
-            <strong>🚧 ${r.titulo}</strong>
+            <strong>${r.titulo}</strong>
             <p>${r.descripcion}</p>
             <small>👤 ${r.autor || "Anónimo"} | 📅 ${fechaBonita}</small>
             ${r.foto ? `<img src="${API}/uploads/${r.foto}?t=${Date.now()}" class="img-reporte">` : ""}
             <div class="acciones">
-              <button class="btn-mapa">📍 Ir a la ubicación</button
+              <button class="btn-mapa">📍 Ir a la ubicación</button>
             </div>
-
           `;
 
-          // 📍 ir a maps
+          // 📍 abrir maps
           div.querySelector(".btn-mapa").onclick = () => {
             window.open(`https://www.google.com/maps?q=${r.lat},${r.lng}`, "_blank");
           };
 
-          // 🔥 SOLO SI ES SU REPORTE
+          // 🔥 SOLO EL DUEÑO
           if (usuario.id == r.id_usuario) {
+
             const acciones = div.querySelector(".acciones");
 
-            // ✏️ EDITAR
             const btnEditar = document.createElement("button");
             btnEditar.textContent = "✏️ Editar";
             btnEditar.onclick = () => editarReporte(r);
 
-            // 🗑 ELIMINAR
             const btnEliminar = document.createElement("button");
             btnEliminar.textContent = "🗑 Eliminar";
             btnEliminar.onclick = () => eliminarReporte(r.id);
@@ -138,9 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===============================
-     ✏️ EDITAR (BÁSICO POR AHORA)
+     ✏️ EDITAR
   ================================ */
   function editarReporte(r) {
+
     modalEditar.style.display = "flex";
 
     document.getElementById("edit_id").value = r.id;
@@ -150,7 +156,10 @@ document.addEventListener("DOMContentLoaded", () => {
     edit_lng.value = r.lng;
 
     setTimeout(() => {
-      if (mapaEditar) mapaEditar.remove();
+
+      if (mapaEditar) {
+        mapaEditar.remove();
+      }
 
       mapaEditar = L.map("mapaEditar").setView([r.lat, r.lng], 16);
 
@@ -165,58 +174,66 @@ document.addEventListener("DOMContentLoaded", () => {
         edit_lat.value = p.lat;
         edit_lng.value = p.lng;
       });
+
     }, 300);
   }
 
+  /* ===============================
+     ❌ CERRAR MODAL
+  ================================ */
   window.cerrarModal = () => {
     modalEditar.style.display = "none";
-    if (mapaEditar) mapaEditar.remove();
+
+    if (mapaEditar) {
+      mapaEditar.remove();
+      mapaEditar = null;
+    }
   };
 
+  /* ===============================
+     💾 GUARDAR EDICIÓN
+  ================================ */
+  document.getElementById("formEditar").addEventListener("submit", e => {
 
-document.getElementById("formEditar").addEventListener("submit", e => {
+    e.preventDefault();
 
-  e.preventDefault();
+    const id = document.getElementById("edit_id").value;
 
-  const id = document.getElementById("edit_id").value;
+    const fd = new FormData();
 
-  const fd = new FormData();
+    fd.append("titulo", edit_titulo.value);
+    fd.append("descripcion", edit_descripcion.value);
+    fd.append("id_usuario", usuario.id);
+    fd.append("rol", usuario.rol);
 
-  fd.append("titulo", document.getElementById("edit_titulo").value);
-  fd.append("descripcion", document.getElementById("edit_descripcion").value);
-  fd.append("id_usuario", usuario.id);
-  fd.append("rol", usuario.rol);
-
-  const foto = document.getElementById("edit_foto").files[0];
-  if (foto) {
-    fd.append("foto", foto);
-  }
-  console.log("ID QUE SE ENVÍA:", id);
-
-  fetch(`${API}/reportes/${id}`, {
-    method: "PUT",
-    body: fd
-  })
-  .then(r => r.json())
-  .then(data => {
-
-    if (data.error) {
-      alert(data.error);
-      return;
+    const foto = document.getElementById("edit_foto").files[0];
+    if (foto) {
+      fd.append("foto", foto);
     }
 
-    alert("Reporte actualizado");
+    fetch(`${API}/reportes/${id}`, {
+      method: "PUT",
+      body: fd
+    })
+      .then(r => r.json())
+      .then(data => {
 
-    modalEditar.style.display = "none";
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
 
-    cargarReportes();
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Error al actualizar");
+        alert("Reporte actualizado");
+
+        modalEditar.style.display = "none";
+        cargarReportes();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error al actualizar");
+      });
+
   });
-
-});
 
   /* ===============================
      🗑 ELIMINAR
@@ -234,4 +251,5 @@ document.getElementById("formEditar").addEventListener("submit", e => {
      🚀 INICIAR
   ================================ */
   cargarReportes();
+
 });
