@@ -99,19 +99,14 @@ document.addEventListener("DOMContentLoaded", () => {
           div.className = "reporte";
 
           div.innerHTML = `
-            <div class="reporte-header">
-              <span>👤 ${r.autor || "Anónimo"}</span>
-              <span>📅 ${fechaBonita}</span>
-            </div>
-
-            <div class="reporte-titulo">🚧 ${r.titulo}</div>
+            <strong>🚧 ${r.titulo}</strong>
             <p>${r.descripcion}</p>
-
+            <small>👤 ${r.autor || "Anónimo"} | 📅 ${fechaBonita}</small>
             ${r.foto ? `<img src="${API}/uploads/${r.foto}?t=${Date.now()}" class="img-reporte">` : ""}
-
             <div class="acciones">
-              <button class="btn-mapa">📍 Ir a la ubicación</button>
+              <button class="btn-mapa">📍 Ir a la ubicación</button
             </div>
+
           `;
 
           // 📍 ir a maps
