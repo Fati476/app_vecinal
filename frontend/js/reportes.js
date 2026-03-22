@@ -141,27 +141,14 @@ document.addEventListener("DOMContentLoaded", () => {
      ✏️ EDITAR (BÁSICO POR AHORA)
   ================================ */
   function editarReporte(r) {
-
     modalEditar.style.display = "flex";
 
-  // 🔥 llenar datos
     document.getElementById("edit_id").value = r.id;
     edit_titulo.value = r.titulo;
     edit_descripcion.value = r.descripcion;
     edit_lat.value = r.lat;
     edit_lng.value = r.lng;
 
-    const preview = document.getElementById("preview_foto");
-
-  // 🖼️ mostrar foto actual
-    if (r.foto) {
-      preview.src = `${API}/uploads/${r.foto}?t=${Date.now()}`;
-      preview.style.display = "block";
-    } else {
-      preview.style.display = "none";
-    }
-
-  // 🗺️ mapa editar
     setTimeout(() => {
       if (mapaEditar) mapaEditar.remove();
 
@@ -180,6 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }, 300);
   }
+
   window.cerrarModal = () => {
     modalEditar.style.display = "none";
     if (mapaEditar) mapaEditar.remove();
