@@ -155,10 +155,24 @@
 
 <!-- JS DEL BOTÓN SOS -->
 
+<!-- Socket.IO -->
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<script>
+window.socket = io("https://app-vecinal.onrender.com");
+console.log("🟢 Socket creado");
+</script>
+
+<!-- IA -->
 <script src="js/chat_ia.js"></script>
-<script src="js/sos.js"></script>
+
+<!-- incidencias -->
 <script src="js/incidencias-burbujas.js"></script>
+
+<!-- SOS -->
+<script src="js/sos.js"></script>
+
+<!-- sistema -->
 <script src="js/menu.js"></script>
 <script src="js/reportes.js"></script>
 </body>
