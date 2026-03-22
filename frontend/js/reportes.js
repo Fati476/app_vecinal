@@ -142,7 +142,6 @@ document.addEventListener("DOMContentLoaded", () => {
   ================================ */
   function editarReporte(r) {
 
-    const modal = document.getElementById("modalEditar");
     modal.style.display = "flex";
 
   // 🔥 llenar datos
@@ -164,7 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 🗺️ mapa editar
     setTimeout(() => {
-
       if (mapaEditar) mapaEditar.remove();
 
       mapaEditar = L.map("mapaEditar").setView([r.lat, r.lng], 16);
@@ -177,12 +175,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       marcadorEditar.on("dragend", e => {
         const p = e.target.getLatLng();
-        document.getElementById("edit_lat").value = p.lat;
-        document.getElementById("edit_lng").value = p.lng;
+        edit_lat.value = p.lat;
+        edit_lng.value = p.lng;
       });
-
     }, 300);
   }
+  window.cerrarModal = () => {
+    modalEditar.style.display = "none";
+    if (mapaEditar) mapaEditar.remove();
+  };
 
 
 document.getElementById("formEditar").addEventListener("submit", e => {
