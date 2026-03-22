@@ -141,8 +141,92 @@ document.addEventListener("DOMContentLoaded", () => {
      ✏️ EDITAR (BÁSICO POR AHORA)
   ================================ */
   function editarReporte(r) {
-    alert("Aquí puedes abrir tu modal después 😉");
+
+  const modal = document.getElementById("modalEditar");
+  modal.style.display = "flex";
+
+  // 🔥 llenar datos
+  document.getElementById("edit_id").value = r.id;
+  document.getElementById("edit_titulo").value = r.titulo;
+  document.getElementById("edit_descripcion").value = r.descripcion;
+  document.getElementById("edit_lat").value = r.lat;
+  document.getElementById("edit_lng").value = r.lng;
+
+  const preview = document.getElementById("preview_foto");
+
+  // 🖼️ mostrar foto actual
+  if (r.foto) {
+    preview.src = `${API}/uploads/${r.foto}?t=${Date.now()}`;
+    preview.style.display = "block";
+  } else {
+    preview.style.display = "none";
   }
+
+  // 🗺️ mapa editar
+  setTimeout(() => {
+
+    if (mapaEditar) mapaEditar.remove();
+
+    mapaEditar = L.map("mapaEditar").setView([r.lat, r.lng], 16);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+      .addTo(mapaEditar);
+
+    marcadorEditar = L.marker([r.lat, r.lng], { draggable: true })
+      .addTo(mapaEditar);
+
+    marcadorEditar.on("dragend", e => {
+      const p = e.target.getLatLng();
+      document.getElementById("edit_lat").value = p.lat;
+      document.getElementById("edit_lng").value = p.lng;
+    });
+
+  }, 300);
+  
+}
+
+document.getElementById("formEditar").addEventListener("submit", e => {
+
+  e.preventDefault();
+
+  const id = document.getElementById("edit_id").value;
+
+  const fd = new FormData();
+
+  fd.append("titulo", document.getElementById("edit_titulo").value);
+  fd.append("descripcion", document.getElementById("edit_descripcion").value);
+  fd.append("id_usuario", usuario.id);
+  fd.append("rol", usuario.rol);
+
+  const foto = document.getElementById("edit_foto").files[0];
+  if (foto) {
+    fd.append("foto", foto);
+  }
+
+  fetch(`${API}/reportes/${id}`, {
+    method: "PUT",
+    body: fd
+  })
+  .then(r => r.json())
+  .then(data => {
+
+    if (data.error) {
+      alert(data.error);
+      return;
+    }
+
+    alert("Reporte actualizado");
+
+    document.getElementById("modalEditar").style.display = "none";
+
+    cargarReportes();
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Error al actualizar");
+  });
+
+});
 
   /* ===============================
      🗑 ELIMINAR
