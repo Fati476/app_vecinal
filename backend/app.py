@@ -2031,7 +2031,7 @@ def manejar_mensaje_grupo(data):
         "mensaje": mensaje,
         "imagen": imagen,
         "foto": usuario["foto"],
-        "fecha": datetime.now(timezone.utc).isoformat()
+        "fecha": datetime.now().isoformat()
     }, room=str(grupo_id))
 
 usuarios_conectados = {}
