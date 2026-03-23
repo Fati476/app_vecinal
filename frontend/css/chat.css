@@ -49,33 +49,65 @@ body {
   gap: 12px;
 }
 
-/* MENSAJE BASE */
+/* CONTENEDOR GENERAL MENSAJE */
 .mensaje {
-  max-width: 65%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 14px;
-  line-height: 1.4;
-  position: relative;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  display: flex;
+  max-width: 70%;
 }
 
-/* MENSAJE MÍO */
+/* POSICIÓN */
 .mensaje.mio {
   align-self: flex-end;
+}
+
+.mensaje.otro {
+  align-self: flex-start;
+}
+
+/* CONTENEDOR INTERNO */
+.mensaje-contenedor {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* INVERTIR PARA MIS MENSAJES */
+.mio .mensaje-contenedor {
+  flex-direction: row-reverse;
+}
+
+/* FOTO */
+.foto-chat {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* BURBUJA */
+.contenido {
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  max-width: 260px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  word-wrap: break-word;
+  animation: fadeIn 0.2s ease-in;
+}
+
+/* MIS MENSAJES */
+.mio .contenido {
   background: #dcf8c6;
   border-bottom-right-radius: 4px;
 }
 
-/* MENSAJE OTRO */
-.mensaje.otro {
-  align-self: flex-start;
-  background: #ffffff;
+/* OTROS */
+.otro .contenido {
   border-bottom-left-radius: 4px;
 }
 
 /* NOMBRE */
-.mensaje strong {
+.contenido strong {
   display: block;
   font-size: 12px;
   color: #555;
@@ -83,12 +115,12 @@ body {
 }
 
 /* TEXTO */
-.mensaje p {
+.contenido p {
   margin: 0;
 }
 
 /* HORA */
-.mensaje .hora {
+.contenido .hora {
   font-size: 11px;
   color: #777;
   text-align: right;
@@ -151,6 +183,7 @@ body {
   color: #475569;
 }
 
+/* ================= FECHA ================= */
 .separador-fecha {
   align-self: center;
   background: rgba(0,0,0,0.1);
@@ -161,27 +194,21 @@ body {
   margin: 10px 0;
 }
 
-
+/* ================= ESCRIBIENDO ================= */
 .escribiendo {
   font-size: 12px;
   color: #64748b;
   padding: 6px 18px;
 }
 
-
-.mensaje-contenedor {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.foto-chat {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.mio .mensaje-contenedor {
-  flex-direction: row-reverse;
+/* ================= ANIMACIÓN ================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
