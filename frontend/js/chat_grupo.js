@@ -144,7 +144,7 @@ function enviarMensaje() {
     if (archivo) {
         const formData = new FormData();
         formData.append("file", archivo);
-        formData.append("upload_preset", "ml_default");
+        formData.append("upload_preset", "chat_upload");
 
         fetch("https://api.cloudinary.com/v1_1/dwpfvr7oz/image/upload", {
             method: "POST",
@@ -201,6 +201,14 @@ function agregarMensaje(data) {
     `;
 
     chat.appendChild(div);
+}
+
+function irGrupo() {
+    // recargar o asegurar que estás en grupo 1
+    socket.emit("unirse_grupo", { grupo_id });
+    socket.emit("cargar_mensajes", { grupo_id });
+
+    chat.innerHTML = "";
 }
 
 // ==============================
