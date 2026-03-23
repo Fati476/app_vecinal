@@ -106,8 +106,12 @@
 <!-- 🫧 BURBUJAS / SOS / CHAT -->
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+window.socket = io("https://app-vecinal.onrender.com");
+console.log("🟢 Socket creado");
+</script>
 <script src="js/chat_ia.js"></script>
-<script src="js/chat.js"></script>
+
 <script src="js/sos.js"></script>
 <button id="btnSOS" title="Emergencia">🚨</button>
 
