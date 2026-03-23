@@ -2087,7 +2087,6 @@ def cargar_mensajes(data):
     grupo_id = data["grupo_id"]
 
     conn = get_db()
-    #conn.row_factory = sqlite3.Row
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
@@ -2106,9 +2105,17 @@ def cargar_mensajes(data):
     rows = cursor.fetchall()
     conn.close()
 
-    mensajes = [dict(row) for row in rows]
+    mensajes_limpios = []
 
-    emit("mensajes_anteriores", mensajes)
+    for row in rows:
+        mensajes_limpios.append({
+            "usuario_id": row["usuario_id"],
+            "nombre": row["nombre"],
+            "mensaje": row["mensaje"],
+            "fecha": row["fecha"].strftime("%Y-%m-%d %H:%M:%S") if row["fecha"] else ""
+        })
+
+    emit("mensajes_anteriores", mensajes_limpios)
 
 
 
