@@ -2006,8 +2006,8 @@ def unirse_grupo(data):
 def manejar_mensaje_grupo(data):
     grupo_id = data["grupo_id"]
     usuario_id = data["usuario_id"]
-    mensaje = data.get("mensaje", "")
-    imagen = data.get("imagen", None)
+    mensaje = data.get("mensaje")
+    imagen = data.get("imagen")
 
     conn = get_db()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -2111,6 +2111,7 @@ def cargar_mensajes(data):
             "usuario_id": row["usuario_id"],
             "nombre": row["nombre"],
             "mensaje": row["mensaje"],
+            "imagen": row["imagen"],
             "foto": row["foto"],
             "fecha": row["fecha"].isoformat() if row["fecha"] else ""
         })

@@ -179,7 +179,7 @@ function enviarMensaje() {
 // ==============================
 function obtenerEtiquetaFecha(fechaMensaje) {
     const hoy = new Date();
-    const fecha = new Date(fechaMensaje);
+    const fecha = new Date(data.fecha + "Z");
 
     const inicioHoy = new Date(
         hoy.getFullYear(),
@@ -213,7 +213,7 @@ function obtenerEtiquetaFecha(fechaMensaje) {
 function agregarMensaje(data) {
     const div = document.createElement("div");
 
-    const fecha = new Date(data.fecha);
+    const fecha = new Date(data.fecha + "Z");
     const hora = fecha.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit'
