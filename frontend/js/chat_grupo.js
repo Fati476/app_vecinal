@@ -127,6 +127,7 @@ imagenInput.addEventListener("change", () => {
     };
     reader.readAsDataURL(file);
 });
+
 function quitarImagen() {
     imagenInput.value = "";
     previewContainer.innerHTML = "";
@@ -174,15 +175,63 @@ function enviarMensaje() {
 }
 
 // ==============================
-// 💬 PINTAR MENSAJE
+// 📅 FUNCIÓN PRO DE FECHAS
+// ==============================
+function obtenerEtiquetaFecha(fechaMensaje) {
+    const hoy = new Date();
+    const fecha = new Date(fechaMensaje);
+
+    const inicioHoy = new Date(
+        hoy.getFullYear(),
+        hoy.getMonth(),
+        hoy.getDate()
+    );
+
+    const inicioMensaje = new Date(
+        fecha.getFullYear(),
+        fecha.getMonth(),
+        fecha.getDate()
+    );
+
+    const diferencia = Math.floor(
+        (inicioHoy - inicioMensaje) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diferencia === 0) return "Hoy";
+    if (diferencia === 1) return "Ayer";
+
+    return fecha.toLocaleDateString("es-MX", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+    });
+}
+
+// ==============================
+// 💬 PINTAR MENSAJE (YA CON FECHA)
 // ==============================
 function agregarMensaje(data) {
     const div = document.createElement("div");
 
-    const fecha = new Date(data.fecha + " UTC");
-    const hora = fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const fecha = new Date(data.fecha);
+    const hora = fecha.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 
     const esMio = parseInt(data.usuario_id) === parseInt(usuario_id);
+
+    const etiquetaFecha = obtenerEtiquetaFecha(data.fecha);
+
+    // 🔥 SEPARADOR DE FECHA
+    if (ultimaFechaMostrada !== etiquetaFecha) {
+        const separador = document.createElement("div");
+        separador.classList.add("separador-fecha");
+        separador.innerText = etiquetaFecha;
+
+        chat.appendChild(separador);
+        ultimaFechaMostrada = etiquetaFecha;
+    }
 
     div.classList.add("mensaje", esMio ? "mio" : "otro");
 
@@ -203,8 +252,10 @@ function agregarMensaje(data) {
     chat.appendChild(div);
 }
 
+// ==============================
+// 🔁 BOTÓN GRUPO
+// ==============================
 function irGrupo() {
-    // recargar o asegurar que estás en grupo 1
     socket.emit("unirse_grupo", { grupo_id });
     socket.emit("cargar_mensajes", { grupo_id });
 

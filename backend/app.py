@@ -2030,7 +2030,7 @@ def manejar_mensaje_grupo(data):
         "mensaje": mensaje,
         "imagen": imagen,
         "foto": usuario["foto"],
-        "fecha": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        "fecha": datetime.now(timezone.utc).isoformat()
     }, room=str(grupo_id))
 
 
@@ -2112,7 +2112,7 @@ def cargar_mensajes(data):
             "nombre": row["nombre"],
             "mensaje": row["mensaje"],
             "foto": row["foto"],
-            "fecha": row["fecha"].strftime("%Y-%m-%d %H:%M:%S") if row["fecha"] else ""
+            "fecha": row["fecha"].isoformat() if row["fecha"] else ""
         })
 
     emit("mensajes_anteriores", mensajes_limpios)
