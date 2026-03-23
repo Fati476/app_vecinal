@@ -1750,7 +1750,7 @@ def obtener_perfil(id_usuario):
             "rol": usuario["rol"],
             "telefono": usuario["telefono"],
             "direccion": usuario["direccion"],
-            "foto": usuario["foto"]
+            "foto": usuario["foto"]  # 👈 ahora será URL de Cloudinary
         })
 
     return jsonify({"error": "Usuario no encontrado"}), 404
@@ -1767,24 +1767,30 @@ def subir_foto_perfil():
     if not id_usuario or foto.filename == "":
         return jsonify({"success": False, "message": "Datos incompletos"}), 400
 
-    extension = foto.filename.rsplit(".", 1)[1].lower()
-    nombre_archivo = f"perfil_{id_usuario}.{extension}"
-    ruta = os.path.join(app.config["UPLOAD_FOLDER"], nombre_archivo)
+    # 🔥 subir a cloudinary
+    resultado = cloudinary.uploader.upload(
+        foto,
+        folder="perfiles",  # 👈 carpeta en cloudinary
+        public_id=f"perfil_{id_usuario}",
+        overwrite=True
+    )
 
-    foto.save(ruta)
+    url_foto = resultado["secure_url"]
 
     conn = get_db()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
+
     cursor.execute(
         "UPDATE usuarios SET foto = %s WHERE id_usuario = %s",
-        (nombre_archivo, id_usuario)
+        (url_foto, id_usuario)
     )
+
     conn.commit()
     conn.close()
 
     return jsonify({
-    "success": True,
-    "foto": nombre_archivo
+        "success": True,
+        "foto": url_foto
     })
 
 
@@ -1834,19 +1840,19 @@ def eliminar_foto(id_usuario):
     conn = get_db()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-    # 🔎 Obtener nombre de la foto actual
+    # 🔎 obtener URL actual
     cursor.execute("SELECT foto FROM usuarios WHERE id_usuario = %s", (id_usuario,))
     usuario = cursor.fetchone()
 
     if usuario and usuario["foto"]:
-        nombre_foto = usuario["foto"]
-        ruta = os.path.join(app.config["UPLOAD_FOLDER"], nombre_foto)
+        try:
+            # 🔥 eliminar de cloudinary
+            public_id = f"perfiles/perfil_{id_usuario}"
+            cloudinary.uploader.destroy(public_id)
+        except Exception as e:
+            print("Error eliminando en cloudinary:", e)
 
-        # 🗑 borrar archivo físico si existe
-        if os.path.exists(ruta):
-            os.remove(ruta)
-
-    # 🧹 poner foto en NULL en la BD
+    # 🧹 limpiar BD
     cursor.execute(
         "UPDATE usuarios SET foto = NULL WHERE id_usuario = %s",
         (id_usuario,)

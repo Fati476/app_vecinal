@@ -16,7 +16,7 @@ function subirFoto() {
   formData.append("foto", input.files[0]);
   formData.append("id_usuario", idUsuario);
 
-  fetch("/api/perfil/foto", {
+  fetch(`${API_URL}/api/perfil/foto`, {
     method: "POST",
     body: formData
   })
@@ -24,15 +24,19 @@ function subirFoto() {
     .then(data => {
       if (data.success) {
 
-        // 🔑 avisamos al perfil que la foto cambió
+        // 🔥 ahora es URL completa (Cloudinary)
         sessionStorage.setItem("foto_actualizada", data.foto);
 
-
-        // 🎞️ animación suave al volver
         document.body.classList.add("fade-out");
 
+        const rol = localStorage.getItem("rol");
+
         setTimeout(() => {
-          window.location.href = "admin_perfil.html";
+          if (rol === "admin") {
+            window.location.href = "admin_perfil.html";
+          } else {
+            window.location.href = "vecino_perfil.html";
+          }
         }, 300);
 
       } else {

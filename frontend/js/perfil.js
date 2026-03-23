@@ -34,13 +34,13 @@ function cargarPerfil() {
       const fotoNueva = sessionStorage.getItem("foto_actualizada");
 
       if (fotoNueva) {
-        fotoPerfil.src = `${API_URL}/uploads/${fotoNueva}?t=${Date.now()}`;
+        fotoPerfil.src = fotoNueva;
         sessionStorage.removeItem("foto_actualizada");
       }
 
       // 🧠 2️⃣ Si ya existe foto en BD
       else if (data.foto) {
-        fotoPerfil.src = `${API_URL}/uploads/${data.foto}?t=${Date.now()}`;
+        fotoPerfil.src = fotoNueva;
       }
 
       // 🧠 3️⃣ Default
