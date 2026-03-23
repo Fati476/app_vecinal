@@ -119,11 +119,18 @@ imagenInput.addEventListener("change", () => {
     const reader = new FileReader();
     reader.onload = e => {
         previewContainer.innerHTML = `
-            <img src="${e.target.result}" class="preview-img">
+            <div class="preview-box">
+              <img src="${e.target.result}" class="preview-img">
+              <span class="cerrar-preview" onclick="quitarImagen()">✖</span>
+            </div>
         `;
     };
     reader.readAsDataURL(file);
 });
+function quitarImagen() {
+    imagenInput.value = "";
+    previewContainer.innerHTML = "";
+}
 
 // ==============================
 // 📤 ENVIAR MENSAJE
