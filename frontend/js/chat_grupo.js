@@ -1,170 +1,193 @@
 const socket = io();
-let ultimaFechaMostrada = null;
 
+let ultimaFechaMostrada = null;
 const grupo_id = 1;
 const usuario_id = localStorage.getItem("id_usuario");
-
-if (!usuario_id) {
-    console.error("No hay usuario logueado");
-}
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("mensaje");
 const escribiendoDiv = document.getElementById("escribiendo");
+const imagenInput = document.getElementById("imagenInput");
+const previewContainer = document.getElementById("previewContainer");
 
-// 🌐 URL API (IMPORTANTE)
 const API_URL = "https://app-vecinal.onrender.com";
 
+let usuariosActivos = [];
+
+// 🔔 NOTIFICACIONES
+if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
 
 // ==============================
 // 🔌 CONEXIÓN
 // ==============================
-socket.on("connect", function () {
-    console.log("Conectado al servidor");
-
+socket.on("connect", () => {
     socket.emit("unirse_grupo", { grupo_id });
     socket.emit("cargar_mensajes", { grupo_id });
     socket.emit("registrar_usuario", { usuario_id });
 });
 
+// ==============================
+// 🟢 USUARIOS ACTIVOS
+// ==============================
+socket.on("usuarios_activos", function(lista) {
+    usuariosActivos = lista;
+
+    const estado = document.getElementById("estadoUsuario");
+    estado.innerText = "🟢 " + lista.length + " en línea";
+});
 
 // ==============================
-// 📩 MENSAJES NUEVOS
+// 👤 VER USUARIOS
+// ==============================
+function verUsuarios() {
+    const contenedor = document.getElementById("listaUsuarios");
+    contenedor.innerHTML = "";
+
+    usuariosActivos.forEach(id => {
+        if (parseInt(id) === parseInt(usuario_id)) return;
+
+        const div = document.createElement("div");
+        div.classList.add("usuario-item");
+        div.innerText = "Usuario " + id;
+
+        div.onclick = () => {
+            alert("Aquí luego abres chat privado 😏");
+        };
+
+        contenedor.appendChild(div);
+    });
+}
+
+// ==============================
+// 💬 MENSAJES
 // ==============================
 socket.on("nuevo_mensaje", function (data) {
     agregarMensaje(data);
-    chat.scrollTop = chat.scrollHeight;
-});
 
+    if (Notification.permission === "granted" && !document.hasFocus()) {
+        new Notification(data.nombre, {
+            body: data.mensaje || "📸 Imagen"
+        });
+    }
 
-// ==============================
-// 📜 MENSAJES ANTERIORES
-// ==============================
-socket.on("mensajes_anteriores", function (mensajes) {
-    ultimaFechaMostrada = null;
-    chat.innerHTML = "";
-
-    mensajes.forEach(function (data) {
-        agregarMensaje(data);
+    chat.scrollTo({
+        top: chat.scrollHeight,
+        behavior: "smooth"
     });
+});
+
+socket.on("mensajes_anteriores", function (mensajes) {
+    chat.innerHTML = "";
+    ultimaFechaMostrada = null;
+
+    mensajes.forEach(agregarMensaje);
 
     chat.scrollTop = chat.scrollHeight;
 });
 
-
 // ==============================
-// ✍️ ESCRIBIENDO...
+// ✍️ ESCRIBIENDO
 // ==============================
 let timeoutEscribiendo;
 
-input.addEventListener("input", function () {
-    socket.emit("usuario_escribiendo", {
-        grupo_id,
-        usuario_id
-    });
+input.addEventListener("input", () => {
+    socket.emit("usuario_escribiendo", { grupo_id, usuario_id });
 
     clearTimeout(timeoutEscribiendo);
-
     timeoutEscribiendo = setTimeout(() => {
         socket.emit("usuario_dejo_escribir", { grupo_id });
     }, 2000);
 });
 
-socket.on("mostrar_escribiendo", function (data) {
+socket.on("mostrar_escribiendo", data => {
     escribiendoDiv.innerText = data.nombre + " está escribiendo...";
 });
 
-socket.on("ocultar_escribiendo", function () {
+socket.on("ocultar_escribiendo", () => {
     escribiendoDiv.innerText = "";
 });
 
+// ==============================
+// 🖼️ PREVIEW IMAGEN
+// ==============================
+imagenInput.addEventListener("change", () => {
+    const file = imagenInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        previewContainer.innerHTML = `
+            <img src="${e.target.result}" class="preview-img">
+        `;
+    };
+    reader.readAsDataURL(file);
+});
 
 // ==============================
 // 📤 ENVIAR MENSAJE
 // ==============================
 function enviarMensaje() {
     const mensaje = input.value.trim();
-    if (!mensaje) return;
+    const archivo = imagenInput.files[0];
 
-    socket.emit("enviar_mensaje_grupo", {
-        grupo_id,
-        usuario_id,
-        mensaje
-    });
+    if (!mensaje && !archivo) return;
+
+    if (archivo) {
+        const formData = new FormData();
+        formData.append("file", archivo);
+        formData.append("upload_preset", "ml_default");
+
+        fetch("https://api.cloudinary.com/v1_1/dwpfvr7oz/image/upload", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            socket.emit("enviar_mensaje_grupo", {
+                grupo_id,
+                usuario_id,
+                mensaje,
+                imagen: data.secure_url
+            });
+        });
+
+    } else {
+        socket.emit("enviar_mensaje_grupo", {
+            grupo_id,
+            usuario_id,
+            mensaje
+        });
+    }
 
     input.value = "";
+    imagenInput.value = "";
+    previewContainer.innerHTML = "";
 }
 
-input.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-        enviarMensaje();
-    }
-});
-
-
 // ==============================
-// 📅 FECHAS BONITAS
-// ==============================
-function obtenerEtiquetaFecha(fechaMensaje) {
-    const hoy = new Date();
-    const fecha = new Date(fechaMensaje + " UTC");
-
-    const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-    const inicioMensaje = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-
-    const diferencia = (inicioHoy - inicioMensaje) / (1000 * 60 * 60 * 24);
-
-    if (diferencia === 0) return "Hoy";
-    if (diferencia === 1) return "Ayer";
-
-    return fecha.toLocaleDateString("es-MX", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric"
-    });
-}
-
-
-// ==============================
-// 💬 MOSTRAR MENSAJE
+// 💬 PINTAR MENSAJE
 // ==============================
 function agregarMensaje(data) {
     const div = document.createElement("div");
 
     const fecha = new Date(data.fecha + " UTC");
-    const hora = fecha.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    const hora = fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const esMio = parseInt(data.usuario_id) === parseInt(usuario_id);
 
-    const etiquetaFecha = obtenerEtiquetaFecha(data.fecha);
+    div.classList.add("mensaje", esMio ? "mio" : "otro");
 
-    // 🔥 Separador de fecha
-    if (ultimaFechaMostrada !== etiquetaFecha) {
-        const separador = document.createElement("div");
-        separador.classList.add("separador-fecha");
-        separador.innerText = etiquetaFecha;
-        chat.appendChild(separador);
-
-        ultimaFechaMostrada = etiquetaFecha;
-    }
-
-    div.classList.add("mensaje");
-    div.classList.add(esMio ? "mio" : "otro");
-
-    // 🖼️ FOTO PERFIL (Cloudinary o default)
-    const foto = data.foto
-        ? data.foto
-        : "img/default.jpg";
+    const foto = data.foto || "img/default.jpg";
 
     div.innerHTML = `
         <div class="mensaje-contenedor">
             <img src="${foto}" class="foto-chat">
             <div class="contenido">
                 <strong>${data.nombre}</strong>
-                <p>${data.mensaje}</p>
+                <p>${data.mensaje || ""}</p>
+                ${data.imagen ? `<img src="${data.imagen}" class="img-chat">` : ""}
                 <span class="hora">${hora}</span>
             </div>
         </div>
@@ -172,3 +195,10 @@ function agregarMensaje(data) {
 
     chat.appendChild(div);
 }
+
+// ==============================
+// ⌨️ ENTER
+// ==============================
+input.addEventListener("keypress", e => {
+    if (e.key === "Enter") enviarMensaje();
+});

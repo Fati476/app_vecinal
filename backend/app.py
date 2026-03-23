@@ -2006,15 +2006,16 @@ def unirse_grupo(data):
 def manejar_mensaje_grupo(data):
     grupo_id = data["grupo_id"]
     usuario_id = data["usuario_id"]
-    mensaje = data["mensaje"]
+    mensaje = data.get("mensaje", "")
+    imagen = data.get("imagen", None)
 
     conn = get_db()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
-        INSERT INTO mensajes_grupo (grupo_id, usuario_id, mensaje)
-        VALUES (%s, %s, %s)
-    """, (grupo_id, usuario_id, mensaje))
+        INSERT INTO mensajes_grupo (grupo_id, usuario_id, mensaje, imagen)
+        VALUES (%s, %s, %s, %s)
+    """, (grupo_id, usuario_id, mensaje, imagen))
     conn.commit()
 
     cursor.execute("""
@@ -2023,18 +2024,14 @@ def manejar_mensaje_grupo(data):
     usuario = cursor.fetchone()
     conn.close()
 
-    # 👇👇👇 AQUÍ 👇👇👇
-    emit(
-        "nuevo_mensaje",
-        {
-            "usuario_id": int(usuario_id),
-            "nombre": usuario["nombre"],
-            "mensaje": mensaje,
-            "foto": usuario["foto"],
-            "fecha": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-        },
-        room=str(grupo_id)
-    )
+    emit("nuevo_mensaje", {
+        "usuario_id": int(usuario_id),
+        "nombre": usuario["nombre"],
+        "mensaje": mensaje,
+        "imagen": imagen,
+        "foto": usuario["foto"],
+        "fecha": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    }, room=str(grupo_id))
 
 
 usuarios_conectados = {}

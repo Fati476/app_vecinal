@@ -212,3 +212,45 @@ body {
     transform: translateY(0);
   }
 }
+
+.btn-chat {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.lista-usuarios {
+  background: white;
+  border-radius: 10px;
+  margin: 10px;
+  padding: 10px;
+}
+
+.usuario-item {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.usuario-item:hover {
+  background: #f1f5f9;
+}
+
+.preview-container {
+  padding: 10px;
+}
+
+.preview-img {
+  max-width: 120px;
+  border-radius: 10px;
+}
+
+.img-chat {
+  max-width: 200px;
+  border-radius: 10px;
+  margin-top: 5px;
+}

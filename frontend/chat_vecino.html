@@ -10,13 +10,11 @@
 
 <body>
 
-<!-- 🔹 TOPBAR -->
 <div class="topbar">
   <button class="menu-btn" onclick="toggleMenu()">☰</button>
   <h2>💬 Comunidad General</h2>
 </div>
 
-<!-- 🔹 SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="logo">Vecinos</div>
 
@@ -25,32 +23,39 @@
   <a href="reportes.html">🛠️ Reportes</a>
   <a href="incidencias_vecino.html">🚨 Incidencias</a>
   <a href="vecino_perfil.html">👤 Perfil</a>
- 
 </aside>
 
-<!-- 🔹 CONTENIDO -->
 <main class="main">
 
-  <!-- PANEL INFO ARRIBA -->
+  <!-- 🔥 BOTONES PRO -->
   <section class="info-top">
-    <strong>Información</strong>
-    <span>ConectaVecinos • Administración</span>
-    <span>Usuarios activos</span>
+    <button class="btn-chat" onclick="irGrupo()">💬 Grupo General</button>
+    <button class="btn-chat" onclick="verUsuarios()">🟢 Usuarios conectados</button>
   </section>
 
-  <!-- CHAT -->
+  <!-- 🔥 LISTA USUARIOS -->
+  <div id="listaUsuarios" class="lista-usuarios"></div>
+
   <section class="chat-section">
 
     <header class="chat-header">
       <h3>Comunidad General</h3>
-      <span>Chat vecinal en tiempo real</span>
+      <span id="estadoUsuario">Conectando...</span>
     </header>
+
     <div id="escribiendo" class="escribiendo"></div>
 
     <div id="chat" class="chat-messages"></div>
 
+    <!-- 🔥 PREVIEW IMAGEN -->
+    <div id="previewContainer" class="preview-container"></div>
+
     <div class="chat-input">
       <input id="mensaje" type="text" placeholder="Escribe un mensaje...">
+
+      <input type="file" id="imagenInput" accept="image/*" hidden>
+      <button onclick="document.getElementById('imagenInput').click()">📸</button>
+
       <button onclick="enviarMensaje()">Enviar</button>
     </div>
 
@@ -61,5 +66,6 @@
 <script src="js/menu.js"></script>
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script src="js/chat_grupo.js"></script>
+
 </body>
 </html>
