@@ -2001,7 +2001,6 @@ def unirse_grupo(data):
     grupo_id = data["grupo_id"]
     join_room(str(grupo_id))
 
-
 @socketio.on("enviar_mensaje_grupo")
 def manejar_mensaje_grupo(data):
     grupo_id = data["grupo_id"]
@@ -2016,12 +2015,14 @@ def manejar_mensaje_grupo(data):
         INSERT INTO mensajes_grupo (grupo_id, usuario_id, mensaje, imagen)
         VALUES (%s, %s, %s, %s)
     """, (grupo_id, usuario_id, mensaje, imagen))
+
     conn.commit()
 
     cursor.execute("""
         SELECT nombre, foto FROM usuarios WHERE id_usuario = %s
     """, (usuario_id,))
     usuario = cursor.fetchone()
+
     conn.close()
 
     emit("nuevo_mensaje", {
@@ -2032,7 +2033,6 @@ def manejar_mensaje_grupo(data):
         "foto": usuario["foto"],
         "fecha": datetime.now(timezone.utc).isoformat()
     }, room=str(grupo_id))
-
 
 usuarios_conectados = {}
 
