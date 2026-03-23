@@ -165,7 +165,7 @@ function enviarMensaje() {
 // ==============================
 function obtenerEtiquetaFecha(fechaMensaje) {
     const hoy = new Date();
-    const fecha = new Date(data.fecha + "Z");
+    const fecha = new Date(fechaMensaje + "Z");
 
     const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
     const inicioMensaje = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
