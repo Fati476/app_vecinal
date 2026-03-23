@@ -167,3 +167,21 @@ body {
   color: #64748b;
   padding: 6px 18px;
 }
+
+
+.mensaje-contenedor {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.foto-chat {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.mio .mensaje-contenedor {
+  flex-direction: row-reverse;
+}

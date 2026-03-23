@@ -2018,7 +2018,7 @@ def manejar_mensaje_grupo(data):
     conn.commit()
 
     cursor.execute("""
-        SELECT nombre FROM usuarios WHERE id_usuario = %s
+        SELECT nombre, foto FROM usuarios WHERE id_usuario = %s
     """, (usuario_id,))
     usuario = cursor.fetchone()
     conn.close()
@@ -2030,6 +2030,7 @@ def manejar_mensaje_grupo(data):
             "usuario_id": int(usuario_id),
             "nombre": usuario["nombre"],
             "mensaje": mensaje,
+            "foto": usuario["foto"],
             "fecha": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
         },
         room=str(grupo_id)
@@ -2093,6 +2094,7 @@ def cargar_mensajes(data):
         SELECT 
           mensajes_grupo.usuario_id,
           usuarios.nombre, 
+          usuarios.foto,
           mensajes_grupo.mensaje, 
           mensajes_grupo.fecha
         FROM mensajes_grupo
@@ -2112,6 +2114,7 @@ def cargar_mensajes(data):
             "usuario_id": row["usuario_id"],
             "nombre": row["nombre"],
             "mensaje": row["mensaje"],
+            "foto": row["foto"],
             "fecha": row["fecha"].strftime("%Y-%m-%d %H:%M:%S") if row["fecha"] else ""
         })
 

@@ -1,7 +1,6 @@
-const socket = io(); {
-    transports: ["polling"]
-};
+const socket = io();
 let ultimaFechaMostrada = null;
+
 const grupo_id = 1;
 const usuario_id = localStorage.getItem("id_usuario");
 
@@ -11,34 +10,39 @@ if (!usuario_id) {
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("mensaje");
+const escribiendoDiv = document.getElementById("escribiendo");
+
+// 🌐 URL API (IMPORTANTE)
+const API_URL = "https://app-vecinal.onrender.com";
 
 
-// 🔹 Cuando conecta
+// ==============================
+// 🔌 CONEXIÓN
+// ==============================
 socket.on("connect", function () {
     console.log("Conectado al servidor");
 
-    // Unirse al grupo
-    socket.emit("unirse_grupo", { grupo_id: grupo_id });
-
-    // Cargar mensajes anteriores
-    socket.emit("cargar_mensajes", { grupo_id: grupo_id });
-
-    // Registrar usuario activo
-    socket.emit("registrar_usuario", { usuario_id: usuario_id });
+    socket.emit("unirse_grupo", { grupo_id });
+    socket.emit("cargar_mensajes", { grupo_id });
+    socket.emit("registrar_usuario", { usuario_id });
 });
 
 
-// 🔹 Recibir mensajes nuevos en tiempo real
+// ==============================
+// 📩 MENSAJES NUEVOS
+// ==============================
 socket.on("nuevo_mensaje", function (data) {
     agregarMensaje(data);
     chat.scrollTop = chat.scrollHeight;
 });
 
 
-// 🔹 Recibir mensajes anteriores
+// ==============================
+// 📜 MENSAJES ANTERIORES
+// ==============================
 socket.on("mensajes_anteriores", function (mensajes) {
-    ultimaFechaMostrada = null; // 🔥 reiniciar control de fecha
-    chat.innerHTML = "";        // opcional: limpiar chat
+    ultimaFechaMostrada = null;
+    chat.innerHTML = "";
 
     mensajes.forEach(function (data) {
         agregarMensaje(data);
@@ -48,26 +52,23 @@ socket.on("mensajes_anteriores", function (mensajes) {
 });
 
 
+// ==============================
+// ✍️ ESCRIBIENDO...
+// ==============================
 let timeoutEscribiendo;
 
 input.addEventListener("input", function () {
     socket.emit("usuario_escribiendo", {
-        grupo_id: grupo_id,
-        usuario_id: usuario_id
+        grupo_id,
+        usuario_id
     });
 
     clearTimeout(timeoutEscribiendo);
 
     timeoutEscribiendo = setTimeout(() => {
-        socket.emit("usuario_dejo_escribir", {
-            grupo_id: grupo_id
-        });
+        socket.emit("usuario_dejo_escribir", { grupo_id });
     }, 2000);
 });
-
-
-
-const escribiendoDiv = document.getElementById("escribiendo");
 
 socket.on("mostrar_escribiendo", function (data) {
     escribiendoDiv.innerText = data.nombre + " está escribiendo...";
@@ -78,24 +79,32 @@ socket.on("ocultar_escribiendo", function () {
 });
 
 
-// 🔹 Función para mostrar mensaje
-
-
-
-// 🔹 Enviar mensaje
+// ==============================
+// 📤 ENVIAR MENSAJE
+// ==============================
 function enviarMensaje() {
     const mensaje = input.value.trim();
     if (!mensaje) return;
 
     socket.emit("enviar_mensaje_grupo", {
-        grupo_id: grupo_id,
-        usuario_id: usuario_id,
-        mensaje: mensaje
+        grupo_id,
+        usuario_id,
+        mensaje
     });
 
     input.value = "";
 }
 
+input.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+        enviarMensaje();
+    }
+});
+
+
+// ==============================
+// 📅 FECHAS BONITAS
+// ==============================
 function obtenerEtiquetaFecha(fechaMensaje) {
     const hoy = new Date();
     const fecha = new Date(fechaMensaje + " UTC");
@@ -115,47 +124,51 @@ function obtenerEtiquetaFecha(fechaMensaje) {
     });
 }
 
+
+// ==============================
+// 💬 MOSTRAR MENSAJE
+// ==============================
 function agregarMensaje(data) {
     const div = document.createElement("div");
 
     const fecha = new Date(data.fecha + " UTC");
-    const hora = fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const hora = fecha.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 
     const esMio = parseInt(data.usuario_id) === parseInt(usuario_id);
 
-
     const etiquetaFecha = obtenerEtiquetaFecha(data.fecha);
 
+    // 🔥 Separador de fecha
     if (ultimaFechaMostrada !== etiquetaFecha) {
         const separador = document.createElement("div");
         separador.classList.add("separador-fecha");
-       separador.innerText = etiquetaFecha;
+        separador.innerText = etiquetaFecha;
         chat.appendChild(separador);
 
         ultimaFechaMostrada = etiquetaFecha;
     }
 
     div.classList.add("mensaje");
+    div.classList.add(esMio ? "mio" : "otro");
 
-    if (esMio) {
-        div.classList.add("mio");
-    } else {
-        div.classList.add("otro");
-    }
+    // 🖼️ FOTO PERFIL (Cloudinary o default)
+    const foto = data.foto
+        ? data.foto
+        : "img/default.jpg";
 
     div.innerHTML = `
-        <div class="contenido">
-            <strong>${data.nombre}</strong>
-            <p>${data.mensaje}</p>
-            <span class="hora">${hora}</span>
+        <div class="mensaje-contenedor">
+            <img src="${foto}" class="foto-chat">
+            <div class="contenido">
+                <strong>${data.nombre}</strong>
+                <p>${data.mensaje}</p>
+                <span class="hora">${hora}</span>
+            </div>
         </div>
     `;
 
     chat.appendChild(div);
 }
-
-input.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-        enviarMensaje();
-    }
-});
