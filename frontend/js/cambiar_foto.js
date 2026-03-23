@@ -1,5 +1,5 @@
 const idUsuario = localStorage.getItem("id_usuario");
-
+const API_URL = "https://app-vecinal.onrender.com";
 if (!idUsuario) {
   window.location.href = "login.html";
 }
