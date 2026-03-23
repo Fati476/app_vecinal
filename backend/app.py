@@ -2093,6 +2093,7 @@ def cargar_mensajes(data):
           usuarios.nombre, 
           usuarios.foto,
           mensajes_grupo.mensaje, 
+          mensajes_grupo.imagen,   
           mensajes_grupo.fecha
         FROM mensajes_grupo
         JOIN usuarios 
