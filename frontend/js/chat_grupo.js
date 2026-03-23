@@ -10,14 +10,7 @@ const escribiendoDiv = document.getElementById("escribiendo");
 const imagenInput = document.getElementById("imagenInput");
 const previewContainer = document.getElementById("previewContainer");
 
-const API_URL = "https://app-vecinal.onrender.com";
-
 let usuariosActivos = [];
-
-// 🔔 NOTIFICACIONES
-if (Notification.permission !== "granted") {
-    Notification.requestPermission();
-}
 
 // ==============================
 // 🔌 CONEXIÓN
@@ -31,7 +24,7 @@ socket.on("connect", () => {
 // ==============================
 // 🟢 USUARIOS ACTIVOS
 // ==============================
-socket.on("usuarios_activos", function(lista) {
+socket.on("usuarios_activos", lista => {
     usuariosActivos = lista;
 
     const estado = document.getElementById("estadoUsuario");
@@ -53,7 +46,7 @@ function verUsuarios() {
         div.innerText = "Usuario " + id;
 
         div.onclick = () => {
-            alert("Aquí luego abres chat privado 😏");
+            alert("Chat privado después 😏");
         };
 
         contenedor.appendChild(div);
@@ -63,22 +56,12 @@ function verUsuarios() {
 // ==============================
 // 💬 MENSAJES
 // ==============================
-socket.on("nuevo_mensaje", function (data) {
+socket.on("nuevo_mensaje", data => {
     agregarMensaje(data);
-
-    if (Notification.permission === "granted" && !document.hasFocus()) {
-        new Notification(data.nombre, {
-            body: data.mensaje || "📸 Imagen"
-        });
-    }
-
-    chat.scrollTo({
-        top: chat.scrollHeight,
-        behavior: "smooth"
-    });
+    chat.scrollTop = chat.scrollHeight;
 });
 
-socket.on("mensajes_anteriores", function (mensajes) {
+socket.on("mensajes_anteriores", mensajes => {
     chat.innerHTML = "";
     ultimaFechaMostrada = null;
 
@@ -96,6 +79,7 @@ input.addEventListener("input", () => {
     socket.emit("usuario_escribiendo", { grupo_id, usuario_id });
 
     clearTimeout(timeoutEscribiendo);
+
     timeoutEscribiendo = setTimeout(() => {
         socket.emit("usuario_dejo_escribir", { grupo_id });
     }, 2000);
@@ -117,14 +101,16 @@ imagenInput.addEventListener("change", () => {
     if (!file) return;
 
     const reader = new FileReader();
+
     reader.onload = e => {
         previewContainer.innerHTML = `
             <div class="preview-box">
-              <img src="${e.target.result}" class="preview-img">
-              <span class="cerrar-preview" onclick="quitarImagen()">✖</span>
+                <img src="${e.target.result}" class="preview-img">
+                <span class="cerrar-preview" onclick="quitarImagen()">✖</span>
             </div>
         `;
     };
+
     reader.readAsDataURL(file);
 });
 
@@ -175,27 +161,16 @@ function enviarMensaje() {
 }
 
 // ==============================
-// 📅 FUNCIÓN PRO DE FECHAS
+// 📅 FECHA BONITA
 // ==============================
 function obtenerEtiquetaFecha(fechaMensaje) {
     const hoy = new Date();
-    const fecha = new Date(data.fecha + "Z");
+    const fecha = new Date(fechaMensaje);
 
-    const inicioHoy = new Date(
-        hoy.getFullYear(),
-        hoy.getMonth(),
-        hoy.getDate()
-    );
+    const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    const inicioMensaje = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
 
-    const inicioMensaje = new Date(
-        fecha.getFullYear(),
-        fecha.getMonth(),
-        fecha.getDate()
-    );
-
-    const diferencia = Math.floor(
-        (inicioHoy - inicioMensaje) / (1000 * 60 * 60 * 24)
-    );
+    const diferencia = Math.floor((inicioHoy - inicioMensaje) / (1000 * 60 * 60 * 24));
 
     if (diferencia === 0) return "Hoy";
     if (diferencia === 1) return "Ayer";
@@ -208,12 +183,12 @@ function obtenerEtiquetaFecha(fechaMensaje) {
 }
 
 // ==============================
-// 💬 PINTAR MENSAJE (YA CON FECHA)
+// 💬 PINTAR MENSAJE
 // ==============================
 function agregarMensaje(data) {
     const div = document.createElement("div");
 
-    const fecha = new Date(data.fecha + "Z");
+    const fecha = new Date(data.fecha);
     const hora = fecha.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit'
@@ -223,13 +198,13 @@ function agregarMensaje(data) {
 
     const etiquetaFecha = obtenerEtiquetaFecha(data.fecha);
 
-    // 🔥 SEPARADOR DE FECHA
+    // 🔥 SEPARADOR DE DÍA
     if (ultimaFechaMostrada !== etiquetaFecha) {
         const separador = document.createElement("div");
         separador.classList.add("separador-fecha");
         separador.innerText = etiquetaFecha;
-
         chat.appendChild(separador);
+
         ultimaFechaMostrada = etiquetaFecha;
     }
 
@@ -253,6 +228,13 @@ function agregarMensaje(data) {
 }
 
 // ==============================
+// ⌨️ ENTER
+// ==============================
+input.addEventListener("keypress", e => {
+    if (e.key === "Enter") enviarMensaje();
+});
+
+// ==============================
 // 🔁 BOTÓN GRUPO
 // ==============================
 function irGrupo() {
@@ -261,10 +243,3 @@ function irGrupo() {
 
     chat.innerHTML = "";
 }
-
-// ==============================
-// ⌨️ ENTER
-// ==============================
-input.addEventListener("keypress", e => {
-    if (e.key === "Enter") enviarMensaje();
-});
