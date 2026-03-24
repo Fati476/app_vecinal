@@ -2014,7 +2014,10 @@ def manejar_mensaje_grupo(data):
     cursor.execute("""
         INSERT INTO mensajes_grupo (grupo_id, usuario_id, mensaje, imagen)
         VALUES (%s, %s, %s, %s)
+        RETURNING id, fecha
     """, (grupo_id, usuario_id, mensaje, imagen))
+
+    nuevo = cursor.fetchone()
 
     conn.commit()
 
@@ -2026,12 +2029,14 @@ def manejar_mensaje_grupo(data):
     conn.close()
 
     emit("nuevo_mensaje", {
+        "id": nuevo["id"],  # 🔥 IMPORTANTE
         "usuario_id": int(usuario_id),
         "nombre": usuario["nombre"],
         "mensaje": mensaje,
         "imagen": imagen,
         "foto": usuario["foto"],
-        "fecha": datetime.now().isoformat()
+        "fecha": nuevo["fecha"].isoformat(),
+        "eliminado": False
     }, room=str(grupo_id))
 
 usuarios_conectados = {}
@@ -2107,21 +2112,21 @@ def cargar_mensajes(data):
     rows = cursor.fetchall()
     conn.close()
 
-    mensajes_limpios = []
+    mensajes = []
 
     for row in rows:
-        mensajes_limpios.append({
+        mensajes.append({
             "id": row["id"],
             "usuario_id": row["usuario_id"],
             "nombre": row["nombre"],
             "mensaje": row["mensaje"],
             "imagen": row["imagen"],
             "foto": row["foto"],
-            "fecha": row["fecha"].isoformat() if row["fecha"] else "",
-            "eliminado": row["eliminado"] 
+            "fecha": row["fecha"].isoformat(),
+            "eliminado": row["eliminado"]
         })
 
-    emit("mensajes_anteriores", mensajes_limpios)
+    emit("mensajes_anteriores", mensajes)
 
 
 
@@ -2153,8 +2158,11 @@ def test_connect():
 
 @socketio.on("editar_mensaje")
 def editar_mensaje(data):
-    mensaje_id = data["id"]
-    nuevo_mensaje = data["mensaje"]
+    mensaje_id = data.get("id")
+    nuevo_mensaje = data.get("mensaje")
+
+    if not mensaje_id:
+        return
 
     conn = get_db()
     cursor = conn.cursor()
@@ -2175,13 +2183,22 @@ def editar_mensaje(data):
 
 @socketio.on("eliminar_mensaje")
 def eliminar_mensaje(data):
-    mensaje_id = data["id"]
+    print("DATA:", data)
+
+    mensaje_id = data.get("id")
+
+    if not mensaje_id:
+        print("❌ NO LLEGÓ ID")
+        return
 
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
-        DELETE FROM mensajes_grupo
+        UPDATE mensajes_grupo
+        SET eliminado = TRUE,
+            mensaje = NULL,
+            imagen = NULL
         WHERE id = %s
     """, (mensaje_id,))
 
@@ -2191,7 +2208,6 @@ def eliminar_mensaje(data):
     emit("mensaje_eliminado", {
         "id": mensaje_id
     }, broadcast=True)
-
 # -----------------------------
 # Ejecutar servidor
 # -----------------------------

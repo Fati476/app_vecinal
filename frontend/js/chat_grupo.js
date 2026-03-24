@@ -161,6 +161,8 @@ function obtenerEtiquetaFecha(fechaMensaje) {
 // 💬 PINTAR MENSAJE
 // ==============================
 function agregarMensaje(data) {
+
+    console.log("MENSAJE:", data);
     const div = document.createElement("div");
 
     const fecha = new Date(data.fecha);
