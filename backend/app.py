@@ -2089,12 +2089,14 @@ def cargar_mensajes(data):
 
     cursor.execute("""
         SELECT 
+          mensajes_grupo.id,
           mensajes_grupo.usuario_id,
           usuarios.nombre, 
           usuarios.foto,
           mensajes_grupo.mensaje, 
           mensajes_grupo.imagen,   
-          mensajes_grupo.fecha
+          mensajes_grupo.fecha,
+          mensajes_grupo.eliminado
         FROM mensajes_grupo
         JOIN usuarios 
             ON mensajes_grupo.usuario_id = usuarios.id_usuario
@@ -2109,12 +2111,14 @@ def cargar_mensajes(data):
 
     for row in rows:
         mensajes_limpios.append({
+            "id": row["id"],
             "usuario_id": row["usuario_id"],
             "nombre": row["nombre"],
             "mensaje": row["mensaje"],
             "imagen": row["imagen"],
             "foto": row["foto"],
-            "fecha": row["fecha"].isoformat() if row["fecha"] else ""
+            "fecha": row["fecha"].isoformat() if row["fecha"] else "",
+            "eliminado": row["eliminado"] 
         })
 
     emit("mensajes_anteriores", mensajes_limpios)
@@ -2146,6 +2150,47 @@ def usuario_dejo_escribir(data):
 @socketio.on("connect")
 def test_connect():
     print("Nueva conexión:", request.sid)
+
+@socketio.on("editar_mensaje")
+def editar_mensaje(data):
+    mensaje_id = data["id"]
+    nuevo_mensaje = data["mensaje"]
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE mensajes_grupo
+        SET mensaje = %s
+        WHERE id = %s
+    """, (nuevo_mensaje, mensaje_id))
+
+    conn.commit()
+    conn.close()
+
+    emit("mensaje_editado", {
+        "id": mensaje_id,
+        "mensaje": nuevo_mensaje
+    }, broadcast=True)
+
+@socketio.on("eliminar_mensaje")
+def eliminar_mensaje(data):
+    mensaje_id = data["id"]
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        DELETE FROM mensajes_grupo
+        WHERE id = %s
+    """, (mensaje_id,))
+
+    conn.commit()
+    conn.close()
+
+    emit("mensaje_eliminado", {
+        "id": mensaje_id
+    }, broadcast=True)
 
 # -----------------------------
 # Ejecutar servidor

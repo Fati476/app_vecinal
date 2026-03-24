@@ -26,9 +26,8 @@ socket.on("connect", () => {
 // ==============================
 socket.on("usuarios_activos", lista => {
     usuariosActivos = lista;
-
-    const estado = document.getElementById("estadoUsuario");
-    estado.innerText = "🟢 " + lista.length + " en línea";
+    document.getElementById("estadoUsuario").innerText =
+        "🟢 " + lista.length + " en línea";
 });
 
 // ==============================
@@ -44,10 +43,6 @@ function verUsuarios() {
         const div = document.createElement("div");
         div.classList.add("usuario-item");
         div.innerText = "Usuario " + id;
-
-        div.onclick = () => {
-            alert("Chat privado después 😏");
-        };
 
         contenedor.appendChild(div);
     });
@@ -165,7 +160,7 @@ function enviarMensaje() {
 // ==============================
 function obtenerEtiquetaFecha(fechaMensaje) {
     const hoy = new Date();
-    const fecha = new Date(fechaMensaje + "Z");
+    const fecha = new Date(fechaMensaje);
 
     const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
     const inicioMensaje = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
@@ -188,14 +183,13 @@ function obtenerEtiquetaFecha(fechaMensaje) {
 function agregarMensaje(data) {
     const div = document.createElement("div");
 
-    const fecha = new Date(data.fecha + "Z");
+    const fecha = new Date(data.fecha);
     const hora = fecha.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit'
     });
 
     const esMio = parseInt(data.usuario_id) === parseInt(usuario_id);
-
     const etiquetaFecha = obtenerEtiquetaFecha(data.fecha);
 
     // 🔥 SEPARADOR DE DÍA
@@ -209,23 +203,84 @@ function agregarMensaje(data) {
     }
 
     div.classList.add("mensaje", esMio ? "mio" : "otro");
+    div.setAttribute("data-id", data.id);
 
     const foto = data.foto || "img/default.jpg";
+
+    let contenidoMensaje = "";
+
+    if (data.eliminado) {
+        contenidoMensaje = `<p class="eliminado">🚫 Mensaje eliminado</p>`;
+    } else {
+        contenidoMensaje = `<p>${data.mensaje || ""}</p>`;
+    }
 
     div.innerHTML = `
         <div class="mensaje-contenedor">
             <img src="${foto}" class="foto-chat">
             <div class="contenido">
                 <strong>${data.nombre}</strong>
-                <p>${data.mensaje || ""}</p>
+                ${contenidoMensaje}
                 ${data.imagen ? `<img src="${data.imagen}" class="img-chat">` : ""}
                 <span class="hora">${hora}</span>
+
+                ${
+                    esMio && !data.eliminado
+                    ? `
+                    <div class="acciones">
+                        <span onclick="editarMensaje(${data.id}, \`${data.mensaje || ""}\`)">✏️</span>
+                        <span onclick="eliminarMensaje(${data.id})">🗑️</span>
+                    </div>
+                    `
+                    : ""
+                }
             </div>
         </div>
     `;
 
     chat.appendChild(div);
 }
+
+// ==============================
+// ✏️ EDITAR
+// ==============================
+function editarMensaje(id, mensajeActual) {
+    const nuevo = prompt("Editar mensaje:", mensajeActual);
+    if (!nuevo) return;
+
+    socket.emit("editar_mensaje", {
+        id,
+        mensaje: nuevo
+    });
+}
+
+// ==============================
+// 🗑️ ELIMINAR
+// ==============================
+function eliminarMensaje(id) {
+    if (!confirm("¿Eliminar mensaje?")) return;
+
+    socket.emit("eliminar_mensaje", { id });
+}
+
+// ==============================
+// 🔄 TIEMPO REAL
+// ==============================
+socket.on("mensaje_editado", data => {
+    const div = document.querySelector(`[data-id="${data.id}"]`);
+    if (div) {
+        const p = div.querySelector("p");
+        if (p) p.innerText = data.mensaje + " (editado)";
+    }
+});
+
+socket.on("mensaje_eliminado", data => {
+    const div = document.querySelector(`[data-id="${data.id}"]`);
+    if (div) {
+        const p = div.querySelector("p");
+        if (p) p.innerHTML = "🚫 Mensaje eliminado";
+    }
+});
 
 // ==============================
 // ⌨️ ENTER
@@ -240,6 +295,5 @@ input.addEventListener("keypress", e => {
 function irGrupo() {
     socket.emit("unirse_grupo", { grupo_id });
     socket.emit("cargar_mensajes", { grupo_id });
-
     chat.innerHTML = "";
 }

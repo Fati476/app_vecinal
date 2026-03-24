@@ -271,3 +271,16 @@ body {
   cursor: pointer;
   font-size: 12px;
 }
+
+.acciones {
+    display: flex;
+    gap: 8px;
+    margin-top: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.eliminado {
+    color: gray;
+    font-style: italic;
+}
