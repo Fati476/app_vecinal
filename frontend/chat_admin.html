@@ -34,20 +34,23 @@
 <!-- 🔹 CONTENIDO -->
 <main class="main">
 
-  <!-- PANEL INFO ARRIBA -->
+  <!-- 🔥 BOTONES SUPERIORES (igual que vecino) -->
   <section class="info-top">
-    <strong>Información</strong>
-    <span>ConectaVecinos • Administración</span>
-    <span>Usuarios activos</span>
+    <button class="btn-chat" onclick="irGrupo()">💬 Grupo General</button>
+    <button class="btn-chat" onclick="verUsuarios()">🟢 Usuarios conectados</button>
   </section>
+
+  <!-- 🔥 LISTA DE USUARIOS (mensaje temporal) -->
+  <div id="listaUsuarios" class="lista-usuarios"></div>
 
   <!-- CHAT -->
   <section class="chat-section">
 
     <header class="chat-header">
       <h3>Comunidad General</h3>
-      <span>Chat vecinal en tiempo real</span>
+      <span id="estadoUsuario">Conectando...</span>
     </header>
+
     <div id="escribiendo" class="escribiendo"></div>
     <div id="chat" class="chat-messages"></div>
 
@@ -60,8 +63,27 @@
 
 </main>
 
+<script>
+function verUsuarios() {
+  const contenedor = document.getElementById("listaUsuarios");
+
+  contenedor.innerHTML = `
+    <div class="msg-proximamente">
+      🔧 Esta función se implementará más adelante...
+    </div>
+  `;
+
+  contenedor.style.display = "block";
+  contenedor.style.opacity = "1";
+}
+
+</script>
+
 <script src="js/menu.js"></script>
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script src="js/chat_grupo.js"></script>
+
+<!-- 🔥 FUNCIÓN agregar mensaje temporal -->
+
 </body>
 </html>
