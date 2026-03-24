@@ -165,7 +165,7 @@ function agregarMensaje(data) {
     console.log("MENSAJE:", data);
     const div = document.createElement("div");
 
-    const fecha = new Date(data.fecha);
+    const fecha = new Date(data.fecha + "Z");
     const hora = fecha.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit'
