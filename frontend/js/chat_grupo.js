@@ -31,24 +31,6 @@ socket.on("usuarios_activos", lista => {
 });
 
 // ==============================
-// 👤 VER USUARIOS
-// ==============================
-function verUsuarios() {
-    const contenedor = document.getElementById("listaUsuarios");
-    contenedor.innerHTML = "";
-
-    usuariosActivos.forEach(id => {
-        if (parseInt(id) === parseInt(usuario_id)) return;
-
-        const div = document.createElement("div");
-        div.classList.add("usuario-item");
-        div.innerText = "Usuario " + id;
-
-        contenedor.appendChild(div);
-    });
-}
-
-// ==============================
 // 💬 MENSAJES
 // ==============================
 socket.on("nuevo_mensaje", data => {
@@ -61,7 +43,6 @@ socket.on("mensajes_anteriores", mensajes => {
     ultimaFechaMostrada = null;
 
     mensajes.forEach(agregarMensaje);
-
     chat.scrollTop = chat.scrollHeight;
 });
 
@@ -151,8 +132,7 @@ function enviarMensaje() {
     }
 
     input.value = "";
-    imagenInput.value = "";
-    previewContainer.innerHTML = "";
+    quitarImagen();
 }
 
 // ==============================
@@ -192,7 +172,7 @@ function agregarMensaje(data) {
     const esMio = parseInt(data.usuario_id) === parseInt(usuario_id);
     const etiquetaFecha = obtenerEtiquetaFecha(data.fecha);
 
-    // 🔥 SEPARADOR DE DÍA
+    // 🔥 separador de día
     if (ultimaFechaMostrada !== etiquetaFecha) {
         const separador = document.createElement("div");
         separador.classList.add("separador-fecha");
@@ -220,8 +200,15 @@ function agregarMensaje(data) {
             <img src="${foto}" class="foto-chat">
             <div class="contenido">
                 <strong>${data.nombre}</strong>
+
                 ${contenidoMensaje}
-                ${data.imagen ? `<img src="${data.imagen}" class="img-chat">` : ""}
+
+                ${
+                    data.imagen && !data.eliminado
+                    ? `<img src="${data.imagen}" class="img-chat">`
+                    : ""
+                }
+
                 <span class="hora">${hora}</span>
 
                 ${
@@ -276,9 +263,16 @@ socket.on("mensaje_editado", data => {
 
 socket.on("mensaje_eliminado", data => {
     const div = document.querySelector(`[data-id="${data.id}"]`);
+
     if (div) {
-        const p = div.querySelector("p");
-        if (p) p.innerHTML = "🚫 Mensaje eliminado";
+        const contenido = div.querySelector(".contenido");
+
+        if (contenido) {
+            contenido.innerHTML = `
+                <strong>Mensaje</strong>
+                <p class="eliminado">🚫 Mensaje eliminado</p>
+            `;
+        }
     }
 });
 
