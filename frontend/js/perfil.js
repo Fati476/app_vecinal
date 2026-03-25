@@ -40,7 +40,7 @@ function cargarPerfil() {
 
       // 🧠 2️⃣ Si ya existe foto en BD
       else if (data.foto) {
-        fotoPerfil.src = fotoNueva;
+        fotoPerfil.src = data.foto;
       }
 
       // 🧠 3️⃣ Default
