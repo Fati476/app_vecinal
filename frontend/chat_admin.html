@@ -16,7 +16,7 @@
   <h2>💬 Comunidad General</h2>
 </div>
 
-<!-- 🔹 SIDEBAR -->
+<!-- 🔹 SIDEBAR (NO TOCADO 👌) -->
 <aside class="sidebar" id="sidebar">
   <div class="logo">ConectaVecinos</div>
 
@@ -34,29 +34,38 @@
 <!-- 🔹 CONTENIDO -->
 <main class="main">
 
-  <!-- 🔥 BOTONES SUPERIORES (igual que vecino) -->
-  <section class="info-top">
-    <button class="btn-chat" onclick="irGrupo()">💬 Grupo General</button>
-    <button class="btn-chat" onclick="verUsuarios()">🟢 Usuarios conectados</button>
+  <!-- 🔥 HEADER PRO -->
+  <section class="chat-top">
+    <div class="acciones-chat">
+      <button class="btn-chat" onclick="irGrupo()">💬 Grupo General</button>
+      <button class="btn-chat" onclick="verUsuarios()">🟢 Usuarios</button>
+    </div>
+
+    <div id="estadoUsuario" class="estado-online">Conectando...</div>
   </section>
 
-  <!-- 🔥 LISTA DE USUARIOS (mensaje temporal) -->
-  <div id="listaUsuarios" class="lista-usuarios"></div>
+  <!-- 🔥 PANEL USUARIOS -->
+  <div id="listaUsuarios" class="lista-usuarios oculto"></div>
 
-  <!-- CHAT -->
+  <!-- 🔥 CHAT -->
   <section class="chat-section">
 
-    <header class="chat-header">
-      <h3>Comunidad General</h3>
-      <span id="estadoUsuario">Conectando...</span>
-    </header>
-
     <div id="escribiendo" class="escribiendo"></div>
+
     <div id="chat" class="chat-messages"></div>
 
+    <!-- 🔥 PREVIEW IMAGEN -->
+    <div id="previewContainer" class="preview-container"></div>
+
+    <!-- 🔥 INPUT PRO -->
     <div class="chat-input">
+
+      <button class="btn-icon" onclick="document.getElementById('imagenInput').click()">📸</button>
+      <input type="file" id="imagenInput" accept="image/*" hidden>
+
       <input id="mensaje" type="text" placeholder="Escribe un mensaje...">
-      <button onclick="enviarMensaje()">Enviar</button>
+
+      <button class="btn-enviar" onclick="enviarMensaje()">➤</button>
     </div>
 
   </section>
@@ -67,23 +76,19 @@
 function verUsuarios() {
   const contenedor = document.getElementById("listaUsuarios");
 
+  contenedor.classList.toggle("oculto");
+
   contenedor.innerHTML = `
     <div class="msg-proximamente">
-      🔧 Esta función se implementará más adelante...
+      🟢 Usuarios conectados aparecerán aquí
     </div>
   `;
-
-  contenedor.style.display = "block";
-  contenedor.style.opacity = "1";
 }
-
 </script>
 
 <script src="js/menu.js"></script>
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script src="js/chat_grupo.js"></script>
-
-<!-- 🔥 FUNCIÓN agregar mensaje temporal -->
 
 </body>
 </html>
