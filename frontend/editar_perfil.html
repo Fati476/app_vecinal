@@ -5,8 +5,9 @@
   <title>Editar perfil</title>
   <link rel="stylesheet" href="css/perfil.css">
 </head>
-<body>
- <body class="pagina-centrada">
+
+<body class="pagina-centrada">
+
   <div class="perfil-container">
 
     <div class="perfil-header">
@@ -21,7 +22,12 @@
 
     <div class="perfil-dato">
       <span>Teléfono</span>
-      <input type="text" id="telefono">
+      <input 
+        type="text" 
+        id="telefono"
+        maxlength="10"
+        placeholder="Solo 10 dígitos"
+      >
     </div>
 
     <div class="perfil-dato">
@@ -32,13 +38,11 @@
     <div class="botones">
       <button class="btn btn-guardar" onclick="guardarCambios()">Guardar cambios</button>
       <button class="btn btn-cancelar" onclick="window.history.back()">Cancelar</button>
-      <button class="btn btn-volver" onclick="history.back()">Volver</button>
-      
     </div>
 
   </div>
 
   <script src="js/editar_perfil.js"></script>
- </body>
+
 </body>
 </html>
