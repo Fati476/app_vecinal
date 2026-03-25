@@ -1,17 +1,10 @@
-// 🔐 Obtener ID del usuario
 const idUsuario = localStorage.getItem("id_usuario");
 
-// 🚫 Si no hay sesión → regresar al login
 if (!idUsuario) {
   window.location.href = "login.html";
 }
 
-// 🌐 URL base
-const API_URL = "https://app-vecinal.onrender.com";
-
-// ==============================
-// 🔹 CARGAR DATOS
-// ==============================
+// 🔹 Cargar datos actuales
 function cargarPerfil() {
   fetch(`${API_URL}/api/perfil/${idUsuario}`)
     .then(res => res.json())
@@ -47,43 +40,32 @@ inputTelefono.addEventListener("input", () => {
   }
 });
 
-
-// ==============================
-// 💾 GUARDAR CAMBIOS
-// ==============================
+// 🔹 Guardar cambios
 function guardarCambios() {
+  const datos = {
+    nombre: document.getElementById("nombre").value,
+    telefono: document.getElementById("telefono").value,
+    direccion: document.getElementById("direccion").value
+  };
 
-  const nombre = document.getElementById("nombre").value.trim();
-  const telefono = document.getElementById("telefono").value.trim();
-  const direccion = document.getElementById("direccion").value.trim();
-
-  // 🔥 VALIDACIÓN TELÉFONO
-  if (telefono && !/^\d{10}$/.test(telefono)) {
-    alert("⚠️ El teléfono debe tener exactamente 10 números");
-    return;
-  }
-
-  fetch(`${API_URL}/api/perfil/${idUsuario}`, {
+  fetch(`/api/perfil/${idUsuario}`,  {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      nombre,
-      telefono,
-      direccion
+    body: JSON.stringify(datos)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Perfil actualizado ✅");
+        window.location.href = "admin_perfil.html";
+      } else {
+        alert("Error al actualizar ❌");
+      }
     })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert("✅ Perfil actualizado");
-      window.location.href = "perfil.html";
-    } else {
-      alert("❌ Error al actualizar");
-    }
-  })
-  .catch(err => {
-    console.error("Error:", err);
-  });
+    .catch(err => {
+      console.error(err);
+      alert("Error de conexión ❌");
+    });
 }
