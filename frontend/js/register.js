@@ -17,6 +17,13 @@ function registrar() {
         return;
     }
 
+    // 📱 Validar teléfono (solo números y 10 dígitos)
+    if (!/^\d{10}$/.test(telefono)) {
+        mensaje.innerText = "El teléfono debe tener exactamente 10 números";
+        mensaje.style.color = "red";
+        return;
+    }
+
     // Validar contraseña
     const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
@@ -143,4 +150,8 @@ document.getElementById("password").addEventListener("input", function(){
 
     }
 
+});
+
+document.getElementById("telefono").addEventListener("input", function() {
+    this.value = this.value.replace(/\D/g, "").slice(0, 10);
 });
