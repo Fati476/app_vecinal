@@ -5,6 +5,7 @@ function login() {
 
     if (!correo || !password) {
         mensaje.innerText = "Completa todos los campos";
+        mensaje.style.color = "red";
         return;
     }
 
@@ -24,6 +25,7 @@ function login() {
         // ❌ SI HAY ERROR, NO GUARDAR NADA
         if (data.error) {
             mensaje.innerText = data.error;
+            mensaje.style.color = "red";
             return;
         }
 
