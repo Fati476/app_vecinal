@@ -86,7 +86,7 @@ def get_db():
     # Si estamos en Render usamos PostgreSQL
     if DATABASE_URL:
         print("🟢 Conectado a PostgreSQL")
-        conn = psycopg2.connect(DATABASE_URL)
+        conn = psycopg2.connect(DATABASE_URL, sslmode="require")
         return conn
 
     # Si estamos en local usamos SQLite
